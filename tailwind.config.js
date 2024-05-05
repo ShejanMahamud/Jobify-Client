@@ -13,7 +13,7 @@ export default {
         'inter' : 'Inter'
       },
       backgroundImage: {
-        'login': "linear-gradient(180deg, rgba(4, 26, 60, 0.45) 0%, rgba(4, 26, 60, 0.90) 100%), url('https://i.ibb.co/ZxGdnJ4/eric-prouzet-B3-UFXwc-Vbc4-unsplash.jpg')",
+        'login': "linear-gradient(180deg, rgba(4, 26, 60, 0.45) 0%, rgba(4, 26, 60, 0.90) 100%), url('https://i.ibb.co/F8LXjp5/luis-villasmil-ml-Vb-Mbxf-WI4-unsplash-1.jpg')",
       }
     },
   },
