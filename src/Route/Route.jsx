@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Root from '../layouts/Root';
+import EmailVerification from '../pages/EmailVerification';
 import Home from '../pages/Home';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
@@ -23,6 +24,10 @@ const Route = createBrowserRouter([
     {
       path: '/register',
       element: <Register/>
+    },
+    {
+      path: '/email',
+      element: <EmailVerification/>
     }
   ]);
 
