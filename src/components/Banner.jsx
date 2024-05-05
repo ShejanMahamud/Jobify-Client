@@ -5,14 +5,18 @@ import { IoIosCloseCircle } from "react-icons/io";
 const Banner = () => {
   const [jobs, setJobs] = useState([]);
   const [jobsDialog, setJobsDialog] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const handleSearch = (e) => {
     setJobsDialog(true);
+    setLoading(true)
     e.preventDefault();
     const title = e.target.title.value;
     axios.get(`http://localhost:5948/search?title=${title}`).then((res) => {
       setJobs(res.data);
-      console.log(res);
+      setTimeout(()=>{
+        setLoading(false)
+      },1000)
     });
   };
 
@@ -62,37 +66,7 @@ const Banner = () => {
                 className="bg-transparent focus:outline-none px-2 py-2 w-full"
               />
             </div>
-            {/* <div className="h-[40px] w-[2px] border border-[#E4E5E8] rounded-full"></div>
-            <div className="flex items-center gap-2 w-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z"
-                  stroke="#0066FF"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z"
-                  stroke="#0066FF"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <input
-                type="text"
-                placeholder="Your Location"
-                required
-                className="bg-transparent focus:outline-none px-2 py-2 w-full"
-              />
-            </div> */}
+
             <button className="bg-primary text-white px-5 py-3 rounded-lg font-semibold">
               Search
             </button>
@@ -101,11 +75,20 @@ const Banner = () => {
                 <button onClick={()=>setJobsDialog(false)} className="text-red-500 absolute -right-2 text-3xl -top-3">
                   <IoIosCloseCircle />
                 </button>
+
                 {jobs && jobs.length !== 0 ? 
                   jobs.map(job => (
-                    <div key={job?._id} className="w-full flex items-center justify-between bg-gray-50 rounded-lg px-2 py-2 font-medium">
-                      <span>{job?.title}</span>
-                      <span>{job?.company}</span>
+                    <div key={job?._id} className="w-full bg-gray-50 rounded-lg px-2 py-2 font-medium">
+                      {
+                        loading ? <div className="flex items-center justify-center space-x-2">
+                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+                      </div> : <div className="flex items-center justify-between">
+                    <span>{job?.title}</span>
+                        <span>{job?.company}</span>
+                    </div>
+                      }
                   </div>
                   ))
                  : (
