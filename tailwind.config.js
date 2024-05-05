@@ -11,6 +11,9 @@ export default {
       },
       fontFamily: {
         'inter' : 'Inter'
+      },
+      backgroundImage: {
+        'login': "linear-gradient(180deg, rgba(4, 26, 60, 0.45) 0%, rgba(4, 26, 60, 0.90) 100%), url('https://i.ibb.co/ZxGdnJ4/eric-prouzet-B3-UFXwc-Vbc4-unsplash.jpg')",
       }
     },
   },

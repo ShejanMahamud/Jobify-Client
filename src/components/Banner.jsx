@@ -14,6 +14,7 @@ const Banner = () => {
     const title = e.target.title.value;
     axios.get(`http://localhost:5948/search?title=${title}`).then((res) => {
       setJobs(res.data);
+      e.target.reset();
       setTimeout(()=>{
         setLoading(false)
       },1000)
@@ -71,33 +72,33 @@ const Banner = () => {
               Search
             </button>
             {jobsDialog && (
-              <div className="bg-white absolute px-5 py-5 rounded-lg h-[100px] w-full -bottom-28 right-0 duration-500">
-                <button onClick={()=>setJobsDialog(false)} className="text-red-500 absolute -right-2 text-3xl -top-3">
-                  <IoIosCloseCircle />
-                </button>
+  <div className="bg-white absolute px-5 py-5 rounded-lg h-[100px] w-full -bottom-28 right-0 duration-500 flex items-center justify-center">
+    <button
+      onClick={() => setJobsDialog(false)}
+      className="text-red-500 absolute -right-2 text-3xl -top-3"
+    >
+      <IoIosCloseCircle />
+    </button>
 
-                {jobs && jobs.length !== 0 ? 
-                  jobs.map(job => (
-                    <div key={job?._id} className="w-full bg-gray-50 rounded-lg px-2 py-2 font-medium">
-                      {
-                        loading ? <div className="flex items-center justify-center space-x-2">
-                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-                        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-                      </div> : <div className="flex items-center justify-between">
-                    <span>{job?.title}</span>
-                        <span>{job?.company}</span>
-                    </div>
-                      }
-                  </div>
-                  ))
-                 : (
-                  <span className="text-center font-medium">
-                    No Jobs Found!
-                  </span>
-                )}
-              </div>
-            )}
+    {loading ? (
+      <div className="flex items-center justify-center space-x-2">
+        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+        <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+      </div>
+    ) : jobs && jobs.length !== 0 ? (
+      jobs.map((job) => (
+        <div key={job?._id} className="w-full bg-[#E7F0FA] bg-opacity-50 rounded-lg px-2 py-2 font-medium flex item-center justify-between">
+          <span>{job?.title}</span>
+          <span>{job?.company}</span>
+        </div>
+      ))
+    ) : (
+      <span className="text-center font-medium">No Jobs Found!</span>
+    )}
+  </div>
+)}
+
           </form>
           <p className="text-[#9199A3] text-sm">
             Suggestion:
@@ -112,8 +113,8 @@ const Banner = () => {
       <div>
         <img src="https://i.ibb.co/DwJPJ31/Illustration.png" alt="hero.png" />
       </div>
-      <div className="w-full grid grid-cols-4 row-auto items-center gap-20 col-span-2">
-        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group">
+      <div className="w-full grid grid-cols-4 row-auto items-center gap-16 col-span-2">
+        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group hover:shadow-lg shadow-sm">
           <div className="bg-[#E7F0FA] px-5 py-5 rounded-lg group-hover:bg-primary duration-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +171,7 @@ const Banner = () => {
             <p className="text-[#767F8C]">Live Job</p>
           </div>
         </div>
-        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group">
+        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group shadow-lg hover:shadow-sm">
           <div className=" px-5 py-5 rounded-lg bg-primary duration-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -254,7 +255,7 @@ const Banner = () => {
             <p className="text-[#767F8C]">Companies</p>
           </div>
         </div>
-        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group">
+        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group hover:shadow-lg shadow-sm">
           <div className="bg-[#E7F0FA] px-5 py-5 rounded-lg group-hover:bg-primary duration-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -310,7 +311,7 @@ const Banner = () => {
             <p className="text-[#767F8C]">Companies</p>
           </div>
         </div>
-        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group">
+        <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group hover:shadow-lg shadow-sm">
           <div className="bg-[#E7F0FA] px-5 py-5 rounded-lg group-hover:bg-primary duration-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
