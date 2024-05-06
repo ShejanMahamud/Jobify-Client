@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Root from '../layouts/Root';
+import Auth from '../pages/Auth';
 import EmailVerification from '../pages/EmailVerification';
 import ForgetPassword from '../pages/ForgetPassword';
 import Home from '../pages/Home';
-import ResetPassword from '../pages/ResetPassword';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
 
@@ -28,7 +28,7 @@ const Route = createBrowserRouter([
       element: <Register/>
     },
     {
-      path: '/email',
+      path: '/email_verification',
       element: <EmailVerification/>
     },
     {
@@ -36,8 +36,8 @@ const Route = createBrowserRouter([
       element: <ForgetPassword/>
     },
     {
-      path: 'reset_password',
-      element: <ResetPassword/>
+      path: '/auth/__/auth/action',
+      element: <Auth/>
     }
   ]);
 

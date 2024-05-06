@@ -1,17 +1,39 @@
 import React from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
 import useAuth from './../hooks/useAuth';
 
 const Login = () => {
 
-const {googleLogin} = useAuth();
+const {googleLogin,emailPasswordLogin} = useAuth();
+const navigate = useNavigate();
+const location = useLocation();
 
 const handleGoogleLogin = async () => {
   try{
     await googleLogin()
     toast.success('Successfully Logged In!')
+    setTimeout(()=>{
+      navigate(location?.state || '/')
+    },1000)
+  }
+  catch{
+    toast.error('Something Went Wrong!')
+  }
+}
+
+const handleEmailPasswordLogin = async (e) => {
+  e.preventDefault();
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+
+  try{
+    await emailPasswordLogin(email,password)
+    toast.success('Successfully Logged In!')
+    setTimeout(()=>{
+      navigate(location?.state || '/')
+    },1000)
   }
   catch{
     toast.error('Something Went Wrong!')
@@ -23,10 +45,10 @@ const handleGoogleLogin = async () => {
 <div class="w-full max-w-sm p-6 m-auto mx-auto bg-white rounded-lg shadow-md ">
 <Logo/>
 
-    <form class="mt-6">
+    <form class="mt-6" onSubmit={handleEmailPasswordLogin}>
         <div>
-            <label for="username" class="block text-sm text-gray-800 ">Username</label>
-            <input type="text" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  dark:text-gray-300  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+            <label for="email" class="block text-sm text-gray-800 ">Email Address</label>
+            <input type="email" required name="email" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  dark:text-gray-300  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
 
         <div class="mt-4">
@@ -35,7 +57,7 @@ const handleGoogleLogin = async () => {
                 <Link to="/forget_password" class="text-xs text-gray-600 hover:underline">Forget Password?</Link>
             </div>
 
-            <input type="password" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:text-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+            <input type="password" name="password" required class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:text-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
 
         <div class="mt-6">

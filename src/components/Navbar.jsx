@@ -221,7 +221,7 @@ const Navbar = () => {
           </form>
         </div>
         {user ? (
-          <div className="relative">
+          <div className="relative flex items-center gap-5">
             <img onClick={()=>setIsOpen(!isOpen)} referrerPolicy="no-referrer" src={user?.photoURL} alt="avatar.png" className="w-10 border-2 border-primary rounded-full duration-700"/>
             {
               isOpen && <div className="flex flex-col gap-3 absolute top-10 right-0 bg-white px-2 py-2 rounded-lg w-80">
@@ -261,9 +261,17 @@ const Navbar = () => {
                 Sign Out
             </span>
         </button>
+
             </div>
             }
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path d="M5.26855 10.5002C5.26608 9.61461 5.43837 8.73727 5.77554 7.91841C6.11271 7.09956 6.60815 6.35528 7.23346 5.72822C7.85876 5.10116 8.60166 4.60365 9.41957 4.26419C10.2375 3.92474 11.1143 3.75 11.9999 3.75C12.8854 3.75 13.7623 3.92474 14.5802 4.26419C15.3981 4.60365 16.141 5.10116 16.7663 5.72822C17.3916 6.35528 17.8871 7.09956 18.2242 7.91841C18.5614 8.73727 18.7337 9.61461 18.7312 10.5002V10.5002C18.7312 13.8579 19.4337 15.8063 20.0524 16.8712C20.1191 16.985 20.1546 17.1144 20.1553 17.2462C20.156 17.3781 20.1219 17.5078 20.0565 17.6223C19.991 17.7368 19.8966 17.832 19.7826 17.8984C19.6686 17.9647 19.5392 17.9998 19.4073 18.0002H4.59173C4.45985 17.9998 4.33038 17.9647 4.2164 17.8984C4.10242 17.832 4.00795 17.7368 3.94252 17.6223C3.8771 17.5077 3.84303 17.378 3.84376 17.2461C3.84449 17.1142 3.87999 16.9849 3.94667 16.8711C4.56573 15.8061 5.26855 13.8577 5.26855 10.5002H5.26855Z" stroke="#18191C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M9 18V18.75C9 19.5456 9.31607 20.3087 9.87868 20.8713C10.4413 21.4339 11.2044 21.75 12 21.75C12.7956 21.75 13.5587 21.4339 14.1213 20.8713C14.6839 20.3087 15 19.5456 15 18.75V18" stroke="#18191C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17.1973 2.24902C18.7234 3.21245 19.9536 4.57885 20.7521 6.19736" stroke="#18191C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M3.24805 6.19736C4.04657 4.57885 5.27679 3.21245 6.80291 2.24902" stroke="#18191C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
           </div>
+          
         ) : (
           <div className="flex items-center gap-5">
             <button

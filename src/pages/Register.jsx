@@ -1,34 +1,124 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { IoIosEyeOff, IoMdEye } from "react-icons/io";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
+import auth from "../config/firebase.config";
+import useAuth from "../hooks/useAuth";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+  const [confirmShow, setConfirmShow] = useState(false);
+
+  const { emailPasswordRegister, logOut } = useAuth();
+
+  const handleEmailPassRegister = async (e) => {
+    e.preventDefault();
+
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).*$/;
+
+    const name = e.target.name.value;
+    const username = e.target.username.value;
+    const email = e.target.email.value;
+    const phone = e.target.phone.name;
+    const password = e.target.password.value;
+    const confirmPassword = e.target.confirm.value;
+    const account = e.target.account.value;
+    const terms = e.target.terms.checked;
+    const photo = e.target.photo.value;
+
+    if (!terms) {
+      return toast.error("Please Accept Terms & Services!");
+    }
+    if (password !== confirmPassword) {
+      return toast.error("Password & Confirm Password Should Be Same!");
+    }
+    if (!usernameRegex.test(username)) {
+      return toast.error("Username Not Available!");
+    }
+    if (!passwordRegex.test(password)) {
+      return toast.error("Password Must Be Strong!");
+    }
+
+    try {
+      await emailPasswordRegister(email,password);
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: photo,
+      });
+      await sendEmailVerification(auth.currentUser);
+      toast.success('Account Registration Successfully!')
+      await logOut();
+      setTimeout(()=>{
+        navigate('/email_verification')
+      },1000)
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        return toast.error('User already exists!');
+    }
+    toast.error('Something Went Wrong!')
+    }
+  };
+
   return (
     <div className="w-full font-inter grid grid-cols-2 row-auto items-center min-h-screen">
       <div class="flex items-center w-full max-w-3xl p-8 mx-auto lg:px-12">
         <div class="w-full">
+          <Logo />
 
-        <Logo/>
-
-          <form class="grid grid-cols-2 gap-6 mt-8 row-auto w-full">
+          <form
+            onSubmit={handleEmailPassRegister}
+            class="grid grid-cols-2 gap-6 mt-8 row-auto w-full"
+          >
             <div>
               <label class="block mb-2 text-sm text-gray-600  ">
                 Your Name
               </label>
               <input
                 type="text"
+                required
                 placeholder="John"
+                name="name"
+                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm text-gray-600  ">Username</label>
+              <input
+                type="text"
+                required
+                name="username"
+                placeholder="Username"
                 class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
               />
             </div>
 
             <div>
               <label class="block mb-2 text-sm text-gray-600  ">
-                Phone number
+                Photo URL
               </label>
               <input
                 type="text"
-                placeholder="XXX-XX-XXXX-XXX"
+                required
+                name="photo"
+                placeholder="Photo URL"
+                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+              />
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm text-gray-600  ">
+                Phone Number
+              </label>
+              <input
+                name="phone"
+                type="number"
+                required
+                placeholder="+880171233474"
                 class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
               />
             </div>
@@ -38,32 +128,62 @@ const Register = () => {
                 Email address
               </label>
               <input
+                name="email"
                 type="email"
+                required
                 placeholder="johnsnow@example.com"
                 class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg    focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
               />
             </div>
 
             <div>
-              <label class="block mb-2 text-sm text-gray-600  ">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg         focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-              />
+              <label class="block mb-2 text-sm text-gray-600  ">Password</label>
+              <div className="flex items-center justify-between w-full px-5 py-3 mt-2 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:ring focus:ring-opacity-40">
+                <input
+                  name="password"
+                  required
+                  type={show ? "text" : "password"}
+                  placeholder="Enter your password"
+                  class="block w-full  text-gray-700 placeholder-gray-400 focus:outline-none "
+                />
+                {show ? (
+                  <IoIosEyeOff
+                    onClick={() => setShow(!show)}
+                    className="text-gray-500 cursor-pointer"
+                  />
+                ) : (
+                  <IoMdEye
+                    onClick={() => setShow(!show)}
+                    className="text-gray-500 cursor-pointer"
+                  />
+                )}
+              </div>
             </div>
 
             <div>
               <label class="block mb-2 text-sm text-gray-600  ">
-                Confirm password
+                Confirm Password
               </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg         focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-              />
+              <div className="flex items-center justify-between w-full px-5 py-3 mt-2 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:ring focus:ring-opacity-40">
+                <input
+                  name="confirm"
+                  required
+                  type={confirmShow ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  class="block w-full  text-gray-700 placeholder-gray-400 focus:outline-none "
+                />
+                {show ? (
+                  <IoIosEyeOff
+                    onClick={() => setConfirmShow(!confirmShow)}
+                    className="text-gray-500 cursor-pointer"
+                  />
+                ) : (
+                  <IoMdEye
+                    onClick={() => setConfirmShow(!confirmShow)}
+                    className="text-gray-500 cursor-pointer"
+                  />
+                )}
+              </div>
             </div>
 
             <div>
@@ -75,15 +195,30 @@ const Register = () => {
                 placeholder="Enter your password"
                 class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
               /> */}
-              <select class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 col-span-2">
-              <option value="Select Type" disabled selected>Select Type</option>
-              <option value="Company" >Company</option>
-              <option value="Employers" >Employers</option>
+              <select
+                required
+                name="account"
+                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 col-span-2"
+              >
+                <option value="Select Type" disabled selected>
+                  Select Type
+                </option>
+                <option value="company">Company</option>
+                <option value="candidate">Candidate</option>
               </select>
             </div>
             <div className="flex items-center gap-3 col-span-2">
-<input type="checkbox" className="focus:outline-[#9DC1EB] w-5 h-5 accent-primary rounded-lg"/>
-<p className="text-[#767F8C]">I've read and agree with your <span className="text-primary font-medium hover:underline underline-offset-2">Terms of Services</span></p>
+              <input
+                name="terms"
+                type="checkbox"
+                className="focus:outline-[#9DC1EB] w-5 h-5 accent-primary rounded-lg"
+              />
+              <p className="text-[#767F8C]">
+                I've read and agree with your{" "}
+                <span className="text-primary font-medium hover:underline underline-offset-2">
+                  Terms of Services
+                </span>
+              </p>
             </div>
             <button class="flex items-center justify-between px-6 py-4 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full col-span-2">
               <span>Sign Up </span>
@@ -102,7 +237,14 @@ const Register = () => {
               </svg>
             </button>
           </form>
-          <p class="mt-8 text-xs font-light text-center text-gray-400"> Already have an account? <Link to="/login" class="font-medium text-gray-700 hover:underline"> Login Here</Link></p>
+          <p class="mt-8 text-xs font-light text-center text-gray-400">
+            {" "}
+            Already have an account?{" "}
+            <Link to="/login" class="font-medium text-gray-700 hover:underline">
+              {" "}
+              Login Here
+            </Link>
+          </p>
         </div>
       </div>
       <div className="w-full bg-login bg-no-repeat bg-cover bg-center h-full flex items-end justify-center px-10 py-10">
