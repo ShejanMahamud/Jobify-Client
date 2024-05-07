@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
-const useJobs = () => {
+const useJobs = (currentPage,itemPerPage) => {
 
 const {data,isLoading,refetch,isPending} = useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
-        const res = await fetch(`http://localhost:5948/jobs`)
-        const data = await res.json()
+        const {data} = await axios.get(`http://localhost:5948/search?page=${currentPage}&limit=${itemPerPage}`)
         return data;
     }
 });

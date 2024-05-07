@@ -1,25 +1,16 @@
 import { Breadcrumb } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import React from "react";
+import { useParams } from "react-router-dom";
+import useCompany from "../hooks/useCompany";
+import useJob from "../hooks/useJob";
 
 const JobDetails = () => {
-  const [company, setCompany] = useState({});
-  const [loading, setLoading] = useState(true);
-  const { data } = useLoaderData();
+  const {id} = useParams();
+  const {data:jobData,isPending:JobPending} = useJob(id);
 
-  const { job_title, company_name,expiration_date,description,responsibilities,posted_date,job_salary_min,job_salary_max,location,job_type,experience } = data;
+const { job_title, company_name,expiration_date,description,responsibilities,posted_date,job_salary_min,job_salary_max,location,job_type,experience } = jobData || {};
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5948/company?name=${company_name}`)
-      .then((res) => {
-        setCompany(res.data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
-      });
-  }, []);
+const {data:companyData,isPending:companyPending} = useCompany(company_name)
 
   const {
     founded_in,
@@ -30,12 +21,12 @@ const JobDetails = () => {
     website,
     company_logo,
     company_category,
-  } = company;
+  } = companyData || {};
 
 
   return (
     <>
-      {loading ? (
+      {JobPending || companyPending ? (
         <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -662,7 +653,7 @@ const JobDetails = () => {
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Organization type:</span>
-                    <span className="text-[#18191C]">{organization_type}</span>
+                    <span className="text-[#18191C] uppercase">{organization_type}</span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Company size:</span>

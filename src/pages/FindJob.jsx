@@ -1,16 +1,54 @@
 import { Breadcrumb } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { useLoaderData } from "react-router-dom";
+import CardJob from "../Utils/CardJob";
 import Job from './../Utils/Job';
 
 const FindJob = () => {
-const [jobs,setJobs] = useState([])
-useEffect(()=>{
-    axios.get(`http://localhost:5948/jobs`)
-    .then(res =>{
-        setJobs(res.data)
-    })
-},[])
+  const [jobs,setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [showCard, setShowCard] = useState(false);
+  const [itemsPerPage,setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1)
+  const {jobsCount} = useLoaderData();
+  const numberOfPages = Math.ceil(jobsCount / itemsPerPage)
+  console.log(currentPage)
+  const pages = [...Array(numberOfPages).keys()]
+
+  const handleItemsPerPage = (e) => {
+    setItemsPerPage(parseInt(e.target.value))
+    setCurrentPage(1)
+  }
+
+  const handlePrevPage = () => {
+    if(currentPage > 1){
+      setCurrentPage(currentPage -1)
+    }
+  }
+  const handleNextPage = () => {
+    if(currentPage < pages.length){
+      setCurrentPage(currentPage+1)
+    }
+  }
+  useEffect(()=>{
+    setLoading(true)
+    const getJobs = async() => {
+      const {data} = await axios.get(`http://localhost:5948/search?page=${currentPage}&limit=${itemsPerPage}`)
+      setJobs(data);
+      setLoading(false)
+    }
+    getJobs();
+  },[currentPage,itemsPerPage])
+
+if(loading){
+  return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+</div>
+}
 
   return (
     <div className="font-inter w-full">
@@ -114,17 +152,20 @@ useEffect(()=>{
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center px-5 py-3 rounded-lg border border-[#E4E5E8]">
-                        <select name="page" className="text-sm focus:outline-none">
-                            <option value="" selected disabled>Items Per Page</option>
-                            <option value="10">10 Per Page</option>
+                    <div className="flex items-center px-5 py-3 gap-3 rounded-lg border border-[#E4E5E8]">
+                        <span className="text-xs">Items Per Page</span>
+                        <select defaultValue={itemsPerPage} onChange={handleItemsPerPage} name="page" className="text-sm focus:outline-none">
+                            <option value="5" selected>5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15" selected>15</option>
+                            <option value="20" selected>20</option>
                         </select>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
   <path d="M5 7.5L10 12.5L15 7.5" stroke="#9199A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
                     </div>
                     <div className="border border-[#E4E5E8] px-5 py-2 rounded-lg flex items-center gap-5">
-                        <button className="px-1 py-1 bg-[#E4E5E8] rounded-md">
+                        <button onClick={()=>setShowCard(true)} className="px-1 py-1 bg-[#E4E5E8] rounded-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
   <path d="M8 3H4C3.44772 3 3 3.44772 3 4V8C3 8.55228 3.44772 9 4 9H8C8.55228 9 9 8.55228 9 8V4C9 3.44772 8.55228 3 8 3Z" fill="#18191C"/>
   <path d="M16 3H12C11.4477 3 11 3.44772 11 4V8C11 8.55228 11.4477 9 12 9H16C16.5523 9 17 8.55228 17 8V4C17 3.44772 16.5523 3 16 3Z" fill="#18191C"/>
@@ -132,7 +173,7 @@ useEffect(()=>{
   <path d="M8 11H4C3.44772 11 3 11.4477 3 12V16C3 16.5523 3.44772 17 4 17H8C8.55228 17 9 16.5523 9 16V12C9 11.4477 8.55228 11 8 11Z" fill="#18191C"/>
 </svg>
                         </button>
-                        <button className="px-1 py-1 bg-[#E4E5E8] rounded-md group">
+                        <button onClick={()=>setShowCard(false)} className="px-1 py-1 bg-[#E4E5E8] rounded-md group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-focus:fill-[#18191C]">
   <path d="M16 3H4C3.44772 3 3 3.44772 3 4V8C3 8.55228 3.44772 9 4 9H16C16.5523 9 17 8.55228 17 8V4C17 3.44772 16.5523 3 16 3Z" fill="#939AAD"/>
   <path d="M16 3H12C11.4477 3 11 3.44772 11 4V8C11 8.55228 11.4477 9 12 9H16C16.5523 9 17 8.55228 17 8V4C17 3.44772 16.5523 3 16 3Z" fill="#939AAD"/>
@@ -144,10 +185,26 @@ useEffect(()=>{
                 </div>
             </div>
       </div>
-      <div className="py-10 px-20 w-full grid grid-cols-1 row-auto items-center gap-10">
+      <div className={`py-10 px-20 w-full grid ${showCard ? 'grid-cols-3' : 'grid-cols-1'} row-auto items-center gap-10`}>
+        
         {
-           jobs && jobs.map(job => <Job key={job._id} job={job}/>)
+          showCard ? jobs && jobs.map(job => <CardJob key={job._id} job={job}/>) : jobs && jobs.map(job => <Job key={job._id} job={job}/>)
         }
+      </div>
+      <div className="flex items-center gap-5 py-10 px-20 w-full justify-center">
+      <button onClick={handlePrevPage} className={`bg-[#E7F0FA] text-primary flex items-center justify-center h-10 w-10 rounded-full text-2xl ${currentPage < 2  && 'text-[#99C2FF]'}`}>
+      <IoIosArrowBack />
+            </button>
+         {
+          pages.map(page => (
+            <button onClick={()=>setCurrentPage(page+1)} key={page+1} className={`${currentPage === page+1 && 'bg-primary text-white'} bg-[#F1F2F4] text-[#5E6670]  flex items-center justify-center h-10 w-10 rounded-full text-lg font-medium`}>
+            {page+1}
+            </button>
+          ))
+         }
+               <button onClick={handleNextPage} className={`bg-[#E7F0FA] text-primary flex items-center justify-center h-10 w-10 rounded-full text-2xl ${currentPage === pages.length && 'text-[#99C2FF]'}`}>
+      <IoIosArrowForward/>
+            </button>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Root from '../layouts/Root';
@@ -22,11 +21,11 @@ const Route = createBrowserRouter([
         },
         {
           path: '/find_jobs',
+          loader: ()=> fetch(`http://localhost:5948/jobs_count`),
           element: <FindJob/>
         },
         {
           path: '/job/:id',
-          loader: ({params})=> axios.get(`http://localhost:5948/job/${params.id}`),
           element: <JobDetails/>
         }
       ]

@@ -1,24 +1,31 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { toast } from 'react-hot-toast';
 import { IoIosCloseCircle } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
   const [jobs, setJobs] = useState([]);
   const [jobsDialog, setJobsDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     setJobsDialog(true);
     setLoading(true);
     e.preventDefault();
     const title = e.target.title.value;
-    axios.get(`http://localhost:5948/search?title=${title}`).then((res) => {
-      setJobs(res.data);
+    try{
+      const {data} = await axios.get(`http://localhost:5948/search?title=${title}`)
+      setJobs(data);
       e.target.reset();
       setTimeout(() => {
         setLoading(false);
       }, 1000);
-    });
+    }
+    catch(error){
+      toast.error('Something Went Wrong!')
+    }
   };
 
   return (
@@ -90,10 +97,11 @@ const Banner = () => {
                   jobs.map((job) => (
                     <div
                       key={job?._id}
-                      className="w-full bg-[#E7F0FA] bg-opacity-50 rounded-lg px-2 py-2 font-medium flex item-center justify-between"
+                      onClick={()=>navigate(`/job/${job?._id}`)}
+                      className="w-full bg-[#E7F0FA] bg-opacity-50 rounded-lg px-2 py-2 font-medium flex item-center justify-between cursor-pointer"
                     >
-                      <span>{job?.title}</span>
-                      <span>{job?.company}</span>
+                      <span>{job?.job_title}</span>
+                      <span>{job?.company_name}</span>
                     </div>
                   ))
                 ) : (
