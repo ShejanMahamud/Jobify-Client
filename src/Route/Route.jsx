@@ -1,8 +1,10 @@
+import axios from 'axios';
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Root from '../layouts/Root';
 import Auth from '../pages/Auth';
 import EmailVerification from '../pages/EmailVerification';
+import FindCompanies from '../pages/FindCompanies';
 import FindJob from '../pages/FindJob';
 import ForgetPassword from '../pages/ForgetPassword';
 import Home from '../pages/Home';
@@ -25,7 +27,12 @@ const Route = createBrowserRouter([
           element: <FindJob/>
         },
         {
+          path: '/find_companies',
+          element: <FindCompanies/>
+        },
+        {
           path: '/job/:id',
+          loader: ({params}) => axios.get(`http://localhost:5948/job/${params.id}`),
           element: <JobDetails/>
         }
       ]

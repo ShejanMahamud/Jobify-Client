@@ -6,8 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
 import auth from "../config/firebase.config";
 import useAuth from "../hooks/useAuth";
+import useAxiosSecure from "./../hooks/useAxiosSecure";
 
 const Register = () => {
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [confirmShow, setConfirmShow] = useState(false);
@@ -26,9 +28,10 @@ const Register = () => {
     const phone = e.target.phone.name;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirm.value;
-    const account = e.target.account.value;
+    const role = e.target.account.value;
     const terms = e.target.terms.checked;
     const photo = e.target.photo.value;
+    const user = { name, username, email, phone, role, photo };
 
     if (!terms) {
       return toast.error("Please Accept Terms & Services!");
@@ -44,22 +47,25 @@ const Register = () => {
     }
 
     try {
-      await emailPasswordRegister(email,password);
+      await emailPasswordRegister(email, password);
       await updateProfile(auth.currentUser, {
         displayName: name,
         photoURL: photo,
       });
       await sendEmailVerification(auth.currentUser);
-      toast.success('Account Registration Successfully!')
-      await logOut();
-      setTimeout(()=>{
-        navigate('/email_verification')
-      },1000)
+      const { data } = await axiosSecure.post("/user", user);
+      if (data.insertedId) {
+        toast.success("Account Registration Successfully!");
+        await logOut();
+        setTimeout(() => {
+          navigate("/email_verification");
+        }, 1000);
+      }
     } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        return toast.error('User already exists!');
-    }
-    toast.error('Something Went Wrong!')
+      if (error.code === "auth/email-already-in-use") {
+        return toast.error("User already exists!");
+      }
+      toast.error("Something Went Wrong!");
     }
   };
 

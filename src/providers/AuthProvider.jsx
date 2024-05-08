@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { GoogleAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import React, { createContext, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -22,9 +23,13 @@ const emailPasswordLogin = (email,password) => {
     return signInWithEmailAndPassword(auth,email,password)
 }
 
-const logOut = () => {
+const logOut = async () => {
+    setLoading(true)
+    const { data } = await axios(`http://localhost:5948/logout`, {
+      withCredentials: true,
+    })
     return signOut(auth)
-}
+  }
 
 useEffect(()=>{
     const unSubscribe = onAuthStateChanged(auth,currentUser => {

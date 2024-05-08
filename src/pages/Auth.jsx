@@ -19,6 +19,7 @@ const Auth = () => {
         await applyActionCode(auth, actionCode);
         setVerificationStatus("success");
       } catch (error) {
+        console.error("Email verification error:", error);
         setVerificationStatus("rejected");
       }
     };
@@ -28,6 +29,7 @@ const Auth = () => {
         await verifyPasswordResetCode(auth, actionCode);
         setVerificationStatus("passwordReset");
       } catch (error) {
+        console.error("Password reset error:", error);
         setVerificationStatus("rejected");
       }
     };
@@ -37,22 +39,23 @@ const Auth = () => {
     } else if (mode === "resetPassword") {
       handleResetPassword();
     }
-  }, [location, navigate]);
+  }, [location, mode, actionCode]);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
     const password = e.target.password.value;
     const confirmPassword = e.target.confirm.value;
     if (password !== confirmPassword) {
-      return toast.error('Password Should Be Matched!')
+      return toast.error('Passwords do not match!');
     }
 
     try {
       await confirmPasswordReset(auth, actionCode, password);
-      toast.success('Password Reset Successfully!')
+      toast.success('Password reset successfully!');
       navigate("/login");
     } catch (error) {
-      toast.error("Something Went Wrong");
+      console.error("Password reset error:", error);
+      toast.error("Something went wrong");
     }
   };
 
@@ -60,33 +63,33 @@ const Auth = () => {
     <>
       {mode === "verifyEmail" && (
         <div className="w-full min-h-screen flex flex-col items-center justify-start gap-40">
-        <Logo />
-        <div className="flex flex-col items-center gap-5">
-          {verificationStatus === "pending" && (
-            <div className="flex flex-col items-center gap-5">
-              <h1 className="text-3xl font-medium">Email Verification In Progress...</h1>
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
-                <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
-                <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
+          <Logo />
+          <div className="flex flex-col items-center gap-5">
+            {verificationStatus === "pending" && (
+              <div className="flex flex-col items-center gap-5">
+                <h1 className="text-3xl font-medium">Email Verification In Progress...</h1>
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
+                  <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
+                  <div className="w-4 h-4 rounded-full animate-pulse dark:bg-green-600"></div>
+                </div>
               </div>
-            </div>
-          )}
-          {verificationStatus === "success" && (
-            <div className="flex flex-col items-center gap-5">
-              <h1 className="text-3xl font-medium">Email Verification Successfully!</h1>
-              <p className="text-[#767F8C] ">Now you can log in to your account and find your desired job.</p>
-            </div>
-          )}
-          {verificationStatus === "rejected" && (
-            <div className="flex flex-col items-center gap-5">
-              <h1 className="text-3xl font-medium">Email Verification Rejected!</h1>
-              <p className="text-[#767F8C] ">Please verify your email first and activate your account.</p>
-            </div>
-          )}
-          <button onClick={() => navigate("/login")} className="bg-primary text-white font-medium uppercase px-4 py-2 rounded-lg">Back To Login</button>
+            )}
+            {verificationStatus === "success" && (
+              <div className="flex flex-col items-center gap-5">
+                <h1 className="text-3xl font-medium">Email Verification Successful!</h1>
+                <p className="text-[#767F8C] ">Now you can log in to your account and find your desired job.</p>
+              </div>
+            )}
+            {verificationStatus === "rejected" && (
+              <div className="flex flex-col items-center gap-5">
+                <h1 className="text-3xl font-medium">Email Verification Rejected!</h1>
+                <p className="text-[#767F8C] ">Please verify your email first and activate your account.</p>
+              </div>
+            )}
+            <button onClick={() => navigate("/login")} className="bg-primary text-white font-medium uppercase px-4 py-2 rounded-lg">Back To Login</button>
+          </div>
         </div>
-      </div>
       )}
       {mode === "resetPassword" && (
         <div className="w-full min-h-screen flex flex-col items-center gap-5 justify-center font-inter">

@@ -2,10 +2,11 @@ import React from "react";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 import useAuth from './../hooks/useAuth';
 
 const Login = () => {
-
+const axiosSecure = useAxiosSecure();
 const {googleLogin,emailPasswordLogin} = useAuth();
 const navigate = useNavigate();
 const location = useLocation();
@@ -29,11 +30,14 @@ const handleEmailPasswordLogin = async (e) => {
   const password = e.target.password.value;
 
   try{
-    await emailPasswordLogin(email,password)
+  const result = await emailPasswordLogin(email,password)
+   const {data} = await axiosSecure.post('/auth',{email: result?.user?.email})
+   if(data.success){
     toast.success('Successfully Logged In!')
     setTimeout(()=>{
       navigate(location?.state || '/')
     },1000)
+   }
   }
   catch{
     toast.error('Something Went Wrong!')
@@ -48,7 +52,7 @@ const handleEmailPasswordLogin = async (e) => {
     <form class="mt-6" onSubmit={handleEmailPasswordLogin}>
         <div>
             <label for="email" class="block text-sm text-gray-800 ">Email Address</label>
-            <input type="email" required name="email" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  dark:text-gray-300  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+            <input type="email" required name="email" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg   focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
 
         <div class="mt-4">
@@ -57,7 +61,7 @@ const handleEmailPasswordLogin = async (e) => {
                 <Link to="/forget_password" class="text-xs text-gray-600 hover:underline">Forget Password?</Link>
             </div>
 
-            <input type="password" name="password" required class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:text-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+            <input type="password" name="password" required class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
 
         <div class="mt-6">

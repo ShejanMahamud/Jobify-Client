@@ -51,9 +51,9 @@ const Navbar = () => {
                 ? "underline decoration-primary decoration-2 underline-offset-8 text-primary"
                 : "no-underline text-[#5E6670]"
             }
-            to={"/employers"}
+            to={"/find_companies"}
           >
-            <li className=" font-medium text-sm cursor-pointer">Employers</li>
+            <li className=" font-medium text-sm cursor-pointer">Find Companies</li>
           </NavLink>
           <NavLink
             className={({ isActive }) =>

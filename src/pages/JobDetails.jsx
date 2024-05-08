@@ -1,18 +1,49 @@
-import { Breadcrumb } from "antd";
-import React from "react";
-import { useParams } from "react-router-dom";
-import useCompany from "../hooks/useCompany";
-import useJob from "../hooks/useJob";
+import { useQuery } from "@tanstack/react-query";
+import { Breadcrumb, Modal } from "antd";
+import axios from "axios";
+import JoditEditor from "jodit-react";
+import React, { useMemo, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useLoaderData } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 const JobDetails = () => {
-  const {id} = useParams();
-  const {data:jobData,isPending:JobPending} = useJob(id);
+  // const userData = useUser()
+  const { user } = useAuth();
+  const resumeRef = useRef(null);
+  const editor = useRef(null);
+  const [content, setContent] = useState("");
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const { data: jobs = [] } = useLoaderData();
+  
+  const {
+    job_title,
+    company_name,
+    expiration_date,
+    description,
+    responsibilities,
+    posted_date,
+    job_salary_min,
+    job_salary_max,
+    location,
+    job_type,
+    experience,
+    _id: jobId,
+  } = jobs;
 
-const { job_title, company_name,expiration_date,description,responsibilities,posted_date,job_salary_min,job_salary_max,location,job_type,experience } = jobData || {};
-
-const {data:companyData,isPending:companyPending} = useCompany(company_name)
+  const { data: company = [], isPending } = useQuery({
+    queryKey: ["company"],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `http://localhost:5948/company?name=${company_name}`
+      );
+      return data;
+    },
+  });
 
   const {
+    _id: companyId,
     founded_in,
     organization_type,
     company_size,
@@ -21,12 +52,96 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
     website,
     company_logo,
     company_category,
-  } = companyData || {};
+  } = company;
 
+  const showModal = () => {
+    setOpen(true);
+  };
 
+  const handleOk = async () => {
+    if(!user){
+      return toast.error('Please Login First!')
+    }
+    setConfirmLoading(true);
+    const jobInfo = {
+      jobId: jobId,
+      companyId: companyId,
+      candidate_email: user?.email,
+      cover_letter: content,
+      resume: resumeRef.current.value,
+    };
+    const { data } = await axios.post("http://localhost:5948/apply", jobInfo);
+    if (data.duplicate) {
+      resumeRef.current.value = "";
+      setContent("");
+      setOpen(false);
+      setConfirmLoading(false);
+      return toast.error("Already Applied!");
+    }
+    if (data.insertedId) {
+      setTimeout(() => {
+        resumeRef.current.value = "";
+        toast.success("Applied Successfully!");
+        setOpen(false);
+        setContent("");
+        setConfirmLoading(false);
+      }, 2000);
+    } else {
+      toast.error("Something Went Wrong!");
+    }
+  };
+  const handleCancel = () => {
+    setOpen(false);
+  };
+  const options = [
+    "bold",
+    "italic",
+    "|",
+    "ul",
+    "ol",
+    "|",
+    "font",
+    "fontsize",
+    "|",
+    "outdent",
+    "indent",
+    "align",
+    "|",
+    "hr",
+    "|",
+    "fullsize",
+    "brush",
+    "|",
+    "table",
+    "link",
+    "|",
+    "undo",
+    "redo",
+  ];
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      placeholder: "",
+      defaultActionOnPaste: "insert_as_html",
+      defaultLineHeight: 1.5,
+      enter: "br",
+      // options that we defined in above step.
+      buttons: options,
+      buttonsMD: options,
+      buttonsSM: options,
+      buttonsXS: options,
+      statusbar: false,
+      sizeLG: 900,
+      sizeMD: 700,
+      sizeSM: 400,
+      toolbarAdaptive: false,
+    }),
+    []
+  );
+// console.log( userData && userData)
   return (
     <>
-      {JobPending || companyPending ? (
+      {isPending ? (
         <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -99,9 +214,7 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                         stroke-linejoin="round"
                       />
                     </svg>
-                    <span className="text-[#474C54]">
-                      {website}
-                    </span>
+                    <span className="text-[#474C54]">{website}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <svg
@@ -194,7 +307,10 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                     />
                   </svg>
                 </div>
-                <button className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3">
+                <button
+                  onClick={showModal}
+                  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+                >
                   <span>Apply Now</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -219,11 +335,44 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                     />
                   </svg>
                 </button>
+                <Modal
+                  open={open}
+                  width={800}
+                  onOk={handleOk}
+                  confirmLoading={confirmLoading}
+                  onCancel={handleCancel}
+                >
+                  <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${job_title}`}</h1>
+                  <div className="mb-10">
+                    <label
+                      for="resume"
+                      class="block text-sm text-gray-800 font-medium mb-5"
+                    >
+                      Resume Link
+                    </label>
+                    <input
+                      ref={resumeRef}
+                      type="text"
+                      required
+                      name="resume"
+                      class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                      placeholder="PDF Link of Resume"
+                    />
+                  </div>
+                  <h1 className="mb-5 text-sm font-medium text-[#18191C]">
+                    Cover Letter
+                  </h1>
+                  <JoditEditor
+                    ref={editor}
+                    value={content}
+                    config={config}
+                    onChange={(newContent) => setContent(newContent)}
+                  />
+                </Modal>
               </div>
               <p className="text-[#767F8C] text-sm">
                 Job expire in:{" "}
                 <span className="text-[#E05151] font-medium">
-                  
                   {expiration_date}
                 </span>
               </p>
@@ -235,9 +384,7 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                 <h1 className="text-black text-lg font-medium mb-3">
                   Job Description
                 </h1>
-                <p className="text-[#5E6670]">
-                  {description}
-                </p>
+                <p className="text-[#5E6670]">{description}</p>
               </div>
 
               <div className="flex flex-col items-start gap-2">
@@ -245,9 +392,10 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                   Responsibilities
                 </h1>
                 <ul className="text-[#5E6670] text-sm list-disc *:mb-3 ml-5">
-                    {
-                      responsibilities && responsibilities.map((responsibility,index) => <li key={index}>{responsibility}</li>)
-                    }           
+                  {responsibilities &&
+                    responsibilities.map((responsibility, index) => (
+                      <li key={index}>{responsibility}</li>
+                    ))}
                 </ul>
               </div>
               <div className="flex items-center gap-3">
@@ -641,9 +789,7 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                     <h1 className="text-[#18191C] text-lg font-medium">
                       {company_name}
                     </h1>
-                    <p className="text-[#767F8C] text-sm">
-                      {company_category}
-                    </p>
+                    <p className="text-[#767F8C] text-sm">{company_category}</p>
                   </div>
                 </div>
                 <div className="flex flex-col gap-5 mb-10">
@@ -653,7 +799,9 @@ const {data:companyData,isPending:companyPending} = useCompany(company_name)
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Organization type:</span>
-                    <span className="text-[#18191C] uppercase">{organization_type}</span>
+                    <span className="text-[#18191C] uppercase">
+                      {organization_type}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Company size:</span>
