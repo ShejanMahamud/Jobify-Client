@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -28,16 +29,23 @@ const handleEmailPasswordLogin = async (e) => {
   e.preventDefault();
   const email = e.target.email.value;
   const password = e.target.password.value;
+  const account = e.target.account.value;
 
   try{
-  const result = await emailPasswordLogin(email,password)
-   const {data} = await axiosSecure.post('/auth',{email: result?.user?.email})
-   if(data.success){
-    toast.success('Successfully Logged In!')
-    setTimeout(()=>{
-      navigate(location?.state || '/')
-    },1000)
-   }
+    const {data:auth} = await axios.get(`http://localhost:5948/login/${email}`)
+    if(auth.role === account){
+      const result = await emailPasswordLogin(email,password)
+      const {data} = await axiosSecure.post('/auth',{email: result?.user?.email,role: account})
+      if(data.success){
+       toast.success('Successfully Logged In!')
+       setTimeout(()=>{
+         navigate(location?.state || '/')
+       },1000)
+      }
+    }
+    else{
+      toast.error('Please Select Correct Account Type!')
+    }
   }
   catch{
     toast.error('Something Went Wrong!')
@@ -63,9 +71,24 @@ const handleEmailPasswordLogin = async (e) => {
 
             <input type="password" name="password" required class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
+        <div className="mt-6">
+            <label for="email" class="block text-sm text-gray-800 ">Who Are You?</label>
+            <select
+                required
+                name="account"
+                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 col-span-2"
+              >
+                <option value="Select Type" disabled selected>
+                  Select Type
+                </option>
+                <option value="company">Company</option>
+                <option value="candidate">Candidate</option>
+                <option value="admin">Admin</option>
+              </select>
+        </div>
 
         <div class="mt-6">
-            <button class="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-primary rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
+            <button type="submit" class="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-primary rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
                 Sign In
             </button>
         </div>

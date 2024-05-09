@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CardJob = ({job}) => {
     const navigate = useNavigate();
-    const {job_title,company_name,location,job_salary_min,job_salary_max,_id} = job;
+    const {job_title,company_name,location,job_salary_min,job_salary_max,_id,job_type} = job;
 
   return (
     <div className='w-full border border-[#EDEFF5] rounded-lg px-5 py-5 flex flex-col items-start gap-8'>
@@ -34,7 +34,13 @@ const CardJob = ({job}) => {
     </div>
     <div className='flex flex-col items-start gap-1'>
         <h1 className='text-[#18191C] text-lg font-medium'>{job_title}</h1>
+        <div className='flex items-center gap-3'>
+        <p className='text-[#767F8C] text-sm'>{job_type}</p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">
+  <path d="M4 2C4 3.10457 3.10457 4 2 4C0.89543 4 0 3.10457 0 2C0 0.89543 0.89543 0 2 0C3.10457 0 4 0.89543 4 2Z" fill="#636A80"/>
+</svg>
         <p className='text-[#767F8C] text-sm'>${job_salary_min}-${job_salary_max}</p>
+        </div>
     </div>
     <button onClick={()=>navigate(`/job/${_id}`)} className='w-full py-3 rounded-md text-[#0A65CC] bg-[#E7F0FA] font-medium'>
         Apply Job

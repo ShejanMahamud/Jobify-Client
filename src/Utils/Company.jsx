@@ -1,17 +1,38 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Company = () => {
+const Company = ({company}) => {
+const [openJobs,setOpenJobs] = useState(0)
+ const {company_name,location,_id} = company;
+ const [loading,setLoading] = useState(true);
+const navigate = useNavigate();
+ useEffect(()=>{
+    const getOpenJobs = async () => {
+      const {data} = await axios.get(`http://localhost:5948/open_jobs?name=${company_name}`);
+      setOpenJobs(data.length)
+      setLoading(false)
+    }
+    getOpenJobs()
+ },[])
+ if(loading){
+    return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  </div>
+  }
   return (
     <div className="w-full flex items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5]">
     <div className="flex items-center gap-5">
     <div
           className={`bg-primary bg-opacity-80 h-16 w-16 rounded-md flex items-center justify-center text-white text-3xl font-bold`}
         >
-          T
+          {company_name[0]}
         </div>
       <div className="flex flex-col items-start gap-3">
           <div className="flex items-center gap-3">
-              <h1>tEST</h1>
+              <h1>{company_name}</h1>
           </div>
           <div className="flex items-center gap-5">
               <div className="flex items-center gap-2">
@@ -19,7 +40,7 @@ const Company = () => {
 <path d="M19.25 9.16675C19.25 15.5834 11 21.0834 11 21.0834C11 21.0834 2.75 15.5834 2.75 9.16675C2.75 6.97871 3.61919 4.88029 5.16637 3.33312C6.71354 1.78594 8.81196 0.916748 11 0.916748C13.188 0.916748 15.2865 1.78594 16.8336 3.33312C18.3808 4.88029 19.25 6.97871 19.25 9.16675Z" stroke="#C5C9D6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M11 11.9167C12.5188 11.9167 13.75 10.6855 13.75 9.16675C13.75 7.64797 12.5188 6.41675 11 6.41675C9.48122 6.41675 8.25 7.64797 8.25 9.16675C8.25 10.6855 9.48122 11.9167 11 11.9167Z" stroke="#C5C9D6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-<span className="text-[#636A80] text-sm">location</span>
+<span className="text-[#636A80] text-sm">{location}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -36,13 +57,13 @@ const Company = () => {
     </clipPath>
   </defs>
 </svg>
-<span className="text-[#636A80] text-sm">3 - Open Job</span>
+<span className="text-[#636A80] text-sm">{openJobs && openJobs} - Open Job</span>
               </div>
 
           </div>
       </div>
     </div>
-    <button onClick={()=>navigate(`/job/${_id}`)} className="bg-[#E7F0FA] px-4 py-3 rounded-md text-primary font-medium flex items-center gap-3">
+    <button onClick={()=>navigate(`/company/${_id}`)} className="bg-[#E7F0FA] px-4 py-3 rounded-md text-primary font-medium flex items-center gap-3">
 <span>Open Position</span>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M5 12H19" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

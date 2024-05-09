@@ -5,7 +5,7 @@ const useCompany = (company_name) => {
   const { data, refetch, isPending, isLoading } = useQuery({
     queryKey: ['company', company_name],
     queryFn: async () => {
-      const { data } = await axios.get(`http://localhost:5948/company?name=${company_name}`);
+      const { data } = await axios.get(`http://localhost:5948/companies?name=${company_name}`);
       return data;
     },
   });

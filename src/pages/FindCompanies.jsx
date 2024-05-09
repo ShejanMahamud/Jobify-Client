@@ -1,27 +1,41 @@
 import { Breadcrumb } from "antd";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import Company from "../Utils/Company";
 
 const FindCompanies = () => {
-  const [itemsPerPage,setItemsPerPage] = useState(10);
-  const [loading,setLoading] = useState(true)
-  const [jobsCount,setJobCount] = useState(0);
-  const numberOfPages = Math.ceil(jobsCount / itemsPerPage)
+  const [itemsPerPage,setItemsPerPage] = useState(5);
+  const [companies, setCompanies] = useState([])
+  const [count,setCount] = useState(0);
+  const numberOfPages = Math.ceil(count / itemsPerPage)
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const pages = [...Array(5).keys()].map(num => num  + 1)
+  const pages = [...Array(numberOfPages).keys()].map(num => num  + 1)
 
 useEffect(()=>{
+  const getData = async () => {
+    const {data} = await axios.get(`http://localhost:5948/companies?page=${currentPage}&size=${itemsPerPage}`)
+    setCompanies(data)
+  }
+  getData();
+},[currentPage,itemsPerPage])
 
+useEffect(()=>{
+  const getCount = async () => {
+    const {data} = await axios.get(`http://localhost:5948/company_search`)
+    setCount(data.count)
+  }
+  getCount();
 },[])
 
-if(loading){
-  return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-</div>
-}
+// if(loading){
+//   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+// </div>
+// }
 
   return (
     <div className="font-inter w-full">
@@ -70,11 +84,11 @@ if(loading){
                 <div className="flex items-center gap-5">
                     <div className="flex items-center px-5 py-3 gap-3 rounded-lg border border-[#E4E5E8]">
                         <span className="text-xs">Items Per Page</span>
-                        <select defaultValue={itemsPerPage} name="page" className="text-sm focus:outline-none">
+                        <select defaultValue={itemsPerPage} onChange={(e)=>setItemsPerPage(e.target.value)} name="page" className="text-sm focus:outline-none">
                             <option value="5" selected>5</option>
-                            <option value="10" selected>10</option>
-                            <option value="15" selected>15</option>
-                            <option value="20" selected>20</option>
+                            <option value="10" >10</option>
+                            <option value="15" >15</option>
+                            <option value="20" >20</option>
                         </select>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
   <path d="M5 7.5L10 12.5L15 7.5" stroke="#9199A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -108,20 +122,22 @@ if(loading){
         }
       </div> */}
       <div className={`py-10 px-20 w-full grid grid-cols-1 row-auto items-center gap-10`}>
-      <Company/>
+      {
+       companies && companies.map(company => <Company key={company._id} company={company}/>)
+      }
       </div>
       <div className="flex items-center gap-5 py-10 px-20 w-full justify-center">
-      <button className={`bg-[#E7F0FA] flex items-center justify-center h-10 w-10 rounded-full text-2xl text-primary}`}>
+      <button onClick={()=>setCurrentPage(currentPage-1)} disabled={currentPage === 1} className={` flex items-center justify-center h-10 w-10 rounded-full text-2xl ${currentPage === 1 ? 'text-[#99C2FF] bg-[#E7F0FA]' : 'bg-[#E7F0FA] text-primary'}`}>
       <IoIosArrowBack />
             </button>
          {
           pages.map(page => (
-            <button key={page} className={`bg-primary text-white flex items-center justify-center h-10 w-10 rounded-full text-lg font-medium`}>
+            <button key={page} onClick={()=>setCurrentPage(page)} className={`flex items-center justify-center h-10 w-10 rounded-full text-lg font-medium ${currentPage === page ? 'bg-primary text-white ': 'bg-[#F1F2F4] text-[#5E6670]'}`}>
             {page}
             </button>
           ))
          }
-               <button  className={`bg-[#E7F0FA] flex items-center justify-center h-10 w-10 rounded-full text-2xl text-primary}`}>
+               <button disabled={currentPage === numberOfPages} onClick={()=>setCurrentPage(currentPage + 1)} className={`bg-[#E7F0FA] flex items-center justify-center h-10 w-10 rounded-full text-2xl text-primary} ${currentPage === numberOfPages ? 'text-[#99C2FF] bg-[#E7F0FA]' : 'bg-[#E7F0FA] text-primary'}`}>
       <IoIosArrowForward/>
             </button>
       </div>

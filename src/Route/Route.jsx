@@ -1,8 +1,11 @@
 import axios from 'axios';
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
+import CandidateDashboard from '../layouts/CandidateDashboard/CandidateDashboard';
+import CandidateOverview from '../layouts/CandidateDashboard/CandidateOverview';
 import Root from '../layouts/Root';
 import Auth from '../pages/Auth';
+import CompanyDetails from '../pages/CompanyDetails';
 import EmailVerification from '../pages/EmailVerification';
 import FindCompanies from '../pages/FindCompanies';
 import FindJob from '../pages/FindJob';
@@ -34,6 +37,11 @@ const Route = createBrowserRouter([
           path: '/job/:id',
           loader: ({params}) => axios.get(`http://localhost:5948/job/${params.id}`),
           element: <JobDetails/>
+        },
+        {
+          path: '/company/:id',
+          loader: ({params})=> axios.get(`http://localhost:5948/company/${params.id}`),
+          element: <CompanyDetails/>
         }
       ]
     },
@@ -56,6 +64,16 @@ const Route = createBrowserRouter([
     {
       path: '/auth/__/auth/action',
       element: <Auth/>
+    },
+    {
+      path: '/dashboard/candidate',
+      children: [
+        {
+          path: '/dashboard/candidate/overview',
+          element: <CandidateOverview/>
+        }
+      ],
+      element: <CandidateDashboard/>
     }
   ]);
 

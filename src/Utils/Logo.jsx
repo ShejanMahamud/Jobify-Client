@@ -6,7 +6,7 @@ const Logo = () => {
 const navigate = useNavigate();
 
   return (
-    <div class="cursor-pointer flex justify-center mx-auto items-center gap-2 my-5" onClick={()=>navigate('/')}>
+    <div class="cursor-pointer flex mx-auto items-center gap-2 my-5 px-5" onClick={()=>navigate('/')}>
     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
   <g clip-path="url(#clip0_2202_13434)">
     <path d="M33.751 11.25H6.25098C5.56062 11.25 5.00098 11.8097 5.00098 12.5V32.5C5.00098 33.1904 5.56062 33.75 6.25098 33.75H33.751C34.4413 33.75 35.001 33.1904 35.001 32.5V12.5C35.001 11.8097 34.4413 11.25 33.751 11.25Z" stroke="#0A65CC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
