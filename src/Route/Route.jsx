@@ -1,8 +1,12 @@
 import axios from 'axios';
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
+import CandidateAppliedJobs from '../layouts/CandidateDashboard/CandidateAppliedJobs';
+import CandidateBookmarkJobs from '../layouts/CandidateDashboard/CandidateBookmarkJobs';
 import CandidateDashboard from '../layouts/CandidateDashboard/CandidateDashboard';
+import CandidateJobAlert from '../layouts/CandidateDashboard/CandidateJobAlert';
 import CandidateOverview from '../layouts/CandidateDashboard/CandidateOverview';
+import CandidateSettings from '../layouts/CandidateDashboard/CandidateSettings';
 import Root from '../layouts/Root';
 import Auth from '../pages/Auth';
 import CompanyDetails from '../pages/CompanyDetails';
@@ -35,7 +39,7 @@ const Route = createBrowserRouter([
         },
         {
           path: '/job/:id',
-          loader: ({params}) => axios.get(`http://localhost:5948/job/${params.id}`),
+          // loader: () => axios.get(`http://localhost:5948/job/${params.id}`),
           element: <JobDetails/>
         },
         {
@@ -69,8 +73,24 @@ const Route = createBrowserRouter([
       path: '/dashboard/candidate',
       children: [
         {
-          path: '/dashboard/candidate/overview',
+          path: '/dashboard/candidate',
           element: <CandidateOverview/>
+        },
+        {
+          path: '/dashboard/candidate/applied_jobs',
+          element: <CandidateAppliedJobs/>
+        },
+        {
+          path: '/dashboard/candidate/bookmark_jobs',
+          element: <CandidateBookmarkJobs/>
+        },
+        {
+          path: '/dashboard/candidate/job_alert',
+          element: <CandidateJobAlert/>
+        },
+        {
+          path: '/dashboard/candidate/settings',
+          element: <CandidateSettings/>
         }
       ],
       element: <CandidateDashboard/>
