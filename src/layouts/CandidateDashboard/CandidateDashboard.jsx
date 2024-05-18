@@ -5,11 +5,14 @@ import { RiStackFill } from "react-icons/ri";
 import { NavLink, Outlet } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 const CandidateDashboard = () => {
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <>
     <Navbar/>
     <div className='w-full px-10 border-t border-[#E4E5E8] grid grid-cols-[20%_80%] row-auto items-start'>
-    <div className='w-full border-r border-[#E4E5E8] py-5'>
+    <div className='w-full py-5'>
       <h1 className='font-medium text-[#9199A3] text-sm uppercase mb-5'>Candidate Dashboard</h1>
       <div className='w-full flex flex-col items-start'>
 
@@ -72,6 +75,9 @@ const CandidateDashboard = () => {
       </div>
     </div>
     <Outlet/>
+    </div>
+    <div className='w-full border-t border-[#E4E5E8] flex items-center justify-center py-5'>
+            <p className='text-[#767F8C] text-sm'>@ {currentYear} Jobify - Job Portal. All rights Reserved</p>
     </div>
     </>
   )

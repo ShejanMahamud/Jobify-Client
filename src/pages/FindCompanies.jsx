@@ -10,6 +10,7 @@ const FindCompanies = () => {
   const [count,setCount] = useState(0);
   const numberOfPages = Math.ceil(count / itemsPerPage)
   const [currentPage, setCurrentPage] = useState(1)
+  const [loading,setLoading] = useState(true)
 
   const pages = [...Array(numberOfPages).keys()].map(num => num  + 1)
 
@@ -25,17 +26,18 @@ useEffect(()=>{
   const getCount = async () => {
     const {data} = await axios.get(`http://localhost:5948/company_search`)
     setCount(data.count)
+    setLoading(false)
   }
   getCount();
 },[])
 
-// if(loading){
-//   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
-//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-//   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-// </div>
-// }
+if(loading){
+  return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+</div>
+}
 
   return (
     <div className="font-inter w-full">

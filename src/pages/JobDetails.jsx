@@ -1,6 +1,7 @@
 import { Modal } from "antd";
 import axios from "axios";
 import JoditEditor from "jodit-react";
+import moment from 'moment';
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -65,6 +66,7 @@ const {id} = useParams();
       candidate_email: user?.email,
       cover_letter: content,
       resume: resumeRef.current.value,
+      applied_date: moment().format('LLL')
     };
     const { data } = await axios.post("http://localhost:5948/apply", jobInfo);
     if (data.duplicate) {

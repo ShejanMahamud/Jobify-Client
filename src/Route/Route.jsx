@@ -6,6 +6,10 @@ import CandidateBookmarkJobs from '../layouts/CandidateDashboard/CandidateBookma
 import CandidateDashboard from '../layouts/CandidateDashboard/CandidateDashboard';
 import CandidateJobAlert from '../layouts/CandidateDashboard/CandidateJobAlert';
 import CandidateOverview from '../layouts/CandidateDashboard/CandidateOverview';
+import CandidateSetting from '../layouts/CandidateDashboard/CandidateSetting';
+import CandidateSettingPersonal from '../layouts/CandidateDashboard/CandidateSettingPersonal';
+import CandidateSettingProfile from '../layouts/CandidateDashboard/CandidateSettingProfile';
+import CandidateSettingSocial from '../layouts/CandidateDashboard/CandidateSettingSocial';
 import CandidateSettings from '../layouts/CandidateDashboard/CandidateSettings';
 import Root from '../layouts/Root';
 import Auth from '../pages/Auth';
@@ -90,6 +94,24 @@ const Route = createBrowserRouter([
         },
         {
           path: '/dashboard/candidate/settings',
+          children: [
+            {
+              path: '/dashboard/candidate/settings',
+              element: <CandidateSettingPersonal/>
+            },
+            {
+              path: '/dashboard/candidate/settings/profile',
+              element: <CandidateSettingProfile/>
+            },
+            {
+              path: '/dashboard/candidate/settings/social',
+              element: <CandidateSettingSocial/>
+            },
+            {
+              path: '/dashboard/candidate/settings/setting',
+              element: <CandidateSetting/>
+            }
+          ],
           element: <CandidateSettings/>
         }
       ],

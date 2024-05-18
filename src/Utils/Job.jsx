@@ -1,9 +1,13 @@
+import axios from 'axios';
 import React from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 const Job = ({job}) => {
 
-const {job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id} = job;
+const {user} = useAuth();
+const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId} = job;
 
 const navigate = useNavigate();
   // Calculate the remaining days
@@ -11,6 +15,20 @@ const navigate = useNavigate();
   const expiryDate = new Date(expiration_date);
   const timeDifference = expiryDate.getTime() - currentDate.getTime();
   const remainingDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+
+const handleBookmarkJob = async () => {
+
+  const bookmarkJob = {job_type:job_type,job_title:job_title,company_name:company_name,location:location,job_salary_min:job_salary_min,job_salary_max:job_salary_max,expiration_date:expiration_date,jobId: jobId,candidate_email:user?.email}
+  
+  const {data} = await axios.post(`http://localhost:5948/bookmark_jobs`,bookmarkJob)
+  if(!data.success){
+    toast.error('Bookmark Already Saved!')
+  }
+  if(data.result.insertedId && data.success){
+    toast.success('Bookmark Saved!')
+  }
+}
 
   return (
     <div className="w-full flex items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5]">
@@ -25,7 +43,7 @@ const navigate = useNavigate();
               <h1>{job_title}</h1>
               <div className='flex items-center gap-3'>
               <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">
-                  Full-Time
+                  {job_type}
               </span>
               <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
                   Featured
@@ -76,13 +94,13 @@ const navigate = useNavigate();
       </div>
     </div>
     <div className="flex items-center gap-5">
-      <div className="bg-[#E8F1FF] px-3 py-3 rounded-md flex items-center justify-center">
+      <button onClick={handleBookmarkJob} className="bg-[#E8F1FF] px-3 py-3 rounded-md flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 
-      </div>
-      <button onClick={()=>navigate(`/job/${_id}`)} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3">
+      </button>
+      <button onClick={()=>navigate(`/job/${jobId}`)} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3">
 <span>Apply Now</span>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
