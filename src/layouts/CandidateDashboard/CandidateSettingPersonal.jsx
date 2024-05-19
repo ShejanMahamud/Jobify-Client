@@ -3,9 +3,14 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import useAuth from '../../hooks/useAuth';
+import useUserInfo from '../../hooks/useUserInfo';
 const { Dragger } = Upload;
 
 const CandidateSettingPersonal = () => {
+
+const {userInfo,userInfoPending,userInfoRefetch} = useUserInfo()
+
+
 const [image,setImage] = useState(null)
 const {user} = useAuth();
   const props = {
@@ -37,13 +42,22 @@ const {user} = useAuth();
     const website = e.target.website.value;
     const resume = e.target.resume.value;
     const photo = image;
-    const userInfo = {name,title,experience,education,website,resume,photo}
-
+    // const userInfo = {name,title,experience,education,website,resume,photo}
+    const userInfo ={
+      ...(name && {name}),
+      ...(title && {title}),
+      ...(experience && {experience}),
+      ...(education && {education}),
+      ...(website && {website}),
+      ...(resume && {resume}),
+      ...(photo && {photo})
+    }
     try{
       const {data} = await axios.patch(`http://localhost:5948/user/${user?.email}`,userInfo)
       console.log(data)
       if(data.success){
         toast.success('Profile Updated')
+        userInfoRefetch()
       }
     }
     catch(error){
@@ -52,11 +66,19 @@ const {user} = useAuth();
     }
   }
 
+  if(userInfoPending){
+    return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  </div>
+  }
+
   return (
     <div className='w-full font-inter'>
       <h1 className='text-base text-[#18191C] font-medium mb-10'>Basic Information</h1>
       <div className='w-full grid grid-cols-[30%_70%] items-start gap-5'>
-      <div className='w-full flex flex-col items-start gap-3'>
+      <div className='w-full flex flex-col items-center gap-3'>
       <h1 className='text-base text-[#18191C]'>Profile Picture</h1>
       <Dragger {...props} className='flex justify-center flex-col items-center'>
     <p className="ant-upload-drag-icon">
@@ -70,34 +92,35 @@ const {user} = useAuth();
       banned files.
     </p>
   </Dragger>
+  <img src={userInfo?.photo} alt="photo.png" className='w-40 h-40 object-cover rounded-full'/>
       </div>
       <form onSubmit={handlePersonalSetting} className='w-full grid grid-cols-2 row-auto items-center gap-5 mt-5'>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Full Name</h1>
-        <input type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='name' placeholder='Full Name'/>
+        <input type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='name' defaultValue={userInfo?.name} placeholder='Full Name'/>
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Title/Heading</h1>
-        <input type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='title' placeholder='Title'/>
+        <input type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='title' placeholder='Title' defaultValue={userInfo?.title}/>
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Experience</h1>
-        <select name="experience" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
+        <select defaultValue={userInfo?.experience} name="experience" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
           <option value="select" selected disabled>Select</option>
           <option value="fresher">Fresher</option>
         </select>
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Education</h1>
-        <input name='education' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Education'/>
+        <input defaultValue={userInfo?.education} name='education' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Education'/>
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Personal Website</h1>
-        <input name='website' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Website URL'/>
+        <input defaultValue={userInfo?.website} name='website' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Website URL'/>
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Professional Resume</h1>
-        <input name='resume' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Resume URL'/>
+        <input defaultValue={userInfo?.resume} name='resume' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Resume URL'/>
         </div>
               <button className='bg-primary text-white font-medium text-lg px-4 py-2 rounded-sm w-[50%]'>Save Changes</button>
       </form>

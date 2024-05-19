@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineWifiCalling3 } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import useUserInfo from "../hooks/useUserInfo";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { userInfo,user,logOut } = useUserInfo();
   const [isOpen, setIsOpen] = useState(false);
 
-  const {logOut} = useAuth();
+  // const {logOut} = useAuth();
 
   const handleLogout = async () => {
     try{
@@ -222,14 +222,14 @@ const Navbar = () => {
         </div>
         {user ? (
           <div className="relative flex items-center gap-5">
-            <img onClick={()=>setIsOpen(!isOpen)} referrerPolicy="no-referrer" src={user?.photoURL} alt="avatar.png" className="w-10 border-2 border-primary rounded-full duration-700"/>
+            <img onClick={()=>setIsOpen(!isOpen)} referrerPolicy="no-referrer" src={userInfo?.photo} alt="avatar.png" className="w-12 h-12 object-cover border-2 border-primary rounded-full duration-700"/>
             {
-              isOpen && <div className="flex flex-col gap-3 absolute top-10 right-0 bg-white px-2 py-2 rounded-lg w-80">
+              isOpen && <div className="flex flex-col gap-3 absolute top-14 right-0 bg-white px-2 py-2 rounded-lg w-80">
                 <div className="flex items-center gap-3">
-                <img referrerPolicy="no-referrer" src={user?.photoURL} alt="avatar.png" className="w-10 rounded-full"/>
+                <img referrerPolicy="no-referrer" src={userInfo?.photo} alt="avatar.png" className="w-12 h-12 object-cover rounded-full"/>
                 <div className="flex flex-col">
-                  <h1 className="text-sm font-semibold text-gray-700">{user?.displayName}</h1>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
+                  <h1 className="text-sm font-semibold text-gray-700">{userInfo?.name}</h1>
+                  <p className="text-sm text-gray-500">{userInfo?.email}</p>
                 </div>
                 </div>
                 <hr class="border-gray-200 border w-full"/>
