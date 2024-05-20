@@ -1,18 +1,21 @@
-import axios from 'axios';
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import CandidateAppliedJobs from '../layouts/CandidateDashboard/CandidateAppliedJobs';
-import CandidateBookmarkJobs from '../layouts/CandidateDashboard/CandidateBookmarkJobs';
-import CandidateDashboard from '../layouts/CandidateDashboard/CandidateDashboard';
-import CandidateJobAlert from '../layouts/CandidateDashboard/CandidateJobAlert';
-import CandidateOverview from '../layouts/CandidateDashboard/CandidateOverview';
-import CandidateSetting from '../layouts/CandidateDashboard/CandidateSetting';
-import CandidateSettingPersonal from '../layouts/CandidateDashboard/CandidateSettingPersonal';
-import CandidateSettingProfile from '../layouts/CandidateDashboard/CandidateSettingProfile';
-import CandidateSettingSocial from '../layouts/CandidateDashboard/CandidateSettingSocial';
-import CandidateSettings from '../layouts/CandidateDashboard/CandidateSettings';
+import useAxiosCommon from '../hooks/useAxiosCommon';
+import CandidateDashboard from '../layouts/CandidateDashboard';
+import CompanyDashboard from '../layouts/CompanyDashboard';
 import Root from '../layouts/Root';
 import Auth from '../pages/Auth';
+import CandidateAppliedJobs from '../pages/CandidateDashboard/CandidateAppliedJobs';
+import CandidateBookmarkJobs from '../pages/CandidateDashboard/CandidateBookmarkJobs';
+import CandidateJobAlert from '../pages/CandidateDashboard/CandidateJobAlert';
+import CandidateOverview from '../pages/CandidateDashboard/CandidateOverview';
+import CandidateSetting from '../pages/CandidateDashboard/CandidateSetting';
+import CandidateSettingPersonal from '../pages/CandidateDashboard/CandidateSettingPersonal';
+import CandidateSettingProfile from '../pages/CandidateDashboard/CandidateSettingProfile';
+import CandidateSettingSocial from '../pages/CandidateDashboard/CandidateSettingSocial';
+import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
+import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
+import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
 import CompanyDetails from '../pages/CompanyDetails';
 import EmailVerification from '../pages/EmailVerification';
 import FindCompanies from '../pages/FindCompanies';
@@ -22,6 +25,7 @@ import Home from '../pages/Home';
 import JobDetails from '../pages/JobDetails';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
+const axiosCommon = useAxiosCommon()
 
 const Route = createBrowserRouter([
     {
@@ -48,7 +52,7 @@ const Route = createBrowserRouter([
         },
         {
           path: '/company/:id',
-          loader: ({params})=> axios.get(`http://localhost:5948/company/${params.id}`),
+          // loader: ({params})=> axiosCommon.get(`/companies?id=${params.id}`),
           element: <CompanyDetails/>
         }
       ]
@@ -77,38 +81,38 @@ const Route = createBrowserRouter([
       path: '/dashboard/candidate',
       children: [
         {
-          path: '/dashboard/candidate',
+          path: '',
           element: <CandidateOverview/>
         },
         {
-          path: '/dashboard/candidate/applied_jobs',
+          path: 'applied_jobs',
           element: <CandidateAppliedJobs/>
         },
         {
-          path: '/dashboard/candidate/bookmark_jobs',
+          path: 'bookmark_jobs',
           element: <CandidateBookmarkJobs/>
         },
         {
-          path: '/dashboard/candidate/job_alert',
+          path: 'job_alert',
           element: <CandidateJobAlert/>
         },
         {
-          path: '/dashboard/candidate/settings',
+          path: 'settings',
           children: [
             {
-              path: '/dashboard/candidate/settings',
+              path: '',
               element: <CandidateSettingPersonal/>
             },
             {
-              path: '/dashboard/candidate/settings/profile',
+              path: 'profile',
               element: <CandidateSettingProfile/>
             },
             {
-              path: '/dashboard/candidate/settings/social',
+              path: 'social',
               element: <CandidateSettingSocial/>
             },
             {
-              path: '/dashboard/candidate/settings/setting',
+              path: 'setting',
               element: <CandidateSetting/>
             }
           ],
@@ -116,6 +120,20 @@ const Route = createBrowserRouter([
         }
       ],
       element: <CandidateDashboard/>
+    },
+    {
+      path: '/dashboard/company',
+      element: <CompanyDashboard/>,
+      children: [
+        {
+          path: '',
+          element: <CompanyOverview/>
+        },
+        {
+          path: 'post_job',
+          element: <CompanyPostJob/>
+        }
+      ],
     }
   ]);
 

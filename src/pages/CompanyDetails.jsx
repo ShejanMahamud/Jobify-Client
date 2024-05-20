@@ -1,26 +1,20 @@
 import { Breadcrumb } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { AiOutlineUserSwitch } from "react-icons/ai";
-import { useLoaderData } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
+import useCompany from "../hooks/useCompany";
+import useOpenJobs from "../hooks/useOpenJobs";
 
 const CompanyDetails = () => {
-    const [openJobs,setOpenJobs] = useState(0)
-    const [loading,setLoading] = useState(true);
-  const { data } = useLoaderData();
-  const { company_name,company_category,benefits,company_vision,description,founded_in,organization_type, company_size, location,website,email,phone } = data;
+  const {id} = useParams()
+  // const { data } = useLoaderData();
+  // const { company_name,company_category,benefits,company_vision,description,founded_in,organization_type, company_size, location,website,email,phone } = data;
 
-  useEffect(()=>{
-    const getOpenJobs = async () => {
-      const {data} = await axios.get(`http://localhost:5948/open_jobs?name=${company_name}`);
-      setOpenJobs(data)
-      setLoading(false)
-    }
-    getOpenJobs()
- },[])
+  const {company,companyIsPending} = useCompany(id)
+  const {openJobs,openJobsPending} = useOpenJobs(company?.company_name)
 
- if(loading){
+  if(openJobsPending || companyIsPending){
     return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
     <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
     <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -32,7 +26,7 @@ const CompanyDetails = () => {
     <div className="w-full font-inter">
       <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full px-20">
         <div className="flex items-center justify-between w-full ">
-          <h1 className="text-[#18191C] text-lg font-medium">{company_name}</h1>
+          <h1 className="text-[#18191C] text-lg font-medium">{company?.company_name}</h1>
           <Breadcrumb
             separator=">"
             items={[
@@ -58,11 +52,11 @@ const CompanyDetails = () => {
       <div className="w-[90%] mx-auto bg-white relative z-50 py-5 px-5 rounded-lg flex items-center justify-between -mt-16 border border-[#E4E5E8]">
       <div className="flex items-center gap-5">
       <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                {company_name[0]}
+                {company?.company_name[0]}
               </div>
               <div className="flex flex-col items-start">
-                <h1 className="text-[#18191C] font-medium text-2xl">{company_name}</h1>
-                <span className="text-[#5E6670]">{company_category}</span>
+                <h1 className="text-[#18191C] font-medium text-2xl">{company?.company_name}</h1>
+                <span className="text-[#5E6670]">{company?.company_category}</span>
               </div>
       </div>
               <button className="bg-primary text-white font-medium text-lg px-6 py-3 rounded-lg">Open Positions</button>
@@ -71,14 +65,14 @@ const CompanyDetails = () => {
             <div className="w-full flex flex-col items-start gap-12">
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Description</h1>
-                    <p className="text-[#5E6670]">{description}</p>
+                    <p className="text-[#5E6670]">{company?.description}</p>
                 </div>
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Benefits</h1>
                     <ul className="text-[#5E6670] list-disc *:mb-3 ml-5">
-                  {benefits &&
-                    benefits.map((benefit, index) => (
+                  {company?.benefits &&
+                    company?.benefits.map((benefit, index) => (
                       <li key={index}>{benefit}</li>
                     ))}
                 </ul>
@@ -86,7 +80,7 @@ const CompanyDetails = () => {
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Vision</h1>
-                    <p className="text-[#5E6670]">{company_vision}</p>
+                    <p className="text-[#5E6670]">{company?.company_vision}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -117,7 +111,7 @@ const CompanyDetails = () => {
                      Founded In:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {founded_in}
+                      {company?.founded_in}
                     </span>
                   </div>
 
@@ -127,7 +121,7 @@ const CompanyDetails = () => {
                       Organization Type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {organization_type}
+                      {company?.organization_type}
                     </span>
                   </div>
 
@@ -137,7 +131,7 @@ const CompanyDetails = () => {
                       Team Size:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {company_size}
+                      {company?.company_size}
                     </span>
                   </div>
 
@@ -175,7 +169,7 @@ const CompanyDetails = () => {
                       Location:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {location}
+                      {company?.location}
                     </span>
                   </div>
 
@@ -188,7 +182,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/1b527c1461bd70ee259aad5a3465cc2f/raw/caf2be0686385bb7bc9dcaaa3cbf5fbc97cbea95/globe.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Website</h1>
-                    <p className="font-medium text-[#18191C]">{website}</p>
+                    <p className="font-medium text-[#18191C]">{company?.website}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -196,7 +190,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/f73c44e6f5a5eb8b101e012a4b9ba526/raw/47152dabb6afa9e32b31a784329559a0be53d611/phone.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Phone</h1>
-                    <p className="font-medium text-[#18191C]">{phone}</p>
+                    <p className="font-medium text-[#18191C]">{company?.phone}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -204,7 +198,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/2374104d4a783130c5540f1fb53d5013/raw/d2de14c9c15942c354ae03fd2ac8dca6cc3a1eb9/email.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Email</h1>
-                    <p className="font-medium text-[#18191C]">{email}</p>
+                    <p className="font-medium text-[#18191C]">{company?.email}</p>
                     </div>
                 </div>
                 </div>

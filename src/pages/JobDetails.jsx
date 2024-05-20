@@ -1,63 +1,83 @@
+import { useQuery } from "@tanstack/react-query";
 import { Modal } from "antd";
 import axios from "axios";
 import JoditEditor from "jodit-react";
-import moment from 'moment';
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import moment from "moment";
+import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
 import useAuth from "../hooks/useAuth";
+import useAxiosCommon from "../hooks/useAxiosCommon";
+import useJoditConfigs from "../hooks/useJoditConfigs";
 
 const JobDetails = () => {
-  const [relatedJobs,setRelatedJobs] = useState([])
+  
+  const axiosCommon = useAxiosCommon();
   const { user } = useAuth();
   const resumeRef = useRef(null);
-  const editor = useRef(null);
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-const [job,setJob] = useState([]);
-const [company,setCompany] = useState([])
-const {id} = useParams();
-  const [isPending,setIsPending] = useState(true)
+  const { id } = useParams();
+  const {editor,config} = useJoditConfigs()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const jobResponse = await axios.get(`http://localhost:5948/job/${id}`);
-        const job = jobResponse.data;
-        setJob(job);
-  
-        if (job && job.company_name) {
-          const companyResponse = await axios.get(`http://localhost:5948/companies?name=${job.company_name}`);
-          const company = companyResponse.data[0];
-          setCompany(company);
-        }
+  const fetchJob = async (id) => {
+    const response = await axiosCommon.get(`/jobs?jobId=${id}`);
+    return response.data[0];
+  };
 
-        if(job && job?.category){
-          const {data} = await axios.get(`http://localhost:5948/jobs?related=${job?.category}&id=${job?._id}`)
-          setRelatedJobs(data)
-        }
-  
-        setIsPending(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsPending(false);
-      }
-    };
-  
-    fetchData();
-  
-  }, [id]);
+  const fetchCompany = async (companyName) => {
+    const response = await axiosCommon.get(`/companies?name=${companyName}`);
+    return response.data[0];
+  };
 
+  const fetchRelatedJobs = async (category, jobId) => {
+    const response = await axiosCommon.get(
+      `/jobs?related=${category}&id=${jobId}`
+    );
+    return response.data;
+  };
+
+  const {
+    data: job,
+    isLoading: jobLoading,
+    error: jobError,
+  } = useQuery(
+    {
+      queryKey: ["job", id],
+      queryFn: async () => await fetchJob(id),
+    });
+
+  const {
+    data: company,
+    isLoading: companyLoading,
+    error: companyError,
+  } = useQuery(
+    {
+      queryKey:["company", job?.company_name],
+      queryFn: async () => await fetchCompany(job?.company_name)
+    }
+  );
+  
+  const {
+    data: relatedJobs,
+    isLoading: relatedJobsLoading,
+    error: relatedJobsError,
+  } = useQuery(
+    {
+      queryKey: ["relatedJobs", job?.category, job?._id],
+      queryFn: async () => await fetchRelatedJobs(job?.category, job?._id),
+    }
+  );
 
   const showModal = () => {
     setOpen(true);
   };
 
   const handleOk = async () => {
-    if(!user){
-      return toast.error('Please Login First!')
+    if (!user) {
+      return toast.error("Please Login First!");
     }
     setConfirmLoading(true);
     const jobInfo = {
@@ -66,7 +86,7 @@ const {id} = useParams();
       candidate_email: user?.email,
       cover_letter: content,
       resume: resumeRef.current.value,
-      applied_date: moment().format('LLL')
+      applied_date: moment().format("LLL"),
     };
     const { data } = await axios.post("http://localhost:5948/apply", jobInfo);
     if (data.duplicate) {
@@ -91,54 +111,10 @@ const {id} = useParams();
   const handleCancel = () => {
     setOpen(false);
   };
-  const options = [
-    "bold",
-    "italic",
-    "|",
-    "ul",
-    "ol",
-    "|",
-    "font",
-    "fontsize",
-    "|",
-    "outdent",
-    "indent",
-    "align",
-    "|",
-    "hr",
-    "|",
-    "fullsize",
-    "brush",
-    "|",
-    "table",
-    "link",
-    "|",
-    "undo",
-    "redo",
-  ];
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      placeholder: "",
-      defaultActionOnPaste: "insert_as_html",
-      defaultLineHeight: 1.5,
-      enter: "br",
-      // options that we defined in above step.
-      buttons: options,
-      buttonsMD: options,
-      buttonsSM: options,
-      buttonsXS: options,
-      statusbar: false,
-      sizeLG: 900,
-      sizeMD: 700,
-      sizeSM: 400,
-      toolbarAdaptive: false,
-    }),
-    []
-  );
+
   return (
     <>
-      {isPending ? (
+      {jobLoading || companyLoading || relatedJobsLoading ? (
         <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -149,17 +125,17 @@ const {id} = useParams();
           <div className="flex items-center justify-between w-full bg-[#F1F2F4] py-5 px-20">
             <h1 className="text-[#18191C] text-lg font-medium">Job Details</h1>
             <ul className="flex items-center gap-1 text-[#18191C] text-xs">
-                <li>Home</li>
-                <li>/</li>
-                <li>Find Jobs</li>
-                <li>/</li>
-                <li>{job?.job_title}</li>
-              </ul>
+              <li>Home</li>
+              <li>/</li>
+              <li>Find Jobs</li>
+              <li>/</li>
+              <li>{job?.job_title}</li>
+            </ul>
           </div>
           <div className="flex items-center justify-between w-full px-20 py-10">
             <div className="flex items-center gap-5">
               <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                {job?.job_title?.slice(0,1)}
+                {job?.job_title?.slice(0, 1)}
               </div>
               <div className="flex items-start flex-col gap-2">
                 <div className="flex items-center gap-3">
@@ -177,15 +153,24 @@ const {id} = useParams();
                 </div>
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-2">
-                      <img src="https://gist.github.com/ShejanMahamud/205056e614f77ef4352546109a1ab4b1/raw/6d2e51907f77bd30c5150401fbe601dd99af44ae/website.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/205056e614f77ef4352546109a1ab4b1/raw/6d2e51907f77bd30c5150401fbe601dd99af44ae/website.svg"
+                      alt=""
+                    />
                     <span className="text-[#474C54]">{company?.website}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                      <img src="https://gist.github.com/ShejanMahamud/ed4015cd6afcad4d397392d5869e1be8/raw/97ed63b0b533c03f1c7326c0db1f1388ffc53778/phone.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/ed4015cd6afcad4d397392d5869e1be8/raw/97ed63b0b533c03f1c7326c0db1f1388ffc53778/phone.svg"
+                      alt=""
+                    />
                     <span className="text-[#474C54]">{company?.phone}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                        <img src="https://gist.github.com/ShejanMahamud/4b5564a901828f1bc610653ac8cdeca4/raw/e8be40062e5ca3460b4dbae3dff928bf385f685c/email.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/4b5564a901828f1bc610653ac8cdeca4/raw/e8be40062e5ca3460b4dbae3dff928bf385f685c/email.svg"
+                      alt=""
+                    />
                     <span className="text-[#474C54]">{company?.email}</span>
                   </div>
                 </div>
@@ -194,14 +179,20 @@ const {id} = useParams();
             <div className="flex items-end flex-col gap-2">
               <div className="flex items-center gap-5">
                 <div className="bg-[#E8F1FF] px-3 py-3 rounded-md flex items-center justify-center">
-                    <img src="https://gist.githubusercontent.com/ShejanMahamud/df47decab64e9be48282c2329e938a76/raw/c8ef385f46684265fb4489c61b111873c4af6e21/bookmark.svg" alt="" />
+                  <img
+                    src="https://gist.githubusercontent.com/ShejanMahamud/df47decab64e9be48282c2329e938a76/raw/c8ef385f46684265fb4489c61b111873c4af6e21/bookmark.svg"
+                    alt=""
+                  />
                 </div>
                 <button
                   onClick={showModal}
                   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
                 >
                   <span>Apply Now</span>
-                      <img src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg" alt="" />
+                  <img
+                    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+                    alt=""
+                  />
                 </button>
                 <Modal
                   open={open}
@@ -269,16 +260,25 @@ const {id} = useParams();
               <div className="flex items-center gap-3">
                 <span className="text-[#191F33]">Share this job:</span>
                 <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#0A65CC] flex items-center gap-2">
-                    <img src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg" alt="" />
+                  <img
+                    src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg"
+                    alt=""
+                  />
                   <span>Facebook</span>
                 </button>
 
                 <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#1DA1F2] flex items-center gap-2">
-                    <img src="https://gist.githubusercontent.com/ShejanMahamud/6588958734fce721b08e8936e9cd024f/raw/cbb92eeefd308ddcb56a8d948f33d2a7146d6d33/twitter.svg" alt="" />
+                  <img
+                    src="https://gist.githubusercontent.com/ShejanMahamud/6588958734fce721b08e8936e9cd024f/raw/cbb92eeefd308ddcb56a8d948f33d2a7146d6d33/twitter.svg"
+                    alt=""
+                  />
                   <span>Twitter</span>
                 </button>
                 <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#CA2127] flex items-center gap-2">
-                <img src="https://gist.githubusercontent.com/ShejanMahamud/2230dc6f21daabb3c38b3b0d08db87c6/raw/639d9bf41e97abe14113637423c3f4238c40bf4c/pinterest.svg" alt="" />
+                  <img
+                    src="https://gist.githubusercontent.com/ShejanMahamud/2230dc6f21daabb3c38b3b0d08db87c6/raw/639d9bf41e97abe14113637423c3f4238c40bf4c/pinterest.svg"
+                    alt=""
+                  />
                   <span>Pinterest</span>
                 </button>
               </div>
@@ -288,7 +288,10 @@ const {id} = useParams();
                 <h1 className="text-xl font-medium mb-5">Job Overview</h1>
                 <div className="w-full grid grid-cols-3 row-auto items-center gap-x-5 gap-y-12">
                   <div className="flex flex-col items-start gap-1">
-                      <img src="https://gist.github.com/ShejanMahamud/af12ad7c38c5005bfd0e2aaa43f4e3d3/raw/1beba8809f390da85300860b6cd14449b8e499c1/calender.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/af12ad7c38c5005bfd0e2aaa43f4e3d3/raw/1beba8809f390da85300860b6cd14449b8e499c1/calender.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Job Posted:
                     </span>
@@ -298,7 +301,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                        <img src="https://gist.github.com/ShejanMahamud/8d852d8a4f2309d81abc342e56a5bb00/raw/e1fba23aaebb9f591f8c7ae797406a714dfabf38/time.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/8d852d8a4f2309d81abc342e56a5bb00/raw/e1fba23aaebb9f591f8c7ae797406a714dfabf38/time.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Job expire in:
                     </span>
@@ -308,7 +314,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                      <img src="https://gist.github.com/ShejanMahamud/e16dec7165622ccc296af02a9eec2074/raw/4c9780faa5be1fda432532fd337bca33aa4b29f5/salary.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/e16dec7165622ccc296af02a9eec2074/raw/4c9780faa5be1fda432532fd337bca33aa4b29f5/salary.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Salaray:
                     </span>
@@ -318,7 +327,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                    <img src="https://gist.github.com/ShejanMahamud/b5c2b5eca7f8bb6fffa6ce3ae9cb9eae/raw/d0bd31fb04d51f0a153d6d6d8f7959d6128acc7d/location.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/b5c2b5eca7f8bb6fffa6ce3ae9cb9eae/raw/d0bd31fb04d51f0a153d6d6d8f7959d6128acc7d/location.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Location:
                     </span>
@@ -328,7 +340,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                      <img src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       job type:
                     </span>
@@ -338,7 +353,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                      <img src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Experience:
                     </span>
@@ -348,7 +366,10 @@ const {id} = useParams();
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                      <img src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg"
+                      alt=""
+                    />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Education:
                     </span>
@@ -361,19 +382,23 @@ const {id} = useParams();
               <div className="border border-[#E7F0FA] px-10 py-5 w-full rounded-lg">
                 <div className="flex items-center gap-5 mb-10">
                   <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                    {company?.company_name?.slice(0,1)}
+                    {company?.company_name?.slice(0, 1)}
                   </div>
                   <div className="flex flex-col items-start gap-2">
                     <h1 className="text-[#18191C] text-lg font-medium">
                       {company?.company_name}
                     </h1>
-                    <p className="text-[#767F8C] text-sm">{company?.company_category}</p>
+                    <p className="text-[#767F8C] text-sm">
+                      {company?.company_category}
+                    </p>
                   </div>
                 </div>
                 <div className="flex flex-col gap-5 mb-10">
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Founded in:</span>
-                    <span className="text-[#18191C]">{company?.founded_in}</span>
+                    <span className="text-[#18191C]">
+                      {company?.founded_in}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Organization type:</span>
@@ -383,7 +408,9 @@ const {id} = useParams();
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Company size:</span>
-                    <span className="text-[#18191C]">{company?.company_size}s</span>
+                    <span className="text-[#18191C]">
+                      {company?.company_size}s
+                    </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Phone:</span>
@@ -400,28 +427,38 @@ const {id} = useParams();
                 </div>
                 <div className="flex items-center gap-5 ">
                   <button className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center">
-                    <img src="https://gist.github.com/ShejanMahamud/4b71f185e68ecc18c20deb49ae19f87a/raw/7cb72f1a68b26fbfbc52a60a465b00f6bcc9a5a3/facebook.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/4b71f185e68ecc18c20deb49ae19f87a/raw/7cb72f1a68b26fbfbc52a60a465b00f6bcc9a5a3/facebook.svg"
+                      alt=""
+                    />
                   </button>
 
                   <button className="bg-primary h-12 w-12 rounded-lg flex items-center justify-center">
-                  <img src="https://gist.github.com/ShejanMahamud/a12960b1dad8f42ac2319a49ea15db23/raw/d24690f074547e5399b358985590b148b2e565a9/twitter.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/a12960b1dad8f42ac2319a49ea15db23/raw/d24690f074547e5399b358985590b148b2e565a9/twitter.svg"
+                      alt=""
+                    />
                   </button>
 
                   <button className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center">
-                    <img src="https://gist.github.com/ShejanMahamud/10ac6f72beaffbb3579928817f5bb9f7/raw/862566ddabfbe9607d60e3fef7e09ec73a0944c1/instagram.svg" alt="" />
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/10ac6f72beaffbb3579928817f5bb9f7/raw/862566ddabfbe9607d60e3fef7e09ec73a0944c1/instagram.svg"
+                      alt=""
+                    />
                   </button>
                 </div>
               </div>
             </div>
           </div>
           <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
-        <h1 className="text-[#18191C] text-[40px] font-medium">Related Jobs ({relatedJobs && relatedJobs.length})</h1>
-        <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
-        {
-            relatedJobs && relatedJobs.map(job => <CardJob job={job} key={job._id}/>)
-        }
-        </div>
-      </div>
+            <h1 className="text-[#18191C] text-[40px] font-medium">
+              Related Jobs ({relatedJobs && relatedJobs.length})
+            </h1>
+            <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
+              {relatedJobs &&
+                relatedJobs.map((job) => <CardJob job={job} key={job._id} />)}
+            </div>
+          </div>
         </div>
       )}
     </>

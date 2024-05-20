@@ -1,27 +1,22 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import useOpenJobs from '../hooks/useOpenJobs';
 
 const Company = ({company}) => {
-const [openJobs,setOpenJobs] = useState(0)
  const {company_name,location,_id} = company;
- const [loading,setLoading] = useState(true);
 const navigate = useNavigate();
- useEffect(()=>{
-    const getOpenJobs = async () => {
-      const {data} = await axios.get(`http://localhost:5948/open_jobs?name=${company_name}`);
-      setOpenJobs(data.length)
-      setLoading(false)
-    }
-    getOpenJobs()
- },[])
- if(loading){
-    return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  </div>
-  }
+
+const {openJobs,openJobsPending} = useOpenJobs(company_name)
+
+console.log(openJobs)
+
+if(openJobsPending){
+  return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+</div>
+}
   return (
     <div className="w-full flex items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5]">
     <div className="flex items-center gap-5">
@@ -57,7 +52,7 @@ const navigate = useNavigate();
     </clipPath>
   </defs>
 </svg>
-<span className="text-[#636A80] text-sm">{openJobs && openJobs} - Open Job</span>
+<span className="text-[#636A80] text-sm">{openJobs && openJobs.length} - Open Job</span>
               </div>
 
           </div>

@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import useAxiosCommon from './useAxiosCommon';
 
-const useCompany = (company_name) => {
-  const { data, refetch, isPending, isLoading } = useQuery({
-    queryKey: ['company', company_name],
+const useCompany = (id) => {
+  const axiosCommon = useAxiosCommon()
+  const { data:company, refetch, isPending:companyIsPending, isLoading } = useQuery({
+    queryKey: ['company', id],
     queryFn: async () => {
-      const { data } = await axios.get(`http://localhost:5948/companies?name=${company_name}`);
-      return data;
+      const { data } = await axiosCommon.get(`/companies?id=${id}`);
+      return data[0];
     },
   });
 
-  return { data, refetch, isPending, isLoading };
+  return { company, refetch, companyIsPending, isLoading };
 };
 
 export default useCompany;

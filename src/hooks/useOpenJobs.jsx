@@ -1,15 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
+import useAxiosCommon from './useAxiosCommon';
 
 const useOpenJobs = (company_name) => {
-
-const {data,refetch,isPending } = useQuery({
+const axiosCommon = useAxiosCommon()
+const {data:openJobs,refetch:openJobsRefetch,isPending:openJobsPending } = useQuery({
     queryKey: ['open_jobs',company_name],
     queryFn: async () => {
-        const {data} = await axios.get(`http://localhost:5948/open_jobs?name=${company_name}`);
+        const {data} = await axiosCommon.get(`/jobs?open_jobs=${company_name}`);
         return data
     }
 })
-return {data,refetch,isPending } 
+return {openJobs,openJobsRefetch,openJobsPending } 
 }
 
 export default useOpenJobs

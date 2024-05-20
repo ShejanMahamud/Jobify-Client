@@ -3,7 +3,7 @@ import { IoBookmarkOutline, IoBriefcaseOutline, IoSettingsOutline } from "react-
 import { LuBellRing } from "react-icons/lu";
 import { RiStackFill } from "react-icons/ri";
 import { NavLink, Outlet } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
+import Navbar from '../components/Navbar';
 const CandidateDashboard = () => {
 
   const currentYear = new Date().getFullYear();

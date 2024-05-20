@@ -1,12 +1,13 @@
-import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
+import useAxiosCommon from "../hooks/useAxiosCommon";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import useAuth from './../hooks/useAuth';
 
 const Login = () => {
+  const axiosCommon = useAxiosCommon()
 const axiosSecure = useAxiosSecure();
 const {googleLogin,emailPasswordLogin} = useAuth();
 const navigate = useNavigate();
@@ -30,22 +31,21 @@ const handleEmailPasswordLogin = async (e) => {
   const email = e.target.email.value;
   const password = e.target.password.value;
   const account = e.target.account.value;
-
+// TODO: ROLE BASED CONTROL AND ROLE BASED NAVIGATE & PRIVATE ROUTE AND CANDIDATE ONLY ACCESS ON HIS DASHBOARD & POLISH THE ACCESS
   try{
-    const {data:auth} = await axios.get(`http://localhost:5948/login/${email}`)
-    if(auth.role === account){
-      const result = await emailPasswordLogin(email,password)
-      const {data} = await axiosSecure.post('/auth',{email: result?.user?.email,role: account})
-      if(data.success){
+    const {data:auth} = await axiosCommon.get(`/role/${email}`)
+    const {data:cookie} = await axiosSecure.post(`/auth`,{email:email,role:account})
+    if(!cookie.success){
+      return toast.error('Suspicious Login!')
+    }
+    if(auth.role !== account){
+      return toast.error('Please Select Correct Account Type!')
+    }
+       await emailPasswordLogin(email,password)
        toast.success('Successfully Logged In!')
        setTimeout(()=>{
          navigate(location?.state || '/')
        },1000)
-      }
-    }
-    else{
-      toast.error('Please Select Correct Account Type!')
-    }
   }
   catch{
     toast.error('Something Went Wrong!')
