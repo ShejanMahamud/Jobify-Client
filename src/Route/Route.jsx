@@ -14,6 +14,7 @@ import CandidateSettingPersonal from '../pages/CandidateDashboard/CandidateSetti
 import CandidateSettingProfile from '../pages/CandidateDashboard/CandidateSettingProfile';
 import CandidateSettingSocial from '../pages/CandidateDashboard/CandidateSettingSocial';
 import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
+import CompanyMyJobs from '../pages/CompanyDashboard/CompanyMyJobs';
 import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
 import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
 import CompanyDetails from '../pages/CompanyDetails';
@@ -132,6 +133,10 @@ const Route = createBrowserRouter([
         {
           path: 'post_job',
           element: <CompanyPostJob/>
+        },
+        {
+          path: 'jobs',
+          element: <CompanyMyJobs/>
         }
       ],
     }

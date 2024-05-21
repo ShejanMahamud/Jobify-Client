@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineWifiCalling3 } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import useUserInfo from "../hooks/useUserInfo";
-import useAxiosCommon from './../hooks/useAxiosCommon';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { userInfo,user,logOut } = useUserInfo();
   const [isOpen, setIsOpen] = useState(false);
-  const axiosCommon = useAxiosCommon()
-  // const {logOut} = useAuth();
-  const [role,setRole] = useState(null)
 
   const handleLogout = async () => {
     try{
@@ -22,14 +18,6 @@ const Navbar = () => {
       toast.error('Something Went Wrong!')
     }
   }
-
-  useEffect(()=>{
-    const getRole = async () => {
-      const {data} = await axiosCommon.get(`/login/${user?.email}`)
-      setRole(data.role)
-    }
-    getRole()
-  },[user])
 
   return (
     <nav className="bg-[#F1F2F4] flex flex-col items-center w-full font-inter">
@@ -232,18 +220,18 @@ const Navbar = () => {
         </div>
         {user ? (
           <div className="relative flex items-center gap-5">
-            <img onClick={()=>setIsOpen(!isOpen)} referrerPolicy="no-referrer" src={userInfo?.photo} alt="avatar.png" className="w-12 h-12 object-cover border-2 border-primary rounded-full duration-700"/>
+            <img onClick={()=>setIsOpen(!isOpen)} referrerPolicy="no-referrer" src={user?.photoURL} alt="avatar.png" className="w-12 h-12 object-cover border-2 border-primary rounded-full duration-700"/>
             {
               isOpen && <div className="flex flex-col gap-3 absolute top-14 right-0 bg-white px-2 py-2 rounded-lg w-80">
                 <div className="flex items-center gap-3">
-                <img referrerPolicy="no-referrer" src={userInfo?.photo} alt="avatar.png" className="w-12 h-12 object-cover rounded-full"/>
+                <img referrerPolicy="no-referrer" src={user?.photoURL} alt="avatar.png" className="w-12 h-12 object-cover rounded-full"/>
                 <div className="flex flex-col">
-                  <h1 className="text-sm font-semibold text-gray-700">{userInfo?.name}</h1>
-                  <p className="text-sm text-gray-500">{userInfo?.email}</p>
+                  <h1 className="text-sm font-semibold text-gray-700">{user?.displayName}</h1>
+                  <p className="text-sm text-gray-500">{user?.email}</p>
                 </div>
                 </div>
                 <hr class="border-gray-200 border w-full"/>
-                <Link to={`${role === 'candidate' ? '/dashboard/candidate' : '/dashboard/company'}`} class="flex items-center py-2 text-sm text-gray-600 capitalize transition-colors duration-300 transform  hover:bg-gray-100 ">
+                <Link to={`${userInfo?.role === 'admin' ? '/dashboard/candidate' : '/dashboard/company'}`} class="flex items-center py-2 text-sm text-gray-600 capitalize transition-colors duration-300 transform  hover:bg-gray-100 ">
             <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7 8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8C17 10.7614 14.7614 13 12 13C9.23858 13 7 10.7614 7 8ZM12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 6.34315 9 8C9 9.65685 10.3431 11 12 11Z" fill="currentColor"></path>
                 <path d="M6.34315 16.3431C4.84285 17.8434 4 19.8783 4 22H6C6 20.4087 6.63214 18.8826 7.75736 17.7574C8.88258 16.6321 10.4087 16 12 16C13.5913 16 15.1174 16.6321 16.2426 17.7574C17.3679 18.8826 18 20.4087 18 22H20C20 19.8783 19.1571 17.8434 17.6569 16.3431C16.1566 14.8429 14.1217 14 12 14C9.87827 14 7.84344 14.8429 6.34315 16.3431Z" fill="currentColor"></path>

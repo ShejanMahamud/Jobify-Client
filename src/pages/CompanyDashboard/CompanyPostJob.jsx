@@ -1,7 +1,10 @@
+import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "antd";
 import JoditEditor from "jodit-react";
 import moment from "moment";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useUserInfo from "../../hooks/useUserInfo";
 import useJoditConfigs from './../../hooks/useJoditConfigs';
 //Will use multi step post job form later
@@ -10,13 +13,28 @@ const CompanyPostJob = () => {
     const {editor,config} = useJoditConfigs()
     const [description, setDescription] = useState("");
     const [responsibility, setResponsibility] = useState('')
+    const axiosSecure = useAxiosSecure();
 
+  const {mutateAsync} = useMutation({
+      mutationFn: async jobInfo => {
+        const {data} = await axiosSecure.post(`/jobs`,jobInfo);
+        if(data.message){
+          return toast.error(data.message)
+        }
+        return data
+      },
+      onSuccess: () => {
+        toast.success('Job Added Successfully!')
+      }
+    })
 
     const handleAddJob = async (e) => {
       e.preventDefault();
-      const form = e.target;
+      
+      try{
+        const form = e.target;
       const job_title = form.title.value;
-      const tags = form.tags.value;
+      const tags = form.tags.value.toLowerCase();
       const job_tags = tags.split(',');
       const job_role = form.role.value;
       const job_salary_min = parseInt(form.min_salary.value);
@@ -27,7 +45,7 @@ const CompanyPostJob = () => {
       const job_nature = form.job_nature.value;
       const job_type = form.job_type.value;
       const vacancies = form.vacancies.value;
-      const expiration_date = form.date.value;
+      const expiration_date = moment(form.date.value).format('MMMM D, YYYY')
       const location = form.location.value;
       const job_level = form.job_level.value;
       const category = form.category.value;
@@ -36,11 +54,15 @@ const CompanyPostJob = () => {
       const posted_date = moment().format('LL');
       const company_name = userInfo.name;
       const company_email = userInfo.email;
-      const status = 'active';
       const featured = false;
 
-      const jobInfo = {job_title,job_tags,job_role,job_salary_min,job_salary_max,job_salary_type,education,experience,job_nature,job_type,vacancies,expiration_date,location,job_level,category,description,responsibilities,platform,posted_date,company_name,company_email,status,featured}
-      console.log(jobInfo)
+      const jobInfo = {job_title,job_tags,job_role,job_salary_min,job_salary_max,job_salary_type,education,experience,job_nature,job_type,vacancies,expiration_date,location,job_level,category,description,responsibilities,platform,posted_date,company_name,company_email,featured}
+      await mutateAsync(jobInfo)
+      }
+      catch(error){
+        toast.error('Something Went Wrong!')
+      }
+
     }
 
   return (
@@ -53,6 +75,7 @@ const CompanyPostJob = () => {
             type="text"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="title"
+            required
             placeholder="Job Title"
           />
         </div>
@@ -60,6 +83,7 @@ const CompanyPostJob = () => {
           <h1 className="text-sm text-[#18191C] mb-2">Tags</h1>
           <input
             type="text"
+            required
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="tags"
             placeholder="Job keyword, tags etc..."
@@ -68,6 +92,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2 col-span-1">
           <h1 className="text-sm text-[#18191C] mb-2">Job Role</h1>
           <input
+          required
             type="text"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="role"
@@ -80,6 +105,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2 ">
           <h1 className="text-sm text-[#18191C] mb-2">Min Salary</h1>
           <input
+          required
             type="number"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="min_salary"
@@ -90,6 +116,7 @@ const CompanyPostJob = () => {
           <h1 className="text-sm text-[#18191C] mb-2">Max Salary</h1>
           <input
             type="number"
+            required
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="max_salary"
             placeholder="Max Salary"
@@ -98,6 +125,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Salary Type</h1>
           <select
+          required
             name="salary_type"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
           >
@@ -116,6 +144,7 @@ const CompanyPostJob = () => {
           <h1 className="text-sm text-[#18191C] mb-2">Education</h1>
           <input
             type="text"
+            required
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="education"
             placeholder="Education"
@@ -124,6 +153,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Experience</h1>
           <select
+          required
             name="experience"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
           >
@@ -142,6 +172,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Job Nature</h1>
           <select
+          required
             name="job_nature"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
           >
@@ -156,6 +187,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Job Type</h1>
           <select
+          required
             name="job_type"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
           >
@@ -170,6 +202,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Vacancies</h1>
           <select
+          required
             name="vacancies"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
           >
@@ -190,6 +223,7 @@ const CompanyPostJob = () => {
           <h1 className="text-sm text-[#18191C] mb-2">Expiration Date</h1>
           {/* Implement date range, image preview on upload image, */}
           <DatePicker
+          required
             name="date"
             format="YYYY-MM-DD"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
@@ -199,6 +233,7 @@ const CompanyPostJob = () => {
         <div className="flex flex-col items-start gap-2">
           <h1 className="text-sm text-[#18191C] mb-2">Location</h1>
           <input
+          required
             type="text"
             className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
             name="location"
@@ -207,7 +242,7 @@ const CompanyPostJob = () => {
         </div>
         <div className='flex flex-col items-start gap-2'>
       <h1 className='text-sm text-[#18191C] mb-2'>Job Level</h1>
-      <select name="job_level" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
+      <select required name="job_level" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
         <option value="select" selected disabled>Select</option>
         <option value="Entry-Level">Entry-Level</option>
         <option value="Mid-Level">Mid-Level</option>
@@ -216,7 +251,7 @@ const CompanyPostJob = () => {
       </div>
       <div className='flex flex-col items-start gap-2'>
       <h1 className='text-sm text-[#18191C] mb-2'>Job Category</h1>
-      <select name="category" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
+      <select required name="category" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
       <option value="select" disabled selected>Select</option>
           <option value="Tech">Tech</option>
           <option value="Developer">Developer</option>
@@ -239,7 +274,7 @@ const CompanyPostJob = () => {
           Apply Job On:
         </h1>
         <div className="w-full bg-white rounded-lg px-5 py-5 flex items-center gap-3">
-        <input type="radio" name="radio" value={'jobify'} className="radio checked:bg-primary" />
+        <input required type="radio" name="radio" value={'jobify'} className="radio checked:bg-primary" />
         <div className="flex flex-col items-start gap-2">
         <h1 className="text-lg text-[#18191C] font-medium ">
         On Jobify
@@ -248,7 +283,7 @@ const CompanyPostJob = () => {
         </div>
         </div>
         <div className="w-full bg-white rounded-lg px-5 py-5 flex items-center gap-3">
-        <input type="radio" name="radio" value={'email'} className="radio checked:bg-primary" />
+        <input required type="radio" name="radio" value={'email'} className="radio checked:bg-primary" />
         <div className="flex flex-col items-start gap-2">
         <h1 className="text-lg text-[#18191C] font-medium ">
         On Your Email
@@ -257,7 +292,7 @@ const CompanyPostJob = () => {
         </div>
         </div>
         <div className="w-full bg-white rounded-lg px-5 py-5 flex items-center gap-3">
-        <input type="radio" name="radio" value={'external'} className="radio checked:bg-primary" />
+        <input required type="radio" name="radio" value={'external'} className="radio checked:bg-primary" />
         <div className="flex flex-col items-start gap-2">
         <h1 className="text-lg text-[#18191C] font-medium ">
         External Platform

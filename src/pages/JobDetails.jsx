@@ -5,8 +5,10 @@ import JoditEditor from "jodit-react";
 import moment from "moment";
 import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { SlGraduation } from "react-icons/sl";
 import { useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
+import Parser from "../Utils/Parser";
 import useAuth from "../hooks/useAuth";
 import useAxiosCommon from "../hooks/useAxiosCommon";
 import useJoditConfigs from "../hooks/useJoditConfigs";
@@ -144,11 +146,13 @@ const JobDetails = () => {
                   </h1>
                   <div className="flex items-center gap-3">
                     <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">
-                      Full-Time
+                      {job?.job_type}
                     </span>
-                    <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                    {
+                      job?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
                       Featured
                     </span>
+                    }
                   </div>
                 </div>
                 <div className="flex items-center gap-5">
@@ -184,16 +188,40 @@ const JobDetails = () => {
                     alt=""
                   />
                 </div>
-                <button
-                  onClick={showModal}
-                  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
-                >
-                  <span>Apply Now</span>
-                  <img
-                    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
-                    alt=""
-                  />
-                </button>
+{
+  job?.platform === 'jobify' && <button
+  onClick={showModal}
+  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+>
+  <span>Apply Now</span>
+  <img
+    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+    alt=""
+  />
+</button>
+}
+{
+  job?.platform === 'email' && <button
+  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+>
+  <a href={`mailto:${job?.company_email}`}>Email Us</a>
+  <img
+    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+    alt=""
+  />
+</button>
+}
+{
+  job?.platform === 'external' && <button
+  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+>
+  <a href={company?.website}>Our Website</a>
+  <img
+    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+    alt=""
+  />
+</button>
+}
                 <Modal
                   open={open}
                   width={800}
@@ -243,19 +271,14 @@ const JobDetails = () => {
                 <h1 className="text-black text-lg font-medium mb-3">
                   Job Description
                 </h1>
-                <p className="text-[#5E6670]">{job?.description}</p>
+                <Parser text={job?.description}/>
               </div>
 
               <div className="flex flex-col items-start gap-2">
                 <h1 className="text-black text-lg font-medium mb-3">
                   Responsibilities
                 </h1>
-                <ul className="text-[#5E6670] text-sm list-disc *:mb-3 ml-5">
-                  {job?.responsibilities &&
-                    job?.responsibilities.map((responsibility, index) => (
-                      <li key={index}>{responsibility}</li>
-                    ))}
-                </ul>
+                <Parser text={job?.responsibilities}/>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[#191F33]">Share this job:</span>
@@ -345,7 +368,7 @@ const JobDetails = () => {
                       alt=""
                     />
                     <span className="text-[#767F8C] text-xs uppercase">
-                      job type:
+                      Job type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
                       {job?.job_type}
@@ -366,15 +389,12 @@ const JobDetails = () => {
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                    <img
-                      src="https://gist.github.com/ShejanMahamud/f1925206163b04c776d705b33754f791/raw/942a7d4a1363b350997f116e5b95d69c50fc8e5b/brifcase.svg"
-                      alt=""
-                    />
+                  <SlGraduation className='text-[#0A65CC] text-3xl'/>
                     <span className="text-[#767F8C] text-xs uppercase">
                       Education:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      Graduation
+                    {job?.education}
                     </span>
                   </div>
                 </div>
@@ -409,7 +429,7 @@ const JobDetails = () => {
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Company size:</span>
                     <span className="text-[#18191C]">
-                      {company?.company_size}s
+                      {company?.company_size}
                     </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
@@ -450,7 +470,8 @@ const JobDetails = () => {
               </div>
             </div>
           </div>
-          <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
+{ relatedJobs && relatedJobs.length > 0 && 
+         <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
             <h1 className="text-[#18191C] text-[40px] font-medium">
               Related Jobs ({relatedJobs && relatedJobs.length})
             </h1>
@@ -458,7 +479,7 @@ const JobDetails = () => {
               {relatedJobs &&
                 relatedJobs.map((job) => <CardJob job={job} key={job._id} />)}
             </div>
-          </div>
+          </div>}
         </div>
       )}
     </>

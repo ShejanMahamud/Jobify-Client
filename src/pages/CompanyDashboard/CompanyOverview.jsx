@@ -1,8 +1,9 @@
 import React from 'react';
+import { IoCheckmark, IoCloseCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import Expire from '../../Utils/Expire';
 import useOpenJobs from '../../hooks/useOpenJobs';
 import useUserInfo from '../../hooks/useUserInfo';
-import { IoCheckmark } from 'react-icons/io5';
 
 const CompanyOverview = () => {
   const navigate = useNavigate()
@@ -80,14 +81,16 @@ if(openJobsPending){
     <thead>
       <tr className='bg-[#F1F2F4]'>
         <th>Job</th>
-        <th>Applied Date</th>
+        <th>Expiration Date</th>
         <th>Status </th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
   {
-  openJobs && openJobs.map(job => (
+  openJobs && openJobs.map(job => {
+    const status = Expire(job?.expiration_date)
+    return (
       <tr key={job?._id} className="w-full">
         <td >
           <div className="flex items-center gap-5 w-full">
@@ -99,7 +102,9 @@ if(openJobsPending){
                 <h1>{job?.job_title}</h1>
                 <div className='flex items-center gap-3'>
                   <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">{job?.job_type}</span>
-                  <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">Featured</span>
+                  {
+                    job?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">Featured</span>
+                  }
                 </div>
               </div>
               <div className="flex items-center gap-5">
@@ -129,21 +134,35 @@ if(openJobsPending){
           </div>
         </td>
         <td >
-          {job?.applied_date}
-        </td>
-        <td>
-          <div  className='flex items-center gap-1 text-[#0BA02C]'>
-          <IoCheckmark/>
-        <span>Active</span>
+          <div className='flex items-center gap-1 flex-col'>
+          <p>{job?.expiration_date}</p>
           </div>
         </td>
+
+<td>
+{job?.status ? (
+        
+                <div className='flex items-center gap-1 text-[#0BA02C]'>
+                <IoCheckmark className='text-xl'/>
+                <span>Active</span>
+              </div>
+      ) : (
+<div className='flex items-center gap-1 text-red-500'>
+          <IoCloseCircleOutline className='text-xl'/>
+          <span>Expired</span>
+        </div>
+      )}
+
+   </td>
+
         <th>
           <button className="bg-primary px-2 py-2 rounded-sm text-white font-medium flex items-center gap-3 text-base">
             <span>View Details</span>
           </button>
         </th>
       </tr>
-    ))
+    )
+  })
   }
 </tbody>
 

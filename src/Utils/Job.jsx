@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 import React from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -10,11 +11,10 @@ const {user} = useAuth();
 const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId} = job;
 
 const navigate = useNavigate();
-  // Calculate the remaining days
-  const currentDate = new Date();
-  const expiryDate = new Date(expiration_date);
-  const timeDifference = expiryDate.getTime() - currentDate.getTime();
-  const remainingDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+  const currentDate = moment().format("MMMM D, YYYY")
+  const expiryDate = moment(expiration_date);
+  const remainingDays = expiryDate.diff(currentDate, 'days');
 
 
 const handleBookmarkJob = async () => {
