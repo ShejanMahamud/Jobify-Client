@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { Modal } from "antd";
-import axios from "axios";
 import JoditEditor from "jodit-react";
 import moment from "moment";
 import React, { useRef, useState } from "react";
@@ -11,10 +10,11 @@ import CardJob from "../Utils/CardJob";
 import Parser from "../Utils/Parser";
 import useAuth from "../hooks/useAuth";
 import useAxiosCommon from "../hooks/useAxiosCommon";
+import useAxiosSecure from '../hooks/useAxiosSecure';
 import useJoditConfigs from "../hooks/useJoditConfigs";
 
 const JobDetails = () => {
-  
+  const axiosSecure = useAxiosSecure()
   const axiosCommon = useAxiosCommon();
   const { user } = useAuth();
   const resumeRef = useRef(null);
@@ -90,13 +90,13 @@ const JobDetails = () => {
       resume: resumeRef.current.value,
       applied_date: moment().format("LLL"),
     };
-    const { data } = await axios.post("http://localhost:5948/apply", jobInfo);
-    if (data.duplicate) {
+    const { data } = await axiosSecure.post("/apply", jobInfo);
+    if (data.message) {
       resumeRef.current.value = "";
       setContent("");
       setOpen(false);
       setConfirmLoading(false);
-      return toast.error("Already Applied!");
+      return toast.error(data.message);
     }
     if (data.insertedId) {
       setTimeout(() => {

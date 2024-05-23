@@ -1,47 +1,14 @@
-import { Breadcrumb } from "antd";
-import React from "react";
-import { AiOutlineUserSwitch } from "react-icons/ai";
-import { useParams } from "react-router-dom";
-import CardJob from "../Utils/CardJob";
-import useCompany from "../hooks/useCompany";
-import useOpenJobs from "../hooks/useOpenJobs";
+import React from 'react';
+import { AiOutlineUserSwitch } from 'react-icons/ai';
+import useCompanyInfo from '../../hooks/useCompanyInfo';
 
-const CompanyDetails = () => {
-  const {id} = useParams()
+const CompanyProfile = () => {
 
-  const {company,companyIsPending} = useCompany(id)
-  const {openJobs,openJobsPending} = useOpenJobs(company?.company_name)
 
-  if(openJobsPending || companyIsPending){
-    return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-    <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  </div>
-  }
+const {companyInfo} = useCompanyInfo();
 
   return (
-    <div className="w-full font-inter">
-      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full px-20">
-        <div className="flex items-center justify-between w-full ">
-          <h1 className="text-[#18191C] text-lg font-medium">{company?.company_name}</h1>
-          <Breadcrumb
-            separator=">"
-            items={[
-              {
-                title: "Home",
-              },
-              {
-                title: "Find Companies",
-                href: "/find_companies",
-              },
-              {
-                title: "Company",
-              },
-            ]}
-          />
-        </div>
-      </div>
+    <div className='w-full font-inter border-l border-[#E4E5E8] px-5 py-5 min-h-screen'>
 
       <div className="w-[90%] mx-auto">
       <div className="w-full rounded-lg border border-[#E4E5E8] h-[250px] z-10 relative">
@@ -49,12 +16,10 @@ const CompanyDetails = () => {
       </div>
       <div className="w-[90%] mx-auto bg-white relative z-50 py-5 px-5 rounded-lg flex items-center justify-between -mt-16 border border-[#E4E5E8]">
       <div className="flex items-center gap-5">
-      <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                {company?.company_name[0]}
-              </div>
+      <img src={companyInfo?.company_logo} alt="" className='h-20 w-20 object-cover rounded-full border border-primary'/>
               <div className="flex flex-col items-start">
-                <h1 className="text-[#18191C] font-medium text-2xl">{company?.company_name}</h1>
-                <span className="text-[#5E6670]">{company?.company_category}</span>
+                <h1 className="text-[#18191C] font-medium text-2xl">{companyInfo?.company_name}</h1>
+                <span className="text-[#5E6670]">{companyInfo?.company_category}</span>
               </div>
       </div>
               <button className="bg-primary text-white font-medium text-lg px-6 py-3 rounded-lg">Open Positions</button>
@@ -63,14 +28,14 @@ const CompanyDetails = () => {
             <div className="w-full flex flex-col items-start gap-12">
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Description</h1>
-                    <p className="text-[#5E6670]">{company?.description}</p>
+                    <p className="text-[#5E6670]">{companyInfo?.description}</p>
                 </div>
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Benefits</h1>
                     <ul className="text-[#5E6670] list-disc *:mb-3 ml-5">
-                  {company?.benefits &&
-                    company?.benefits.map((benefit, index) => (
+                  {companyInfo?.benefits &&
+                    companyInfo?.benefits.map((benefit, index) => (
                       <li key={index}>{benefit}</li>
                     ))}
                 </ul>
@@ -78,7 +43,7 @@ const CompanyDetails = () => {
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Vision</h1>
-                    <p className="text-[#5E6670]">{company?.company_vision}</p>
+                    <p className="text-[#5E6670]">{companyInfo?.company_vision}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -109,7 +74,7 @@ const CompanyDetails = () => {
                      Founded In:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {company?.founded_in}
+                      {companyInfo?.founded_in}
                     </span>
                   </div>
 
@@ -119,7 +84,7 @@ const CompanyDetails = () => {
                       Organization Type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {company?.organization_type}
+                      {companyInfo?.organization_type}
                     </span>
                   </div>
 
@@ -129,7 +94,7 @@ const CompanyDetails = () => {
                       Team Size:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {company?.company_size}
+                      {companyInfo?.company_size}
                     </span>
                   </div>
 
@@ -167,7 +132,7 @@ const CompanyDetails = () => {
                       Location:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {company?.location}
+                      {companyInfo?.location}
                     </span>
                   </div>
 
@@ -180,7 +145,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/1b527c1461bd70ee259aad5a3465cc2f/raw/caf2be0686385bb7bc9dcaaa3cbf5fbc97cbea95/globe.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Website</h1>
-                    <p className="font-medium text-[#18191C]">{company?.website}</p>
+                    <p className="font-medium text-[#18191C]">{companyInfo?.website}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -188,7 +153,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/f73c44e6f5a5eb8b101e012a4b9ba526/raw/47152dabb6afa9e32b31a784329559a0be53d611/phone.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Phone</h1>
-                    <p className="font-medium text-[#18191C]">{company?.phone}</p>
+                    <p className="font-medium text-[#18191C]">{companyInfo?.phone}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -196,7 +161,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/2374104d4a783130c5540f1fb53d5013/raw/d2de14c9c15942c354ae03fd2ac8dca6cc3a1eb9/email.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Email</h1>
-                    <p className="font-medium text-[#18191C]">{company?.email}</p>
+                    <p className="font-medium text-[#18191C]">{companyInfo?.email}</p>
                     </div>
                 </div>
                 </div>
@@ -223,16 +188,8 @@ const CompanyDetails = () => {
             </div>
       </div>
       </div>
-      <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
-        <h1 className="text-[#18191C] text-[40px] font-medium">Open Positions ({openJobs && openJobs.length})</h1>
-        <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
-        {
-            openJobs && openJobs.map(job => <CardJob job={job} key={job._id}/>)
-        }
-        </div>
-      </div>
     </div>
-  );
-};
+  )
+}
 
-export default CompanyDetails;
+export default CompanyProfile

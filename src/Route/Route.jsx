@@ -17,6 +17,10 @@ import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
 import CompanyMyJobs from '../pages/CompanyDashboard/CompanyMyJobs';
 import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
 import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
+import CompanyProfile from '../pages/CompanyDashboard/CompanyProfile';
+import CompanyFundingInfo from '../pages/CompanyDashboard/Settings/CompanyFundingInfo';
+import CompanySetting from '../pages/CompanyDashboard/Settings/CompanySetting';
+import CompanySettings from '../pages/CompanyDashboard/Settings/CompanySettings';
 import CompanyDetails from '../pages/CompanyDetails';
 import EmailVerification from '../pages/EmailVerification';
 import FindCompanies from '../pages/FindCompanies';
@@ -24,6 +28,8 @@ import FindJob from '../pages/FindJob';
 import ForgetPassword from '../pages/ForgetPassword';
 import Home from '../pages/Home';
 import JobDetails from '../pages/JobDetails';
+import CompanyInfo from './../pages/CompanyDashboard/Settings/CompanyInfo';
+import CompanySocial from './../pages/CompanyDashboard/Settings/CompanySocial';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
 const axiosCommon = useAxiosCommon()
@@ -137,6 +143,32 @@ const Route = createBrowserRouter([
         {
           path: 'jobs',
           element: <CompanyMyJobs/>
+        },
+        {
+          path: 'settings',
+          element: <CompanySettings/>,
+          children: [
+            {
+              path: '',
+              element: <CompanyInfo/>
+            },
+            {
+              path: 'funding_info',
+              element: <CompanyFundingInfo/>
+            },
+            {
+              path: 'social',
+              element: <CompanySocial/>
+            },
+            {
+              path: 'setting',
+              element: <CompanySetting/>
+            },
+          ]
+        },
+        {
+          path: 'profile',
+          element: <CompanyProfile/>
         }
       ],
     }
