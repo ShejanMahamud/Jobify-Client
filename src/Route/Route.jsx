@@ -12,6 +12,7 @@ import CandidateOverview from '../pages/CandidateDashboard/CandidateOverview';
 import CandidateSettingPersonal from '../pages/CandidateDashboard/CandidateSettingPersonal';
 import CandidateSettingProfile from '../pages/CandidateDashboard/CandidateSettingProfile';
 import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
+import Billing from '../pages/CompanyDashboard/Billing';
 import CompanyMyJobs from '../pages/CompanyDashboard/CompanyMyJobs';
 import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
 import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
@@ -119,7 +120,7 @@ const Route = createBrowserRouter([
             {
               path: 'setting',
               element: <AccountSettings/>
-            }
+            },
           ],
           element: <CandidateSettings/>
         }
@@ -141,6 +142,10 @@ const Route = createBrowserRouter([
         {
           path: 'jobs',
           element: <CompanyMyJobs/>
+        },
+        {
+          path: 'billing',
+          element: <Billing/>
         },
         {
           path: 'settings',

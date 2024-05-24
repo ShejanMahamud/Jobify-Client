@@ -34,14 +34,14 @@ const handleEmailPasswordLogin = async (e) => {
 // TODO: ROLE BASED CONTROL AND ROLE BASED NAVIGATE & PRIVATE ROUTE AND CANDIDATE ONLY ACCESS ON HIS DASHBOARD & POLISH THE ACCESS
   try{
     const {data:auth} = await axiosCommon.get(`/role/${email}`)
-    const {data:cookie} = await axiosSecure.post(`/auth`,{email:email,role:account})
-    if(!cookie.success){
-      return toast.error('Suspicious Login!')
-    }
     if(auth.role !== account){
       return toast.error('Please Select Correct Account Type!')
     }
        await emailPasswordLogin(email,password)
+       const {data:cookie} = await axiosSecure.post(`/auth`,{email:email,role:account})
+       if(!cookie.success){
+        return toast.error('Suspicious Login!')
+      }
        toast.success('Successfully Logged In!')
        setTimeout(()=>{
          navigate(location?.state || '/')

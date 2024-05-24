@@ -102,7 +102,7 @@ const CompanyDashboard = () => {
                 ? "bg-[#E7F0FA] text-primary w-full flex items-center gap-3 py-3 px-3"
                 : "w-full flex items-center gap-3 py-3 px-3 text-[#767F8C]"
             }
-            to={"/dashboard/company/plans"}
+            to={"/dashboard/company/billing"}
           >
             <LiaWalletSolid className='text-xl'/>
           <span className='text-base'>Plan & Billings</span>
