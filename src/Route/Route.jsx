@@ -9,17 +9,14 @@ import CandidateAppliedJobs from '../pages/CandidateDashboard/CandidateAppliedJo
 import CandidateBookmarkJobs from '../pages/CandidateDashboard/CandidateBookmarkJobs';
 import CandidateJobAlert from '../pages/CandidateDashboard/CandidateJobAlert';
 import CandidateOverview from '../pages/CandidateDashboard/CandidateOverview';
-import CandidateSetting from '../pages/CandidateDashboard/CandidateSetting';
 import CandidateSettingPersonal from '../pages/CandidateDashboard/CandidateSettingPersonal';
 import CandidateSettingProfile from '../pages/CandidateDashboard/CandidateSettingProfile';
-import CandidateSettingSocial from '../pages/CandidateDashboard/CandidateSettingSocial';
 import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
 import CompanyMyJobs from '../pages/CompanyDashboard/CompanyMyJobs';
 import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
 import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
 import CompanyProfile from '../pages/CompanyDashboard/CompanyProfile';
 import CompanyFundingInfo from '../pages/CompanyDashboard/Settings/CompanyFundingInfo';
-import CompanySetting from '../pages/CompanyDashboard/Settings/CompanySetting';
 import CompanySettings from '../pages/CompanyDashboard/Settings/CompanySettings';
 import CompanyDetails from '../pages/CompanyDetails';
 import EmailVerification from '../pages/EmailVerification';
@@ -28,8 +25,9 @@ import FindJob from '../pages/FindJob';
 import ForgetPassword from '../pages/ForgetPassword';
 import Home from '../pages/Home';
 import JobDetails from '../pages/JobDetails';
+import AccountSettings from '../pages/shared/AccountSettings';
+import SocialSettings from '../pages/shared/SocialSettings';
 import CompanyInfo from './../pages/CompanyDashboard/Settings/CompanyInfo';
-import CompanySocial from './../pages/CompanyDashboard/Settings/CompanySocial';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
 const axiosCommon = useAxiosCommon()
@@ -116,11 +114,11 @@ const Route = createBrowserRouter([
             },
             {
               path: 'social',
-              element: <CandidateSettingSocial/>
+              element: <SocialSettings/>
             },
             {
               path: 'setting',
-              element: <CandidateSetting/>
+              element: <AccountSettings/>
             }
           ],
           element: <CandidateSettings/>
@@ -158,11 +156,11 @@ const Route = createBrowserRouter([
             },
             {
               path: 'social',
-              element: <CompanySocial/>
+              element: <SocialSettings/>
             },
             {
               path: 'setting',
-              element: <CompanySetting/>
+              element: <AccountSettings/>
             },
           ]
         },

@@ -8,7 +8,7 @@ import useAuth from '../hooks/useAuth';
 const Job = ({job}) => {
 
 const {user} = useAuth();
-const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId} = job;
+const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId,featured} = job;
 
 const navigate = useNavigate();
 
@@ -45,9 +45,11 @@ const handleBookmarkJob = async () => {
               <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">
                   {job_type}
               </span>
-              <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
-                  Featured
-              </span>
+              {
+                featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                Featured
+            </span>
+              }
               </div>
           </div>
           <div className="flex items-center gap-5">
@@ -88,7 +90,12 @@ const handleBookmarkJob = async () => {
 </clipPath>
 </defs>
 </svg>
-<span className="text-[#636A80] text-sm">{remainingDays} Days Remaining</span>
+<span className="text-[#636A80] text-sm">
+  {currentDate === moment(expiration_date).format("MMMM D, YYYY")
+    ? 'Today Last Date'
+    : `${remainingDays} Days Remaining`}
+</span>
+
               </div>
           </div>
       </div>

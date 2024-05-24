@@ -8,8 +8,6 @@ const navigate = useNavigate();
 
 const {openJobs,openJobsPending} = useOpenJobs(company_name)
 
-console.log(openJobs)
-
 if(openJobsPending){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
