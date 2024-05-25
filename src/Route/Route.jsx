@@ -26,6 +26,7 @@ import FindJob from '../pages/FindJob';
 import ForgetPassword from '../pages/ForgetPassword';
 import Home from '../pages/Home';
 import JobDetails from '../pages/JobDetails';
+import PaymentSuccess from '../pages/PaymentSuccess';
 import AccountSettings from '../pages/shared/AccountSettings';
 import SocialSettings from '../pages/shared/SocialSettings';
 import CompanyInfo from './../pages/CompanyDashboard/Settings/CompanyInfo';
@@ -174,6 +175,10 @@ const Route = createBrowserRouter([
           element: <CompanyProfile/>
         }
       ],
+    },
+    {
+      path: 'payment/success',
+      element: <PaymentSuccess/>
     }
   ]);
 

@@ -3,7 +3,7 @@ import JoditEditor from 'jodit-react';
 import React, { useState } from 'react';
 import { FiLink } from "react-icons/fi";
 import useJoditConfigs from './../../../hooks/useJoditConfigs';
-
+//todo: need to complete
 const CompanyFundingInfo = () => {
 
 const [vision,setVision] = useState(null)

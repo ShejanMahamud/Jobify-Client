@@ -25,13 +25,13 @@ const Register = () => {
     const name = e.target.name.value;
     const username = e.target.username.value;
     const email = e.target.email.value;
-    const phone = e.target.phone.name;
+    const photo = e.target.photo.name;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirm.value;
     const role = e.target.account.value;
     const terms = e.target.terms.checked;
-    const photo = e.target.photo.value;
-    const user = { name, username, email, phone, role, photo };
+    const phone_number = e.target.phone_number.value;
+    const user = { name, username, email, phone_number, role, photo };
 
     if (!terms) {
       return toast.error("Please Accept Terms & Services!");
@@ -53,6 +53,9 @@ const Register = () => {
         photoURL: photo,
       });
       await sendEmailVerification(auth.currentUser);
+      if(role === 'company'){
+        const { data } = await axiosSecure.post("/company", {company_name: name,email,company_logo: photo,phone: phone_number,plan:'free',job_limit:1,resume_access_limit: 5,resume_visibility_limit: 5,featured:false});
+      }
       const { data } = await axiosSecure.post("/user", user);
       if (data.insertedId) {
         toast.success("Account Registration Successfully!");
@@ -111,7 +114,7 @@ const Register = () => {
                 type="text"
                 required
                 name="photo"
-                placeholder="Photo URL"
+                placeholder="Photo URL/Logo URL"
                 class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
               />
             </div>
@@ -121,7 +124,7 @@ const Register = () => {
                 Phone Number
               </label>
               <input
-                name="phone"
+                name="photo_number"
                 type="number"
                 required
                 placeholder="+880171233474"
