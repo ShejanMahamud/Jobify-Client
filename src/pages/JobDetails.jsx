@@ -96,7 +96,7 @@ const JobDetails = () => {
       candidate_email: user?.email,
       cover_letter: content,
       resume: resumeRef.current.value,
-      applied_date: moment().format("LLL"),
+      applied_date: moment().format("MMMM D, YYYY"),
       status: 'applied'
     };
     const { data } = await axiosSecure.post("/apply", jobInfo);

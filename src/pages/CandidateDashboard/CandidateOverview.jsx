@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MdCancel, MdDoneAll, MdEvent, MdExitToApp, MdLocalOffer, MdPersonAdd, MdSend, MdVisibility } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import useAppliedJobs from '../../hooks/useAppliedJobs';
-import useAuth from '../../hooks/useAuth';
 import useBookmarkJobs from '../../hooks/useBookmarkJobs';
+import useUserInfo from '../../hooks/useUserInfo';
 
 const CandidateOverview = () => {
+  const [profileComplete,setProfileComplete] = useState(false)
   const navigate = useNavigate()
-const {user} = useAuth()
+const {user,userInfo} = useUserInfo()
   const {appliedJobs,isPending:appliedPending} = useAppliedJobs();
   const {data:bookmarkJobs,isPending:bookmarkPending} = useBookmarkJobs();
+  
 
 if(appliedPending || bookmarkPending){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
@@ -55,19 +57,33 @@ if(appliedPending || bookmarkPending){
             </div>
           </div>
         </div>
-        <div className='w-full bg-[#E05151] px-5 py-5 rounded-lg flex items-center justify-between mt-10'>
-          <div className='flex items-center gap-3'>
-            <img src={user?.photoURL} alt="user.png" className='w-14 h-14 rounded-full'/>
-            <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-lg font-medium text-white'>Your profile editing is not completed.</h1>
-              <h1 className='text-xs text-white'>Complete your profile editing & build your custom Resume</h1>
-            </div>
-          </div>
-            <button className='px-3 py-2 rounded-sm text-[#E05151] bg-white font-medium flex items-center gap-1'>
-              <span>Edit Profile</span>
-            <img src="https://gist.github.com/ShejanMahamud/75c0ff3a427e791882df08982b477d2e/raw/41df9e052f5e5c4f7465fd8f4bcce8e0e717ec61/arrow.svg" alt="" />
-            </button>
-        </div>
+{
+  !(
+    userInfo &&
+    userInfo.name &&
+    userInfo.email &&
+    userInfo.photo &&
+    userInfo.education &&
+    userInfo.experience &&
+    userInfo.resume &&
+    userInfo.title &&
+    userInfo.biodata &&
+    userInfo.location &&
+    userInfo.number
+  ) && <div className='w-full bg-[#E05151] px-5 py-5 rounded-lg flex items-center justify-between mt-10'>
+  <div className='flex items-center gap-3'>
+    <img src={user?.photoURL} alt="user.png" className='w-14 h-14 rounded-full'/>
+    <div className='flex flex-col items-start gap-1'>
+      <h1 className='text-lg font-medium text-white'>Your profile editing is not completed.</h1>
+      <h1 className='text-xs text-white'>Complete your profile editing & build your custom Resume</h1>
+    </div>
+  </div>
+    <button onClick={()=>navigate('/dashboard/candidate/settings')} className='px-3 py-2 rounded-sm text-[#E05151] bg-white font-medium flex items-center gap-1'>
+      <span>Edit Profile</span>
+    <img src="https://gist.github.com/ShejanMahamud/75c0ff3a427e791882df08982b477d2e/raw/41df9e052f5e5c4f7465fd8f4bcce8e0e717ec61/arrow.svg" alt="" />
+    </button>
+</div>
+}
         <div className='w-full flex items-center justify-between mt-10'>
           <h1 className='text-[#18191C] font-medium'>Recently Applied</h1>
           <button onClick={()=>navigate('/dashboard/candidate/applied_jobs')} className='px-3 py-2 rounded-sm text-[#767F8C] bg-white font-medium flex items-center text-base gap-1'>
