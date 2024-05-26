@@ -132,7 +132,9 @@ const CompanyMyJobs = () => {
                         <div className='flex items-center gap-3 text-[#767F8C]'>
                           <span>{job?.job_type}</span>
                           <span>•</span>
-                          <span>{remainingDays < 0 ? job?.expiration_date : `${remainingDays} Days Remaining`}</span>
+                          <span>{currentDate === moment(job?.expiration_date).format("MMMM D, YYYY")
+    ? 'Today Last Date'
+    : `${remainingDays} Days Remaining`}</span>
                         </div>
                       </div>
                     </div>

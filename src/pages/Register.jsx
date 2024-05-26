@@ -7,7 +7,7 @@ import Logo from "../Utils/Logo";
 import auth from "../config/firebase.config";
 import useAuth from "../hooks/useAuth";
 import useAxiosSecure from "./../hooks/useAxiosSecure";
-
+// in custom email verification page there is a problem that is its says rejected but it working [maybe a condition issue need to fix]
 const Register = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const Register = () => {
     const name = e.target.name.value;
     const username = e.target.username.value;
     const email = e.target.email.value;
-    const photo = e.target.photo.name;
+    const photo = e.target.photo.value;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirm.value;
     const role = e.target.account.value;
@@ -124,7 +124,7 @@ const Register = () => {
                 Phone Number
               </label>
               <input
-                name="photo_number"
+                name="phone_number"
                 type="number"
                 required
                 placeholder="+880171233474"

@@ -20,7 +20,7 @@ const CandidateDashboard = () => {
   return (
     <>
     <Navbar/>
-    <div className='w-full px-10 border-t border-[#E4E5E8] grid grid-cols-[20%_80%] row-auto items-start'>
+    <div className='w-full px-5 border-t border-[#E4E5E8] grid grid-cols-[15%_85%] row-auto items-start'>
     <div className='w-full py-5'>
       <h1 className='font-medium text-[#9199A3] text-sm uppercase mb-5'>Candidate Dashboard</h1>
       <div className='w-full flex flex-col items-start'>

@@ -1,9 +1,9 @@
 import { Modal, Tooltip } from 'antd';
-import { EmailAuthProvider, deleteUser, reauthenticateWithCredential, updateEmail, updatePassword } from 'firebase/auth';
+import { EmailAuthProvider, deleteUser, reauthenticateWithCredential, sendEmailVerification, updateEmail, updatePassword } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoIosEyeOff, IoMdEye } from 'react-icons/io';
-import { IoBriefcaseOutline, IoCloseCircleOutline, IoLocation } from "react-icons/io5";
+import { IoBriefcaseOutline, IoCheckmarkCircleOutline, IoCloseCircleOutline, IoLocation } from "react-icons/io5";
 import { SlEnvolope } from "react-icons/sl";
 import { useNavigate } from 'react-router-dom';
 import auth from '../../config/firebase.config';
@@ -118,6 +118,14 @@ const AccountSettings = () => {
     }
   }
 
+  const handleResendEmailVerification = () => {
+    sendEmailVerification(auth.currentUser)
+    .then(res => {
+        toast.success('Email Verification Send!')
+    })
+    .catch(error => toast.error('Something Went Wrong!'))
+  }
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -147,6 +155,16 @@ const AccountSettings = () => {
         <SlEnvolope className='text-2xl text-primary mr-5'/>
         <input defaultValue={userInfo?.email} type="email" className='bg-transparent w-full focus:outline-none' name='email' placeholder='Email Address'/>
         </div>
+        {
+          user?.emailVerified ? <div className='text-sm text-green-500 flex items-center gap-1'>
+            <IoCheckmarkCircleOutline className='text-lg'/>
+            <span>Your email verified</span>
+          </div> : <div className='text-sm text-red-500 flex items-center gap-1'>
+            <IoCloseCircleOutline className='text-lg'/>
+            <span>Your email not verified.</span>
+            <button type='button' onClick={handleResendEmailVerification} className='underline decoration-red-500 underline-offset-2'>Verify Here</button>
+          </div>
+        }
 
     <div className='w-full flex gap-5 items-start'>
     <div className='flex flex-col items-start gap-2 mt-5'>

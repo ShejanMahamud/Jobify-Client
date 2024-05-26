@@ -8,15 +8,16 @@ import { SlGraduation } from "react-icons/sl";
 import { useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
 import Parser from "../Utils/Parser";
-import useAuth from "../hooks/useAuth";
 import useAxiosCommon from "../hooks/useAxiosCommon";
 import useAxiosSecure from '../hooks/useAxiosSecure';
 import useJoditConfigs from "../hooks/useJoditConfigs";
+import useUserInfo from "../hooks/useUserInfo";
 
 const JobDetails = () => {
+  const [profileComplete, setProfileComplete] = useState(false)
   const axiosSecure = useAxiosSecure()
   const axiosCommon = useAxiosCommon();
-  const { user } = useAuth();
+  const { user,userInfo } = useUserInfo();
   const resumeRef = useRef(null);
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
@@ -82,6 +83,13 @@ const JobDetails = () => {
       return toast.error("Please Login First!");
     }
     setConfirmLoading(true);
+    if(
+      !(userInfo && userInfo.name && userInfo.email && userInfo.photo && userInfo.education &&
+      userInfo.experience && userInfo.resume && userInfo.title && userInfo.biodata && userInfo.location && userInfo.number)
+    ){
+      setOpen(false);
+     return toast.error('Please Complete Your Profile First')
+    }
     const jobInfo = {
       jobId: job?._id,
       companyId: company?._id,
@@ -89,6 +97,7 @@ const JobDetails = () => {
       cover_letter: content,
       resume: resumeRef.current.value,
       applied_date: moment().format("LLL"),
+      status: 'applied'
     };
     const { data } = await axiosSecure.post("/apply", jobInfo);
     if (data.message) {
@@ -190,6 +199,7 @@ const JobDetails = () => {
                 </div>
 {
   job?.platform === 'jobify' && <button
+  disabled={!job?.status}
   onClick={showModal}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
@@ -202,6 +212,7 @@ const JobDetails = () => {
 }
 {
   job?.platform === 'email' && <button
+  disabled={!job?.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
   <a href={`mailto:${job?.company_email}`}>Email Us</a>
@@ -213,6 +224,7 @@ const JobDetails = () => {
 }
 {
   job?.platform === 'external' && <button
+  disabled={!job?.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
   <a href={company?.website}>Our Website</a>

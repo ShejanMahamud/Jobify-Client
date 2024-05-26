@@ -1,5 +1,5 @@
 import React from 'react';
-import { IoCheckmark } from "react-icons/io5";
+import { MdCancel, MdDoneAll, MdEvent, MdExitToApp, MdLocalOffer, MdPersonAdd, MdSend, MdVisibility } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import useAppliedJobs from '../../hooks/useAppliedJobs';
 import useAuth from '../../hooks/useAuth';
@@ -133,10 +133,54 @@ if(appliedPending || bookmarkPending){
           {job?.applied_date}
         </td>
         <td>
-          <div  className='flex items-center gap-1 text-[#0BA02C]'>
-          <IoCheckmark/>
-        <span>Active</span>
-          </div>
+          {
+           job?.status === 'applied' && <div  className='flex items-center gap-1 text-blue-500'>
+            <MdSend  className='text-lg'/>
+          <span>Applied</span>
+            </div>
+          }
+          {
+           job?.status === 'in-review' && <div  className='flex items-center gap-1 text-orange-500'>
+            <MdVisibility className='text-lg'/>
+          <span>In Review</span>
+            </div>
+          }
+          {
+           job?.status === 'scheduled' && <div  className='w-full flex items-center gap-1 text-cyan-500'>
+            <MdEvent className='text-lg'/>
+          <span className='w-full'>Interview Scheduled</span>
+            </div>
+          }
+          {
+           job?.status === 'interviewed' && <div  className='flex items-center gap-1 text-green-500'>
+            <MdDoneAll className='text-lg'/>
+          <span>Interviewed</span>
+            </div>
+          }
+          {
+           job?.status === 'offered' && <div  className='flex items-center gap-1 text-[#daa520]'>
+            <MdLocalOffer className='text-lg'/>
+          <span>Offered</span>
+            </div>
+          }
+          {
+           job?.status === 'hired' && <div  className='flex items-center gap-1 text-[#008080]'>
+            <MdPersonAdd className='text-lg'/>
+          <span>Hired</span>
+            </div>
+          }
+          {
+           job?.status === 'rejected' && <div  className='flex items-center gap-1 text-red-500'>
+            <MdCancel className='text-lg'/>
+          <span>Rejected</span>
+            </div>
+          }
+          {
+           job?.status === 'withdrawn' && <div  className='flex items-center gap-1 text-gray-500'>
+            <MdExitToApp className='text-lg'/>
+          <span>Withdrawn</span>
+            </div>
+          }
         </td>
         <th>
           <button className="bg-primary px-2 py-2 rounded-sm text-white font-medium flex items-center gap-3 text-base">

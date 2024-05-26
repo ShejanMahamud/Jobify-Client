@@ -67,7 +67,7 @@ const CompanyPostJob = () => {
       }
 
     }
-
+//Todo: candidate work
   return (
 <div className="border-l border-[#e4e5e8] w-full min-h-screen px-10 py-10 font-inter">
 {

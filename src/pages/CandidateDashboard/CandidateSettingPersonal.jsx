@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import useAuth from '../../hooks/useAuth';
 import useUserInfo from '../../hooks/useUserInfo';
 const { Dragger } = Upload;
-
+// i want to implement upload direct resume pdf 
 const CandidateSettingPersonal = () => {
 
 const {userInfo,userInfoPending,userInfoRefetch} = useUserInfo()
@@ -108,6 +108,12 @@ const {user} = useAuth();
         <select defaultValue={userInfo?.experience} name="experience" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
           <option value="select" selected disabled>Select</option>
           <option value="fresher">Fresher</option>
+          <option value="1 Year">1 Year</option>
+          <option value="2 Year">2 Year</option>
+          <option value="3 Year">3 Year</option>
+          <option value="4 Year">4 Year</option>
+          <option value="5 Year">5 Year</option>
+          <option value="5+ Year">5+ Year</option>
         </select>
         </div>
         <div className='flex flex-col items-start gap-2'>
