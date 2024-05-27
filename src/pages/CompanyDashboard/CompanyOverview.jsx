@@ -1,17 +1,27 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { IoCheckmark, IoCloseCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import Expire from '../../Utils/Expire';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useOpenJobs from '../../hooks/useOpenJobs';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const CompanyOverview = () => {
+  const axiosSecure = useAxiosSecure()
   const navigate = useNavigate()
 const {userInfo} = useUserInfo()
 
 const {openJobs,openJobsPending} = useOpenJobs(userInfo?.name)
+    const { data:candidates, isLoading } = useQuery({
+        queryKey: ["candidate"],
+        queryFn: async () => {
+          const { data } = await axiosSecure.get(`/candidates`);
+          return data;
+        },
+      });
 
-if(openJobsPending){
+if(openJobsPending || isLoading){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -37,7 +47,7 @@ if(openJobsPending){
 
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#FFF6E6]'>
             <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-[#18191C] text-2xl font-medium'>{openJobs.length}</h1>
+              <h1 className='text-[#18191C] text-2xl font-medium'>{candidates && candidates.length}</h1>
               <p className='text-[#18191C] text-sm'>Candidates</p>
             </div>
             <div className='bg-white h-16 w-16 flex items-center justify-center rounded-lg'>

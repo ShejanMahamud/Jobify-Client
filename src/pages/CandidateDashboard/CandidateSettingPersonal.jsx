@@ -126,7 +126,7 @@ const {user} = useAuth();
         </div>
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Professional Resume</h1>
-        <input defaultValue={userInfo?.resume} name='resume' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Resume URL'/>
+        <input defaultValue={userInfo?.resume} name='resume' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Resume URL (Only Google Drive)'/>
         </div>
               <button className='bg-primary text-white font-medium text-lg px-4 py-2 rounded-sm w-[50%]'>Save Changes</button>
       </form>
