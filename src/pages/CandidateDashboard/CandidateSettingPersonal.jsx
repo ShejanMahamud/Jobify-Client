@@ -1,18 +1,17 @@
 import { message, Upload } from 'antd';
-import axios from 'axios';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import useAuth from '../../hooks/useAuth';
+import useAxiosCommon from '../../hooks/useAxiosCommon';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useUserInfo from '../../hooks/useUserInfo';
 const { Dragger } = Upload;
 // i want to implement upload direct resume pdf 
 const CandidateSettingPersonal = () => {
-
-const {userInfo,userInfoPending,userInfoRefetch} = useUserInfo()
-
+const axiosCommon = useAxiosCommon()
+const axiosSecure = useAxiosSecure()
+const {userInfo,userInfoPending,userInfoRefetch,user} = useUserInfo()
 
 const [image,setImage] = useState(null)
-const {user} = useAuth();
   const props = {
     name: 'file',
     multiple: false,
@@ -22,7 +21,7 @@ const {user} = useAuth();
       formData.append('image', file);
 
       try {
-        const response = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API}`, formData);
+        const response = await axiosCommon.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API}`, formData);
         onSuccess(response.data);
         message.success(`${file.name} file uploaded successfully.`);
         setImage(response.data.data.url);
@@ -42,6 +41,8 @@ const {user} = useAuth();
     const website = e.target.website.value;
     const resume = e.target.resume.value;
     const photo = image;
+    const preference = e.target.job_preference.value;
+    const job_preference = preference.split(',')
     // const userInfo = {name,title,experience,education,website,resume,photo}
     const userInfo ={
       ...(name && {name}),
@@ -50,10 +51,11 @@ const {user} = useAuth();
       ...(education && {education}),
       ...(website && {website}),
       ...(resume && {resume}),
-      ...(photo && {photo})
+      ...(photo && {photo}),
+      ...(job_preference && {job_preference})
     }
     try{
-      const {data} = await axios.patch(`http://localhost:5948/user/${user?.email}`,userInfo)
+      const {data} = await axiosSecure.patch(`http://localhost:5948/user/${user?.email}`,userInfo)
       console.log(data)
       if(data.success){
         toast.success('Profile Updated')
@@ -62,7 +64,6 @@ const {user} = useAuth();
     }
     catch(error){
       toast.error('Something Went Wrong!')
-      console.log(error)
     }
   }
 
@@ -127,6 +128,10 @@ const {user} = useAuth();
         <div className='flex flex-col items-start gap-2'>
         <h1 className='text-sm text-[#18191C]'>Professional Resume</h1>
         <input defaultValue={userInfo?.resume} name='resume' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='Resume URL (Only Google Drive)'/>
+        </div>
+        <div className='flex flex-col items-start gap-2 col-span-2'>
+        <h1 className='text-sm text-[#18191C]'>Job Preference (For Job Alert)</h1>
+        <input defaultValue={userInfo?.job_preference} name='job_preference' type="text" className='px-4 py-2 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' placeholder='React.Js Developer, Frontend Developer'/>
         </div>
               <button className='bg-primary text-white font-medium text-lg px-4 py-2 rounded-sm w-[50%]'>Save Changes</button>
       </form>

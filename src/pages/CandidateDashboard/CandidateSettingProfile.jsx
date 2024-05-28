@@ -1,58 +1,15 @@
 import { DatePicker } from 'antd';
 import axios from 'axios';
 import JoditEditor from 'jodit-react';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import useJoditConfigs from '../../hooks/useJoditConfigs';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const CandidateSettingProfile = () => {
   const {user,userInfo} = useUserInfo()
-  const editor = useRef(null);
   const [content, setContent] = useState("");
-  const options = [
-    "bold",
-    "italic",
-    "|",
-    "ul",
-    "ol",
-    "|",
-    "font",
-    "fontsize",
-    "|",
-    "outdent",
-    "indent",
-    "align",
-    "|",
-    "hr",
-    "|",
-    "fullsize",
-    "brush",
-    "|",
-    "table",
-    "link",
-    "|",
-    "undo",
-    "redo",
-  ];
-  const config = useMemo(
-    () => ({
-      readonly: false,
-      placeholder: "",
-      defaultActionOnPaste: "insert_as_html",
-      defaultLineHeight: 1.5,
-      enter: "br",
-      buttons: options,
-      buttonsMD: options,
-      buttonsSM: options,
-      buttonsXS: options,
-      statusbar: false,
-      sizeLG: 900,
-      sizeMD: 700,
-      sizeSM: 400,
-      toolbarAdaptive: false,
-    }),
-    []
-  );
+  const {editor,config} = useJoditConfigs()
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();

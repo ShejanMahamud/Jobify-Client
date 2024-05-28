@@ -92,8 +92,10 @@ const handleBookmarkJob = async () => {
 </svg>
 <span className="text-[#636A80] text-sm">
   {currentDate === moment(expiration_date).format("MMMM D, YYYY")
-    ? 'Today Last Date'
-    : `${remainingDays} Days Remaining`}
+     ? 'Today Last Date'
+     : remainingDays < 0
+     ? 'Expired Date'
+     : `${remainingDays} Days Remaining`}
 </span>
 
               </div>

@@ -1,11 +1,11 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import useBookmarkJobs from '../../hooks/useBookmarkJobs'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import useBookmarkJobs from '../../hooks/useBookmarkJobs';
 
 const CandidateBookmarkJobs = () => {
 const navigate = useNavigate();
 
-const {data,isPending} = useBookmarkJobs()
+const {bookmarkJobs,isPending} = useBookmarkJobs()
 
 const calculateRemainingDays = (expirationDate) => {
   const currentDate = new Date();
@@ -26,11 +26,11 @@ if(isPending){
   return (
     <div className='w-full px-5 font-inter min-h-screen border-l border-[#E4E5E8]'>
                      <div className='w-full flex items-center justify-between mt-10'>
-          <h1 className='text-[#18191C] font-medium text-xl'>Bookmark Jobs ({data.length})</h1>
+          <h1 className='text-[#18191C] font-medium text-xl'>Bookmark Jobs ({bookmarkJobs.length})</h1>
         </div>
         <div className='w-full grid grid-cols-1 row-auto items-center gap-5 mt-10'>
           {
-            data && data.map(job => {
+            bookmarkJobs && bookmarkJobs.map(job => {
               const remainingDays = calculateRemainingDays(job?.expiration_date);
                return (<div className="w-full flex items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5]">
               <div className="flex items-center gap-5">

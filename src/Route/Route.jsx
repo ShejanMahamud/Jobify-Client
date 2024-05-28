@@ -9,8 +9,8 @@ import CandidateAppliedJobs from '../pages/CandidateDashboard/CandidateAppliedJo
 import CandidateBookmarkJobs from '../pages/CandidateDashboard/CandidateBookmarkJobs';
 import CandidateJobAlert from '../pages/CandidateDashboard/CandidateJobAlert';
 import CandidateOverview from '../pages/CandidateDashboard/CandidateOverview';
+import CandidatePublicProfile from '../pages/CandidateDashboard/CandidatePublicProfile';
 import CandidateSettingPersonal from '../pages/CandidateDashboard/CandidateSettingPersonal';
-import CandidateSettingProfile from '../pages/CandidateDashboard/CandidateSettingProfile';
 import CandidateSettings from '../pages/CandidateDashboard/CandidateSettings';
 import Billing from '../pages/CompanyDashboard/Billing';
 import Candidates from '../pages/CompanyDashboard/Candidates';
@@ -30,6 +30,7 @@ import JobDetails from '../pages/JobDetails';
 import PaymentSuccess from '../pages/PaymentSuccess';
 import AccountSettings from '../pages/shared/AccountSettings';
 import SocialSettings from '../pages/shared/SocialSettings';
+import CandidateSettingProfile from './../pages/CandidateDashboard/CandidateSettingProfile';
 import CompanyInfo from './../pages/CompanyDashboard/Settings/CompanyInfo';
 import Login from './../pages/Login';
 import Register from './../pages/Register';
@@ -103,6 +104,10 @@ const Route = createBrowserRouter([
         {
           path: 'job_alert',
           element: <CandidateJobAlert/>
+        },
+        {
+          path: 'public_profile',
+          element: <CandidatePublicProfile/>
         },
         {
           path: 'settings',

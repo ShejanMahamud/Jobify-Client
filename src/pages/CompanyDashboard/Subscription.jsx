@@ -1,19 +1,77 @@
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+import { Modal, Tabs } from 'antd'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { IoIosArrowRoundForward } from 'react-icons/io'
+import { IoCardOutline } from 'react-icons/io5'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
+import useCurrency from '../../hooks/useCurrency'
 import useUserInfo from '../../hooks/useUserInfo'
-
+import CheckoutForm from './CheckoutForm'
 
 const Subscription = () => {
+  const [plan,setPlan] = useState(null)
+  const [price,setPrice] = useState(0)
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [method,setMethod] = useState(null)
+  const stripePromise = loadStripe(import.meta.env.VITE_PK);
+  const {usd} = useCurrency(price)
+
+  const handlePaymentModal = (plan,price) => {
+    setPaymentModal(true)
+    setPlan(plan)
+    setPrice(price)
+  }
+
     const purchase_date = moment().format("MMMM D, YYYY")
     const expiration_date = moment().add(1, 'month').format("MMMM D, YYYY");
     const {user} = useUserInfo()
 const axiosSecure = useAxiosSecure()
-    const handlePlans = async (plan,price) => {
-        const {data} = await axiosSecure.post(`/plans`,{user_email: user?.email,plan:plan,price: price,purchase_date,expiration_date})
+
+    const handlePlans = async () => {
+        const {data} = await axiosSecure.post(`/plans`,{user_email: user?.email,plan:plan,price: price,purchase_date,expiration_date,currency:'BDT'})
         window.location.replace(data.url)
     }
+
+    const items = [
+      {
+        key: '1',
+        label: <div className='flex items-center gap-2 text-primary font-medium'>
+        <IoCardOutline className='text-2xl'/> 
+        <p>Debit/Credit Card</p>
+      </div>,
+        children: <div className='flex flex-col items-start w-full gap-5'>
+              <div className="flex flex-col items-start gap-1 w-full">
+      <h1 className="text-sm text-[#18191C] mb-1">Name on Card</h1>
+      <input
+        type="text"
+        className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+        name="name"
+        required
+        placeholder="Name on Card"
+      />
+    </div>
+    <Elements stripe={stripePromise}>
+      <CheckoutForm />
+    </Elements>
+        </div>,
+      },
+      {
+        key: '2',
+        label: <div className='flex items-center gap-2 text-primary font-medium'>
+        <img src="https://sslcommerz.com/wp-content/uploads/2020/03/favicon.png" alt="" />
+        <p>SSL COMMERZ</p>
+      </div>,
+        children: <button type="submit"  onClick={handlePlans} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center justify-center gap-3 w-full mt-5">
+        <span>Pay Now</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 5L19 12L12 19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        </button>,
+      },
+    ];
 
   return (
     <div className=''>
@@ -171,7 +229,7 @@ const axiosSecure = useAxiosSecure()
             </div>
           </div>
 
-          <button onClick={()=>handlePlans('basic',499)} className="hover:bg-primary bg-[#E7F0FA] px-4 py-2 rounded-md text-primary hover:text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
+          <button onClick={()=>handlePaymentModal('basic',499)} className="hover:bg-primary bg-[#E7F0FA] px-4 py-2 rounded-md text-primary hover:text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
             <span>Choose plan</span>
             <IoIosArrowRoundForward className="text-4xl" />
           </button>
@@ -320,7 +378,7 @@ const axiosSecure = useAxiosSecure()
             </div>
           </div>
 
-          <button onClick={()=>handlePlans('standard',699)} className="bg-primary hover:bg-[#E7F0FA] px-4 py-2 rounded-md hover:text-primary text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
+          <button onClick={()=>handlePaymentModal('standard',699)} className="bg-primary hover:bg-[#E7F0FA] px-4 py-2 rounded-md hover:text-primary text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
             <span>Choose plan</span>
             <IoIosArrowRoundForward className="text-4xl" />
           </button>
@@ -466,12 +524,58 @@ const axiosSecure = useAxiosSecure()
             </div>
           </div>
 
-          <button onClick={()=>handlePlans('premium',999)} className="hover:bg-primary bg-[#E7F0FA] px-4 py-2 rounded-md text-primary hover:text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
+          <button onClick={()=>handlePaymentModal('premium',999)} className="hover:bg-primary bg-[#E7F0FA] px-4 py-2 rounded-md text-primary hover:text-white font-medium gap-2 mt-8 w-full flex justify-center items-center">
             <span>Choose plan</span>
             <IoIosArrowRoundForward className="text-4xl" />
           </button>
         </div>
       </div>
+      <Modal
+        width={800}
+        footer={false}
+        open={paymentModal}
+        onCancel={() => setPaymentModal(false)}
+      >
+        <h1 className="text-[#18191C] font-medium text-xl my-3">
+          Checkout
+        </h1>
+        <hr className='border border-[#E4E5E8] w-full my-5'/>
+        
+        <div className='w-full grid grid-cols-2 row-auto items-start gap-5'>
+        <div className='flex flex-col items-start gap-2 w-full border border-[#E4E5E8] p-3 rounded-lg'>
+        <h1 className="text-[#18191C] font-medium text-base my-2">
+          Payment Method
+        </h1>
+        <Tabs defaultActiveKey="2" items={items} className='w-full' onChange={(key)=>{
+          setMethod(key)
+        }}/>
+        </div>
+        <div>
+        <div className='w-full border border-[#E4E5E8] p-3 rounded-lg flex flex-col items-start gap-2'>
+        <h1 className="text-[#18191C] font-medium text-base my-2">
+          Plan Details
+        </h1>
+        <div className='w-full flex items-center justify-between'>
+        <h1 className=" text-sm text-[#9199A3] my-2">
+          Pricing Plan : <span className='text-[#18191C] font-medium text-base uppercase '>{plan}</span>
+        </h1>
+        <p className='text-[#18191C] text-base'>{
+          method === '1' ? `${usd} USD` : <>{price} BDT</>
+        }</p>
+        </div>
+        <div className='w-full flex items-center justify-between font-medium'>
+        <h1 className=" text-base text-[#18191C] my-2">
+          Total: 
+        </h1>
+        <p className='text-[#18191C] text-base'>{
+          method === '1' ? `${usd} USD` : <>{price} BDT</>
+        }</p>
+        </div>
+        </div>
+        <p className='text-sm text-[#9199A3] my-3'>This package will expire after one month.</p>
+        </div>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -5,14 +5,14 @@ import useAuth from './useAuth'
 const useBookmarkJobs = () => {
 
     const {user} = useAuth()
-    const {data,isPending} = useQuery({
+    const {data:bookmarkJobs=[],isPending} = useQuery({
       queryKey: ['bookmark_jobs',user?.email],
       queryFn: async () => {
         const {data} = await axios.get(`http://localhost:5948/bookmark_jobs?email=${user?.email}`)
         return data
       }
     })
-    return {data,isPending}
+    return {bookmarkJobs,isPending,bookmarkJobsCount: bookmarkJobs.length}
 }
 
 export default useBookmarkJobs

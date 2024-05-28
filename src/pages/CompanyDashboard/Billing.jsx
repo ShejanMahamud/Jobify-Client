@@ -57,7 +57,9 @@ const Billing = () => {
         companyInfo?.plan === "premium" ||
         companyInfo?.plan === "basic" ||
         companyInfo?.plan === "standard"
-      ) && <Subscription />}
+      ) ? <Subscription />
+      :
+      (<>
       <div className="w-full flex flex-col items-start gap-10">
         <div className="w=full flex flex-row items-start gap-5">
           <div className="w-full flex flex-col gap-5 items-start">
@@ -443,6 +445,8 @@ const Billing = () => {
           </tbody>
         </table>
       </div>
+      </>)
+      }
     </div>
   );
 };
