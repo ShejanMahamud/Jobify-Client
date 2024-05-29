@@ -57,19 +57,19 @@ const Candidates = () => {
     setInterviewModal(true);
   }
 
-  const handleChangeStatus = async (id, status,email) => {
-    const { data } = await axiosSecure.patch(`/applied_job/${id}`, {
+  const handleChangeStatus = async (id,status,email) => {
+    const { data } = await axiosSecure.patch(`/change_status/${id}`, {
       status: status,
       email: email
     });
-    if (data.modifiedCount > 0) {
+    if (data.modifiedCount > 0){
       refetch();
       toast.success("Status Changed!");
     }
   };
 
 
-  const handleInterviewScheduled = async (e, id) => {
+  const handleInterviewScheduled = async (e, id,email) => {
     e.preventDefault();
     const interview_time = e.target.time.value;
     const interview_date = e.target.date.value;
@@ -96,8 +96,10 @@ const Candidates = () => {
       };
     }
   
-    const { data } = await axiosSecure.patch(`/applied_job/${id}`, interview_info);
+    const { data } = await axiosSecure.patch(`/interview/${id}`, {...interview_info,email});
     if (data.modifiedCount > 0) {
+      refetch()
+      setInterviewModal(false)
       toast.success("Interview Added!");
     }
   };
@@ -323,7 +325,7 @@ const Candidates = () => {
         onCancel={() => setInterviewModal(false)}
       >
         {/* want to add task submission feature */}
-        {selectedCandidate && <form onSubmit={(e)=>handleInterviewScheduled(e,selectedCandidate?._id)} className="my-5 w-full flex flex-col items-start gap-3">
+        {selectedCandidate && <form onSubmit={(e)=>handleInterviewScheduled(e,selectedCandidate?._id,selectedCandidate?.email)} className="my-5 w-full flex flex-col items-start gap-3">
           {
             selectedCandidate?.job_nature === 'On Site' && <div className='flex flex-col items-start gap-2 w-full mb-3'>
             <h1 className='text-sm text-[#18191C]'>Location</h1>
