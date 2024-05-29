@@ -14,7 +14,6 @@ import useJoditConfigs from "../hooks/useJoditConfigs";
 import useUserInfo from "../hooks/useUserInfo";
 
 const JobDetails = () => {
-  const [profileComplete, setProfileComplete] = useState(false)
   const axiosSecure = useAxiosSecure()
   const axiosCommon = useAxiosCommon();
   const { user,userInfo } = useUserInfo();
@@ -25,107 +24,74 @@ const JobDetails = () => {
   const { id } = useParams();
   const {editor,config} = useJoditConfigs()
 
-  const fetchJob = async (id) => {
-    const response = await axiosCommon.get(`/jobs?jobId=${id}`);
-    return response.data[0];
-  };
-
-  const fetchCompany = async (companyName) => {
-    const response = await axiosCommon.get(`/companies?name=${companyName}`);
-    return response.data[0];
-  };
-
-  const fetchRelatedJobs = async (category, jobId) => {
-    const response = await axiosCommon.get(
-      `/jobs?related=${category}&id=${jobId}`
-    );
-    return response.data;
-  };
-
-  const {
-    data: job,
-    isLoading: jobLoading,
-    error: jobError,
-  } = useQuery(
-    {
-      queryKey: ["job", id],
-      queryFn: async () => await fetchJob(id),
-    });
-
-  const {
-    data: company,
-    isLoading: companyLoading,
-    error: companyError,
-  } = useQuery(
-    {
-      queryKey:["company", job?.company_name],
-      queryFn: async () => await fetchCompany(job?.company_name)
+  const {data,isLoading} = useQuery({
+    queryKey: ['job_details',id],
+    queryFn: async () => {
+      const {data} = await axiosCommon(`/job_details/${id}`)
+      return data
     }
-  );
-  
-  const {
-    data: relatedJobs,
-    isLoading: relatedJobsLoading,
-    error: relatedJobsError,
-  } = useQuery(
-    {
-      queryKey: ["relatedJobs", job?.category, job?._id],
-      queryFn: async () => await fetchRelatedJobs(job?.category, job?._id),
-    }
-  );
-
-  const showModal = () => {
-    setOpen(true);
-  };
+  })
 
   const handleOk = async () => {
     if (!user) {
       return toast.error("Please Login First!");
     }
+    if (!user?.emailVerified) {
+      return toast.error("Verify Your Email First!");
+    }
     setConfirmLoading(true);
-    if(
+    if (
       !(userInfo && userInfo.name && userInfo.email && userInfo.photo && userInfo.education &&
-      userInfo.experience && userInfo.resume && userInfo.title && userInfo.biodata && userInfo.location && userInfo.number)
-    ){
+        userInfo.experience && userInfo.resume && userInfo.title && userInfo.biodata && userInfo.location && userInfo.number)
+    ) {
       setOpen(false);
-     return toast.error('Please Complete Your Profile First')
+      setConfirmLoading(false);
+      return toast.error('Please Complete Your Profile First');
     }
     const jobInfo = {
-      jobId: job?._id,
-      companyId: company?._id,
+      jobId: data && data?.job?._id,
+      companyId: data && data?.company?._id,
       candidate_email: user?.email,
       cover_letter: content,
       resume: resumeRef.current.value,
       applied_date: moment().format("MMMM D, YYYY"),
       status: 'applied'
     };
-    const { data } = await axiosSecure.post("/apply", jobInfo);
-    if (data.message) {
-      resumeRef.current.value = "";
-      setContent("");
-      setOpen(false);
-      setConfirmLoading(false);
-      return toast.error(data.message);
-    }
-    if (data.insertedId) {
-      setTimeout(() => {
+    try {
+      const { data: responseData } = await axiosSecure.post("/apply", jobInfo);
+      if (responseData.message) {
         resumeRef.current.value = "";
-        toast.success("Applied Successfully!");
-        setOpen(false);
         setContent("");
+        setOpen(false);
         setConfirmLoading(false);
-      }, 2000);
-    } else {
-      toast.error("Something Went Wrong!");
+        return toast.error(responseData.message);
+      }
+      if (responseData.insertedId) {
+        setTimeout(() => {
+          resumeRef.current.value = "";
+          toast.success("Applied Successfully!");
+          setOpen(false);
+          setContent("");
+          setConfirmLoading(false);
+        }, 2000);
+      } else {
+        toast.error("Something Went Wrong!");
+      }
+    } catch (error) {
+      toast.error("An error occurred while applying.");
+      setConfirmLoading(false);
     }
   };
   const handleCancel = () => {
     setOpen(false);
   };
+  const showModal = () => {
+    setOpen(true);
+  };
 
   return (
     <>
-      {jobLoading || companyLoading || relatedJobsLoading ? (
+      {isLoading ? (
         <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
           <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -140,25 +106,23 @@ const JobDetails = () => {
               <li>/</li>
               <li>Find Jobs</li>
               <li>/</li>
-              <li>{job?.job_title}</li>
+              <li>{data?.job?.job_title}</li>
             </ul>
           </div>
           <div className="flex items-center justify-between w-full px-20 py-10">
             <div className="flex items-center gap-5">
-              <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                {job?.job_title?.slice(0, 1)}
-              </div>
+              <img src={data?.company?.company_logo} alt="" className="w-20 h-20 object-cover rounded-full"/>
               <div className="flex items-start flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <h1 className="text-[#18191C] text-2xl font-medium">
-                    {job?.job_title}
+                    {data?.job?.job_title}
                   </h1>
                   <div className="flex items-center gap-3">
                     <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">
-                      {job?.job_type}
+                      {data?.job?.job_type}
                     </span>
                     {
-                      job?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                      data?.job?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
                       Featured
                     </span>
                     }
@@ -170,21 +134,21 @@ const JobDetails = () => {
                       src="https://gist.github.com/ShejanMahamud/205056e614f77ef4352546109a1ab4b1/raw/6d2e51907f77bd30c5150401fbe601dd99af44ae/website.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54]">{company?.website}</span>
+                    <span className="text-[#474C54]">{data?.company?.website}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <img
                       src="https://gist.github.com/ShejanMahamud/ed4015cd6afcad4d397392d5869e1be8/raw/97ed63b0b533c03f1c7326c0db1f1388ffc53778/phone.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54]">{company?.phone}</span>
+                    <span className="text-[#474C54]">{data?.company?.phone}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <img
                       src="https://gist.github.com/ShejanMahamud/4b5564a901828f1bc610653ac8cdeca4/raw/e8be40062e5ca3460b4dbae3dff928bf385f685c/email.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54]">{company?.email}</span>
+                    <span className="text-[#474C54]">{data?.company?.email}</span>
                   </div>
                 </div>
               </div>
@@ -198,8 +162,8 @@ const JobDetails = () => {
                   />
                 </div>
 {
-  job?.platform === 'jobify' && <button
-  disabled={!job?.status}
+  data?.job?.platform === 'jobify' && <button
+  disabled={!data?.job?.status}
   onClick={showModal}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
@@ -211,11 +175,11 @@ const JobDetails = () => {
 </button>
 }
 {
-  job?.platform === 'email' && <button
-  disabled={!job?.status}
+  data?.job?.platform === 'email' && <button
+  disabled={!data?.job?.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
-  <a href={`mailto:${job?.company_email}`}>Email Us</a>
+  <a href={`mailto:${data?.job?.company_email}`}>Email Us</a>
   <img
     src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
     alt=""
@@ -223,11 +187,11 @@ const JobDetails = () => {
 </button>
 }
 {
-  job?.platform === 'external' && <button
-  disabled={!job?.status}
+  data?.job?.platform === 'external' && <button
+  disabled={!data?.job?.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
-  <a href={company?.website}>Our Website</a>
+  <a href={data?.company?.website}>Our Website</a>
   <img
     src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
     alt=""
@@ -241,7 +205,7 @@ const JobDetails = () => {
                   confirmLoading={confirmLoading}
                   onCancel={handleCancel}
                 >
-                  <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${job?.job_title}`}</h1>
+                  <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${data?.job?.job_title}`}</h1>
                   <div className="mb-10">
                     <label
                       for="resume"
@@ -272,7 +236,7 @@ const JobDetails = () => {
               <p className="text-[#767F8C] text-sm">
                 Job expire in:{" "}
                 <span className="text-[#E05151] font-medium">
-                  {job?.expiration_date}
+                  {data?.job?.expiration_date}
                 </span>
               </p>
             </div>
@@ -283,14 +247,14 @@ const JobDetails = () => {
                 <h1 className="text-black text-lg font-medium mb-3">
                   Job Description
                 </h1>
-                <Parser text={job?.description}/>
+                <Parser text={data?.job?.description}/>
               </div>
 
               <div className="flex flex-col items-start gap-2">
                 <h1 className="text-black text-lg font-medium mb-3">
                   Responsibilities
                 </h1>
-                <Parser text={job?.responsibilities}/>
+                <Parser text={data?.job?.responsibilities}/>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[#191F33]">Share this job:</span>
@@ -331,7 +295,7 @@ const JobDetails = () => {
                       Job Posted:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {job?.posted_date}
+                      {data?.job?.posted_date}
                     </span>
                   </div>
 
@@ -344,7 +308,7 @@ const JobDetails = () => {
                       Job expire in:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {job?.expiration_date}
+                      {data?.job?.expiration_date}
                     </span>
                   </div>
 
@@ -357,7 +321,7 @@ const JobDetails = () => {
                       Salaray:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      ${job?.job_salary_min}-{job?.job_salary_max}/month
+                      ${data?.job?.job_salary_min}-{data?.job?.job_salary_max}/month
                     </span>
                   </div>
 
@@ -370,7 +334,7 @@ const JobDetails = () => {
                       Location:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {job?.location}
+                      {data?.job?.location}
                     </span>
                   </div>
 
@@ -383,7 +347,7 @@ const JobDetails = () => {
                       Job type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {job?.job_type}
+                      {data?.job?.job_type}
                     </span>
                   </div>
 
@@ -396,7 +360,7 @@ const JobDetails = () => {
                       Experience:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {job?.experience}
+                      {data?.job?.experience}
                     </span>
                   </div>
 
@@ -406,22 +370,20 @@ const JobDetails = () => {
                       Education:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                    {job?.education}
+                    {data?.job?.education}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="border border-[#E7F0FA] px-10 py-5 w-full rounded-lg">
                 <div className="flex items-center gap-5 mb-10">
-                  <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                    {company?.company_name?.slice(0, 1)}
-                  </div>
+                <img src={data?.company?.company_logo} alt="" className="w-20 h-20 object-cover rounded-full"/>
                   <div className="flex flex-col items-start gap-2">
                     <h1 className="text-[#18191C] text-lg font-medium">
-                      {company?.company_name}
+                      {data?.company?.company_name}
                     </h1>
                     <p className="text-[#767F8C] text-sm">
-                      {company?.company_category}
+                      {data?.company?.company_category}
                     </p>
                   </div>
                 </div>
@@ -429,32 +391,32 @@ const JobDetails = () => {
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Founded in:</span>
                     <span className="text-[#18191C]">
-                      {company?.founded_in}
+                      {data?.company?.founded_in}
                     </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Organization type:</span>
                     <span className="text-[#18191C] uppercase">
-                      {company?.organization_type}
+                      {data?.company?.organization_type}
                     </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Company size:</span>
                     <span className="text-[#18191C]">
-                      {company?.company_size}
+                      {data?.company?.company_size}
                     </span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Phone:</span>
-                    <span className="text-[#18191C]">{company?.phone}</span>
+                    <span className="text-[#18191C]">{data?.company?.phone}</span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Email:</span>
-                    <span className="text-[#18191C]">{company?.email}</span>
+                    <span className="text-[#18191C]">{data?.company?.email}</span>
                   </div>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-[#5E6670]">Website:</span>
-                    <span className="text-[#18191C]">{company?.website}</span>
+                    <span className="text-[#18191C]">{data?.company?.website}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-5 ">
@@ -482,14 +444,14 @@ const JobDetails = () => {
               </div>
             </div>
           </div>
-{ relatedJobs && relatedJobs.length > 0 && 
+{ data?.related_jobs && data?.related_jobs.length > 0 && 
          <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
             <h1 className="text-[#18191C] text-[40px] font-medium">
-              Related Jobs ({relatedJobs && relatedJobs.length})
+              Related Jobs ({data?.related_jobs && data?.related_jobs.length})
             </h1>
             <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
-              {relatedJobs &&
-                relatedJobs.map((job) => <CardJob job={job} key={job._id} />)}
+              {data?.related_jobs &&
+                data?.related_jobs.map((job) => <CardJob job={job} key={job._id} />)}
             </div>
           </div>}
         </div>

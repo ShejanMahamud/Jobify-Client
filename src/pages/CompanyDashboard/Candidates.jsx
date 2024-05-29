@@ -57,9 +57,10 @@ const Candidates = () => {
     setInterviewModal(true);
   }
 
-  const handleChangeStatus = async (id, status) => {
+  const handleChangeStatus = async (id, status,email) => {
     const { data } = await axiosSecure.patch(`/applied_job/${id}`, {
       status: status,
+      email: email
     });
     if (data.modifiedCount > 0) {
       refetch();
@@ -202,7 +203,7 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "in-review"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "in-review")
+                              handleChangeStatus(candidate._id, "in-review",candidate?.email)
                             }
                           >
                             <MdVisibility className="text-xl text-orange-500" />
@@ -222,7 +223,7 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "interviewed"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "interviewed")
+                              handleChangeStatus(candidate._id, "interviewed",candidate?.email)
                             }
                           >
                             <MdDoneAll className="text-xl text-green-500" />
@@ -232,7 +233,7 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "offered"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "offered")
+                              handleChangeStatus(candidate._id, "offered",candidate?.email)
                             }
                           >
                             <MdLocalOffer className="text-xl text-[#daa520]" />
@@ -242,7 +243,7 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "hired"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "hired")
+                              handleChangeStatus(candidate._id, "hired",candidate?.email)
                             }
                           >
                             <MdPersonAdd className="text-xl text-[#008080]" />
@@ -252,7 +253,7 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "rejected"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "rejected")
+                              handleChangeStatus(candidate._id, "rejected",candidate?.email)
                             }
                           >
                             <MdCancel className="text-xl text-red-500" />
