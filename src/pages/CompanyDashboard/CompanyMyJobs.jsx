@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Modal } from "antd";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import {
   IoAddCircleOutline,
@@ -9,10 +9,10 @@ import {
   IoCloseCircleOutline,
   IoEyeOutline,
 } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 import useAxiosCommon from "../../hooks/useAxiosCommon";
 import useOpenJobs from "../../hooks/useOpenJobs";
 import useUserInfo from "../../hooks/useUserInfo";
-import { useNavigate } from "react-router-dom";
 
 const CompanyMyJobs = () => {
 const navigate = useNavigate()
@@ -160,12 +160,11 @@ const navigate = useNavigate()
                             <span>{job?.job_type}</span>
                             <span>•</span>
                             <span>
-                              {currentDate ===
-                              moment(job?.expiration_date).format(
-                                "MMMM D, YYYY"
-                              )
-                                ? "Today Last Date"
-                                : `${remainingDays} Days Remaining`}
+                            {currentDate === moment(job?.expiration_date).format("MMMM D, YYYY")
+     ? 'Today Last Date'
+     : remainingDays < 0
+     ? 'Expired Date'
+     : `${remainingDays} Days Remaining`}
                             </span>
                           </div>
                         </div>

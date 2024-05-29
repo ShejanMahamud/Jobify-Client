@@ -3,11 +3,13 @@ import {
   useElements,
   useStripe
 } from '@stripe/react-stripe-js';
+import moment from 'moment';
 import React, { memo } from 'react';
 import toast from 'react-hot-toast';
+import { axiosSecure } from '../../hooks/useAxiosSecure';
 import useUserInfo from '../../hooks/useUserInfo';
 
-const CheckoutForm = ({clientSecret,plan}) => {
+const CheckoutForm = ({clientSecret,plan,setPaymentModal}) => {
     const stripe = useStripe();
     const elements = useElements();
     const {userInfo} = useUserInfo()
@@ -37,8 +39,25 @@ const CheckoutForm = ({clientSecret,plan}) => {
           }
         }
       }) 
-      if(paymentIntent){
-        toast.success('Payment Success')
+
+      if(paymentIntent.status === 'succeeded'){
+        const {data} = await axiosSecure.post('/plans_stripe',{
+          user_email:userInfo?.email,
+          plan: plan,
+          price : parseInt(paymentIntent.amount / 100),
+          currency: paymentIntent.currency.toUpperCase(),
+          tran_id: paymentIntent.id,
+          status: true,
+          active: true,
+          payment_method: 'STRIPE',
+          purchase_date:  moment().format("MMMM D, YYYY"),
+          expiration_date: moment().add(1, 'month').format("MMMM D, YYYY")
+        })
+        if(data.insertedId){
+          event.target.reset()
+          toast.success('Payment Success')
+          setPaymentModal(false)
+        }
       }
     };
   

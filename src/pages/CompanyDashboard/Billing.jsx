@@ -13,7 +13,7 @@ const Billing = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const axiosSecure = useAxiosSecure();
-  const { companyInfo } = useCompanyInfo();
+  const { resume_visibility_limit,plan,job_limit,resume_access_limit,email,company_name,phone,location } = useCompanyInfo();
 
   const { data: planInfo } = useQuery({
     queryKey: ["plan_info"],
@@ -24,10 +24,10 @@ const Billing = () => {
   });
 
   const { data: allPlans } = useQuery({
-    queryKey: ["all_plans", companyInfo?.email],
+    queryKey: ["all_plans",  email],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
-        `/orders?email=${companyInfo?.email}&active=${true}`
+        `/orders?email=${email}&active=${true}`
       );
       return data;
     },
@@ -54,9 +54,9 @@ const Billing = () => {
   return (
     <div className="border-l border-[#e4e5e8] w-full min-h-screen px-10 py-10 font-inter">
       {!(
-        companyInfo?.plan === "premium" ||
-        companyInfo?.plan === "basic" ||
-        companyInfo?.plan === "standard"
+         plan === "premium" ||
+         plan === "basic" ||
+         plan === "standard"
       ) ? <Subscription />
       :
       (<>
@@ -66,7 +66,7 @@ const Billing = () => {
             <div className="w-full border border-[#e4e5e8] rounded-lg px-5 py-5 flex flex-col items-start gap-3">
               <h1 className="font-medium text-base">Current Plan</h1>
               <h1 className="text-lg font-medium uppercase">
-                {companyInfo?.plan}
+                { plan}
               </h1>
               <p className="text-sm text-[#767F8C]">
                 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
@@ -84,7 +84,7 @@ const Billing = () => {
             <div className="w-full border border-[#e4e5e8] rounded-lg px-5 py-5 flex flex-col items-start gap-3">
               <h1 className="font-medium text-base">Next Invoices</h1>
               <h1 className="text-2xl text-primary font-medium uppercase">
-                ৳ {planInfo?.price}
+                {planInfo?.currency === 'USD' ? '$' : '৳'} {planInfo?.price}
               </h1>
               <h1 className="font-medium text-base">
                 {planInfo?.expiration_date}
@@ -135,9 +135,9 @@ const Billing = () => {
                   />
                 </svg>
                 <span className="text-[#474C54]">
-                  {(companyInfo?.plan === "basic" && 5) ||
-                    (companyInfo?.plan === "standard" && 10) ||
-                    (companyInfo?.plan === "premium" && 20)}{" "}
+                  {( plan === "basic" && 5) ||
+                    ( plan === "standard" && 10) ||
+                    ( plan === "premium" && 20)}{" "}
                   Active Jobs
                 </span>
               </div>
@@ -164,7 +164,7 @@ const Billing = () => {
                     stroke-linejoin="round"
                   />
                 </svg>
-                <span className="text-[#474C54]">Urgents & Featured Jobs</span>
+                <span className="text-[#474C54]">Urgent & Featured Jobs</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg
@@ -218,9 +218,9 @@ const Billing = () => {
                 </svg>
                 <span className="text-[#474C54]">
                   Access & Saved{" "}
-                  {(companyInfo?.plan === "basic" && 10) ||
-                    (companyInfo?.plan === "standard" && 20) ||
-                    (companyInfo?.plan === "premium" && 50)}{" "}
+                  {( plan === "basic" && 10) ||
+                    ( plan === "standard" && 20) ||
+                    ( plan === "premium" && 50)}{" "}
                   Candidates
                 </span>
               </div>
@@ -248,9 +248,9 @@ const Billing = () => {
                   />
                 </svg>
                 <span className="text-[#474C54]">
-                  {(companyInfo?.plan === "basic" && 10) ||
-                    (companyInfo?.plan === "standard" && 20) ||
-                    (companyInfo?.plan === "premium" && 50)}{" "}
+                  {( plan === "basic" && 10) ||
+                    ( plan === "standard" && 20) ||
+                    ( plan === "premium" && 50)}{" "}
                   Days Resume Visibility
                 </span>
               </div>
@@ -286,19 +286,19 @@ const Billing = () => {
               <div className="flex items-center gap-2">
                 <IoCloseCircleOutline className="text-red-500 text-2xl" />
                 <span className="text-[#474C54]">
-                  {companyInfo?.job_limit} Active Jobs
+                  { job_limit} Active Jobs
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <IoCloseCircleOutline className="text-red-500 text-2xl" />
                 <span className="text-[#474C54]">
-                  {companyInfo?.resume_access_limit} Resume Access{" "}
+                  { resume_access_limit} Resume Access{" "}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <IoCloseCircleOutline className="text-red-500 text-2xl" />
                 <span className="text-[#474C54]">
-                  {companyInfo?.resume_visibility_limit} Days Resume Visibility{" "}
+                  { resume_visibility_limit} Days Resume Visibility{" "}
                 </span>
               </div>
             </div>
@@ -323,7 +323,7 @@ const Billing = () => {
                 <th className="font-normal">{plan?.tran_id}</th>
                 <td>{plan?.purchase_date}</td>
                 <td className="uppercase">{plan?.plan}</td>
-                <td>{plan?.price} BDT</td>
+                <td>{plan?.price} {plan?.currency}</td>
                 <td>
                   <button onClick={()=>setIsModalOpen(true)}>
                     <svg
@@ -382,15 +382,15 @@ const Billing = () => {
                 <div className="w-full flex items-center justify-between mt-5">
                     <div className="flex flex-col items-start gap-1">
                       <p className="text-[#474C54] text-sm">Invoice to</p>
-                      <h1 className="text-xl font-medium">{companyInfo?.company_name}</h1>
-                      <p className="text-[#474C54] text-sm">{companyInfo?.phone}</p>
-                      <p className="text-[#474C54] text-sm">{companyInfo?.location}</p>
-                      <p className="text-[#474C54] text-sm">{companyInfo?.email}</p>
+                      <h1 className="text-xl font-medium">{ company_name}</h1>
+                      <p className="text-[#474C54] text-sm">{ phone}</p>
+                      <p className="text-[#474C54] text-sm">{ location}</p>
+                      <p className="text-[#474C54] text-sm">{ email}</p>
                     </div>
                     <div className="flex flex-col items-start gap-1">
                       <p className="text-[#474C54] text-sm">Invoice No: {plan?.tran_id}</p>
                       <p className="text-[#474C54] text-sm">{plan?.purchase_date}</p>
-                      <h1 className="text-2xl font-medium text-primary">BDT {plan?.price}</h1>
+                      <h1 className="text-2xl font-medium text-primary">{plan?.currency === 'USD' ? 'USD' : 'BDT'} {plan?.price} </h1>
                       <p className=" text-lg text-primary font-medium">PAID</p>
                     </div>
                 </div>
@@ -418,7 +418,7 @@ const Billing = () => {
 <p>Total: {plan?.price}</p>
 </div>
 <div className="items-start flex-col gap-2 mt-5 flex text-lg font-medium">
-<p>Payment Method: SSL COMMERZ</p>
+<p>Payment Method: {plan?.payment_method}</p>
 </div>
 
 

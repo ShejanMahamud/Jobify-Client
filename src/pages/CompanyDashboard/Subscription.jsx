@@ -42,7 +42,7 @@ const Subscription = () => {
 const axiosSecure = useAxiosSecure()
 
     const handlePlans = async () => {
-        const {data} = await axiosSecure.post(`/plans`,{user_email: user?.email,plan:plan,price: price,purchase_date,expiration_date,currency:'BDT'})
+        const {data} = await axiosSecure.post(`/plans`,{user_email: user?.email,plan:plan,price: price,purchase_date,expiration_date,currency:'BDT',payment_method:'SSLCOMMERZ'})
         window.location.replace(data.url)
     }
 
@@ -65,7 +65,7 @@ const axiosSecure = useAxiosSecure()
       />
     </div>
     <Elements stripe={stripePromise}>
-      <CheckoutForm clientSecret={clientSecret} plan={plan}/>
+      <CheckoutForm clientSecret={clientSecret} plan={plan} setPaymentModal={setPaymentModal}/>
     </Elements>
         </div>,
       },
