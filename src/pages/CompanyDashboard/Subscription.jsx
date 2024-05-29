@@ -2,7 +2,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { Modal, Tabs } from 'antd'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { IoIosArrowRoundForward } from 'react-icons/io'
 import { IoCardOutline } from 'react-icons/io5'
 import useAxiosSecure from '../../hooks/useAxiosSecure'
@@ -11,12 +11,24 @@ import useUserInfo from '../../hooks/useUserInfo'
 import CheckoutForm from './CheckoutForm'
 
 const Subscription = () => {
+  const [clientSecret,setClientSecret] = useState()
   const [plan,setPlan] = useState(null)
   const [price,setPrice] = useState(0)
   const [paymentModal, setPaymentModal] = useState(false);
   const [method,setMethod] = useState(null)
   const stripePromise = loadStripe(import.meta.env.VITE_PK);
   const {usd} = useCurrency(price)
+
+    
+  useEffect(() => {
+      const getPaymentIntent = async () => {
+        const {data} = await axiosSecure.post(`/create-payment-intent`,{price:usd})
+        setClientSecret(data.clientSecret)
+      }
+      if(usd){
+        getPaymentIntent()
+      }
+  }, [usd]);
 
   const handlePaymentModal = (plan,price) => {
     setPaymentModal(true)
@@ -53,7 +65,7 @@ const axiosSecure = useAxiosSecure()
       />
     </div>
     <Elements stripe={stripePromise}>
-      <CheckoutForm />
+      <CheckoutForm clientSecret={clientSecret} plan={plan}/>
     </Elements>
         </div>,
       },
@@ -580,4 +592,4 @@ const axiosSecure = useAxiosSecure()
   )
 }
 
-export default Subscription
+export default memo(Subscription)

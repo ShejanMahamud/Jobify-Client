@@ -1,48 +1,49 @@
 import {
-    CardElement,
-    useElements,
-    useStripe
+  CardElement,
+  useElements,
+  useStripe
 } from '@stripe/react-stripe-js';
-import React from 'react';
+import React, { memo } from 'react';
+import toast from 'react-hot-toast';
+import useUserInfo from '../../hooks/useUserInfo';
 
-const CheckoutForm = () => {
+const CheckoutForm = ({clientSecret,plan}) => {
     const stripe = useStripe();
     const elements = useElements();
-  
-    const handleSubmit = async (event) => {
-      // Block native form submission.
+    const {userInfo} = useUserInfo()
+    const handleStripePayment = async (event) => {
       event.preventDefault();
   
       if (!stripe || !elements) {
-        // Stripe.js has not loaded yet. Make sure to disable
-        // form submission until Stripe.js has loaded.
         return;
       }
   
-      // Get a reference to a mounted CardElement. Elements knows how
-      // to find your CardElement because there can only ever be one of
-      // each type of element.
       const card = elements.getElement(CardElement);
   
       if (card == null) {
         return;
       }
-  
-      // Use your card Element with other Stripe.js APIs
-      const {error, paymentMethod} = await stripe.createPaymentMethod({
+
+      const {paymentMethod} = await stripe.createPaymentMethod({
         type: 'card',
         card,
       });
-  
-      if (error) {
-        console.log('[error]', error);
-      } else {
-        console.log('[PaymentMethod]', paymentMethod);
+      const {paymentIntent,error} = await stripe.confirmCardPayment(clientSecret,{
+        payment_method: {
+          card: card,
+          billing_details:{
+            email: userInfo?.email,
+            name: userInfo?.name,
+          }
+        }
+      }) 
+      if(paymentIntent){
+        toast.success('Payment Success')
       }
     };
   
     return (
-        <form onSubmit={handleSubmit} className='w-full'>
+        <form onSubmit={handleStripePayment} className='w-full'>
         <h1 className="text-sm text-[#18191C] mb-2">Credit Card</h1>
         <div className="p-4 border border-[#E4E5E8] rounded-lg">
           <CardElement
@@ -63,7 +64,7 @@ const CheckoutForm = () => {
           />
         </div>
 
-        <button type="submit"  disabled={!stripe} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center justify-center gap-3 w-full mt-5">
+        <button type="submit"  disabled={!stripe || !clientSecret} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center justify-center gap-3 w-full mt-5">
 <span>Pay Now</span>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -75,5 +76,5 @@ const CheckoutForm = () => {
     );
   };
 
-export default CheckoutForm
+export default memo(CheckoutForm)
 

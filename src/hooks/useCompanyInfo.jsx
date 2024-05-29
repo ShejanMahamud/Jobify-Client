@@ -14,7 +14,7 @@ const {data:companyInfo,isPending:companyInfoPending,refetch:companyInfoRefetch}
         return data[0]
     }
 })
-return {companyInfo,companyInfoPending,companyInfoRefetch}
+return {...companyInfo,companyInfoPending,companyInfoRefetch}
 }
 
 export default useCompanyInfo

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { memo } from 'react';
 import { IoCheckmark, IoCloseCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import Expire from '../../Utils/Expire';
@@ -198,4 +198,4 @@ if(openJobsPending || isLoading){
   )
 }
 
-export default CompanyOverview
+export default memo(CompanyOverview)

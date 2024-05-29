@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { Modal } from 'antd';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { AiOutlineUserSwitch } from 'react-icons/ai';
 import useAxiosCommon from '../../hooks/useAxiosCommon';
@@ -9,11 +9,11 @@ import useCompanyInfo from '../../hooks/useCompanyInfo';
 const CompanyProfile = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 const axiosCommon = useAxiosCommon()
-const {companyInfo} = useCompanyInfo();
+const {company_logo,description,company_category,company_vision,benefits,website,phone,email,founded_in,organization_type,company_size,location,company_name} = useCompanyInfo();
 
 const { mutateAsync:handlePromote } = useMutation({
     mutationFn: async (promote) => {
-      const { data } = await axiosCommon.patch(`/company/${companyInfo?.email}`, { [promote]: true })
+      const { data } = await axiosCommon.patch(`/company/${ email}`, { [promote]: true })
       if (!data.success) {
         toast.error('Something Went Wrong...')
       }
@@ -46,17 +46,17 @@ const { mutateAsync:handlePromote } = useMutation({
       </div>
       <div className="w-[90%] mx-auto bg-white relative z-50 py-5 px-5 rounded-lg flex items-center justify-between -mt-16 border border-[#E4E5E8]">
       <div className="flex items-center gap-5">
-      <img src={companyInfo?.company_logo} alt="" className='h-20 w-20 object-cover rounded-full border border-primary'/>
+      <img src={company_logo} alt="" className='h-20 w-20 object-cover rounded-full border border-primary'/>
               <div className="flex flex-col items-start">
-                <h1 className="text-[#18191C] font-medium text-2xl">{companyInfo?.company_name}</h1>
-                <span className="text-[#5E6670]">{companyInfo?.company_category}</span>
+                <h1 className="text-[#18191C] font-medium text-2xl">{ company_name}</h1>
+                <span className="text-[#5E6670]">{ company_category}</span>
               </div>
       </div>
               <button onClick={()=>setIsModalOpen(true)} className="bg-primary text-white font-medium text-lg px-6 py-3 rounded-lg">Promote Company</button>
               <Modal width={600} footer={false} open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
 
           <form onSubmit={handlePromoteCompany} className='w-full mb-5'>
-            <h1 className='text-2xl font-medium mb-3'>Promote Company: {companyInfo?.company_name}</h1>
+            <h1 className='text-2xl font-medium mb-3'>Promote Company: { company_name}</h1>
             <p className='text-[#5E6670] mb-3'>Fusce commodo, sem non tempor convallis, sapien turpis bibendum turpis, non pharetra nisl velit pulvinar lectus. Suspendisse varius at nisl aliquam. </p>
             <div className='w-full grid grid-cols-1 row-auto items-center gap-5'>
               <div className='w-full bg-[#f1f2f480] rounded-lg px-5 py-5 hover:bg-[#E7F0FA]'>
@@ -95,14 +95,14 @@ const { mutateAsync:handlePromote } = useMutation({
             <div className="w-full flex flex-col items-start gap-12">
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Description</h1>
-                    <p className="text-[#5E6670]">{companyInfo?.description}</p>
+                    <p className="text-[#5E6670]">{ description}</p>
                 </div>
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Benefits</h1>
                     <ul className="text-[#5E6670] list-disc *:mb-3 ml-5">
-                  {companyInfo?.benefits &&
-                    companyInfo?.benefits.map((benefit, index) => (
+                  { benefits &&
+                     benefits.map((benefit, index) => (
                       <li key={index}>{benefit}</li>
                     ))}
                 </ul>
@@ -110,7 +110,7 @@ const { mutateAsync:handlePromote } = useMutation({
 
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Company Vision</h1>
-                    <p className="text-[#5E6670]">{companyInfo?.company_vision}</p>
+                    <p className="text-[#5E6670]">{ company_vision}</p>
                 </div>
 
                 <div className="flex items-center gap-2 w-full">
@@ -140,7 +140,7 @@ const { mutateAsync:handlePromote } = useMutation({
                      Founded In:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {companyInfo?.founded_in}
+                      { founded_in}
                     </span>
                   </div>
 
@@ -150,7 +150,7 @@ const { mutateAsync:handlePromote } = useMutation({
                       Organization Type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {companyInfo?.organization_type}
+                      { organization_type}
                     </span>
                   </div>
 
@@ -160,7 +160,7 @@ const { mutateAsync:handlePromote } = useMutation({
                       Team Size:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium uppercase">
-                      {companyInfo?.company_size}
+                      { company_size}
                     </span>
                   </div>
 
@@ -198,7 +198,7 @@ const { mutateAsync:handlePromote } = useMutation({
                       Location:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {companyInfo?.location}
+                      { location}
                     </span>
                   </div>
 
@@ -211,7 +211,7 @@ const { mutateAsync:handlePromote } = useMutation({
                     <img src="https://gist.github.com/ShejanMahamud/1b527c1461bd70ee259aad5a3465cc2f/raw/caf2be0686385bb7bc9dcaaa3cbf5fbc97cbea95/globe.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Website</h1>
-                    <p className="font-medium text-[#18191C]">{companyInfo?.website}</p>
+                    <p className="font-medium text-[#18191C]">{ website}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -219,7 +219,7 @@ const { mutateAsync:handlePromote } = useMutation({
                     <img src="https://gist.github.com/ShejanMahamud/f73c44e6f5a5eb8b101e012a4b9ba526/raw/47152dabb6afa9e32b31a784329559a0be53d611/phone.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Phone</h1>
-                    <p className="font-medium text-[#18191C]">{companyInfo?.phone}</p>
+                    <p className="font-medium text-[#18191C]">{ phone}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -227,7 +227,7 @@ const { mutateAsync:handlePromote } = useMutation({
                     <img src="https://gist.github.com/ShejanMahamud/2374104d4a783130c5540f1fb53d5013/raw/d2de14c9c15942c354ae03fd2ac8dca6cc3a1eb9/email.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Email</h1>
-                    <p className="font-medium text-[#18191C]">{companyInfo?.email}</p>
+                    <p className="font-medium text-[#18191C]">{ email}</p>
                     </div>
                 </div>
                 </div>
@@ -258,4 +258,4 @@ const { mutateAsync:handlePromote } = useMutation({
   )
 }
 
-export default CompanyProfile
+export default memo(CompanyProfile)
