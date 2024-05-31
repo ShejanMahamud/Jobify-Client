@@ -2,7 +2,8 @@ import React from 'react';
 import { FiPlusCircle } from "react-icons/fi";
 import { IoBookmarkOutline, IoBriefcaseOutline, IoSettingsOutline } from "react-icons/io5";
 import { LiaWalletSolid } from "react-icons/lia";
-import { LuUser2, LuUserCircle2 } from "react-icons/lu";
+import { LuUserCircle2 } from "react-icons/lu";
+import { PiUsers } from "react-icons/pi";
 import { RiStackFill } from "react-icons/ri";
 import { NavLink, Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -91,10 +92,10 @@ const CompanyDashboard = () => {
                 ? "bg-[#E7F0FA] text-primary w-full flex items-center gap-3 py-3 px-3"
                 : "w-full flex items-center gap-3 py-3 px-3 text-[#767F8C]"
             }
-            to={"/dashboard/company/candidates"}
+            to={"/dashboard/company/team"}
           >
-            <LuUser2 className='text-xl'/>
-          <span className='text-base'>Candidates</span>
+            <PiUsers className='text-xl'/>
+          <span className='text-base'>Team</span>
           </NavLink>
           <NavLink
             className={({ isActive }) =>

@@ -202,7 +202,7 @@ const navigate = useNavigate()
                           }
                           className="bg-primary px-2 py-2 rounded-sm text-white font-medium flex items-center gap-3 text-base"
                         >
-                          <span>View Details</span>
+                          <span>Candidates</span>
                         </button>
                         <button
                           onClick={() =>

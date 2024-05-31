@@ -18,6 +18,7 @@ import CompanyMyJobs from '../pages/CompanyDashboard/CompanyMyJobs';
 import CompanyOverview from '../pages/CompanyDashboard/CompanyOverview';
 import CompanyPostJob from '../pages/CompanyDashboard/CompanyPostJob';
 import CompanyProfile from '../pages/CompanyDashboard/CompanyProfile';
+import CompanyTeam from '../pages/CompanyDashboard/CompanyTeam';
 import CompanyFundingInfo from '../pages/CompanyDashboard/Settings/CompanyFundingInfo';
 import CompanySettings from '../pages/CompanyDashboard/Settings/CompanySettings';
 import CompanyDetails from '../pages/CompanyDetails';
@@ -153,6 +154,10 @@ const Route = createBrowserRouter([
         {
           path: 'billing',
           element: <Billing/>
+        },
+        {
+          path: 'team',
+          element: <CompanyTeam/>
         },
         {
           path: 'settings',

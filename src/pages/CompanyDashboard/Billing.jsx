@@ -8,7 +8,7 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useCompanyInfo from "../../hooks/useCompanyInfo";
 import Subscription from "./Subscription";
-
+//if company hired then that hired perosn will be add on team section of team section
 const Billing = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);

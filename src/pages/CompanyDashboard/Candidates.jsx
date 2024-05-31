@@ -20,18 +20,20 @@ import useJoditConfigs from "../../hooks/useJoditConfigs";
 import Parser from "./../../Utils/Parser";
 
 const Candidates = () => {
-  const {config,editor} = useJoditConfigs()
-  const [otherInfo,setOtherInfo] = useState(null)
+  const { config, editor } = useJoditConfigs();
+  const [otherInfo, setOtherInfo] = useState(null);
   const [expandedCandidateId, setExpandedCandidateId] = useState(null);
   const [coverModal, setCoverLetter] = useState(false);
   const [resumeModal, setResumeModal] = useState(false);
-  const [interviewModal,setInterviewModal] = useState(false)
+  const [interviewModal, setInterviewModal] = useState(false);
+  const [hiredModal, setHiredModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const axiosSecure = useAxiosSecure();
+
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading, refetch } = useCandidates(id)
+  const { data, isLoading, refetch } = useCandidates(id);
 
   if (isLoading) {
     return (
@@ -55,51 +57,61 @@ const Candidates = () => {
   const handleInterviewScheduledModal = (candidate) => {
     setSelectedCandidate(candidate);
     setInterviewModal(true);
-  }
+  };
 
-  const handleChangeStatus = async (id,status,email) => {
+  const handleHiredModal = (candidate) => {
+    setSelectedCandidate(candidate);
+    setHiredModal(true);
+  };
+
+  const handleChangeStatus = async (id, status, email) => {
     const { data } = await axiosSecure.patch(`/change_status/${id}`, {
       status: status,
-      email: email
+      email: email,
     });
-    if (data.modifiedCount > 0){
+    if (data.modifiedCount > 0) {
       refetch();
       toast.success("Status Changed!");
     }
   };
 
-
-  const handleInterviewScheduled = async (e, id,email) => {
+  const handleInterviewScheduled = async (e, id, email) => {
     e.preventDefault();
     const interview_time = e.target.time.value;
     const interview_date = e.target.date.value;
     const interview_location = e.target.location?.value;
     const interview_link = e.target.meet?.value;
     const interview_query = otherInfo;
-  
+
     let interview_info = {
       ...(interview_time && { interview_time }),
       ...(interview_date && { interview_date }),
       ...(interview_query && { interview_query }),
-      status: 'scheduled'
+      status: "scheduled",
     };
-  
-    if (selectedCandidate.job_nature === 'On Site' || selectedCandidate.job_nature === 'Hybrid') {
+
+    if (
+      selectedCandidate.job_nature === "On Site" ||
+      selectedCandidate.job_nature === "Hybrid"
+    ) {
       interview_info = {
         ...interview_info,
-        ...(interview_location && { interview_location })
+        ...(interview_location && { interview_location }),
       };
-    } else if (selectedCandidate.job_nature === 'Remote') {
+    } else if (selectedCandidate.job_nature === "Remote") {
       interview_info = {
         ...interview_info,
-        ...(interview_link && { interview_link })
+        ...(interview_link && { interview_link }),
       };
     }
-  
-    const { data } = await axiosSecure.patch(`/interview/${id}`, {...interview_info,email});
+
+    const { data } = await axiosSecure.patch(`/interview/${id}`, {
+      ...interview_info,
+      email,
+    });
     if (data.modifiedCount > 0) {
-      refetch()
-      setInterviewModal(false)
+      refetch();
+      setInterviewModal(false);
       toast.success("Interview Added!");
     }
   };
@@ -203,9 +215,20 @@ const Candidates = () => {
                       <div className="flex items-center gap-3 w-full">
                         <Tooltip title="In Review">
                           <button
-                            disabled={candidate?.status === "in-review"}
+                            disabled={
+                              candidate?.status === "in-review" ||
+                              candidate?.status === "scheduled" ||
+                              candidate?.status === "interviewed" ||
+                              candidate?.status === "offered" ||
+                              candidate?.status === "hired" ||
+                              candidate?.status === "rejected"
+                            }
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "in-review",candidate?.email)
+                              handleChangeStatus(
+                                candidate._id,
+                                "in-review",
+                                candidate?.email
+                              )
                             }
                           >
                             <MdVisibility className="text-xl text-orange-500" />
@@ -213,7 +236,13 @@ const Candidates = () => {
                         </Tooltip>
                         <Tooltip title="Interview Scheduled">
                           <button
-                          disabled={candidate?.status === "scheduled"}
+                            disabled={
+                              candidate?.status === "scheduled" ||
+                              candidate?.status === "interviewed" ||
+                              candidate?.status === "offered" ||
+                              candidate?.status === "hired" ||
+                              candidate?.status === "rejected"
+                            }
                             onClick={() =>
                               handleInterviewScheduledModal(candidate)
                             }
@@ -223,9 +252,18 @@ const Candidates = () => {
                         </Tooltip>
                         <Tooltip title="Interviewed">
                           <button
-                            disabled={candidate?.status === "interviewed"}
+                            disabled={
+                              candidate?.status === "interviewed" ||
+                              candidate?.status === "offered" ||
+                              candidate?.status === "hired" ||
+                              candidate?.status === "rejected"
+                            }
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "interviewed",candidate?.email)
+                              handleChangeStatus(
+                                candidate._id,
+                                "interviewed",
+                                candidate?.email
+                              )
                             }
                           >
                             <MdDoneAll className="text-xl text-green-500" />
@@ -233,9 +271,17 @@ const Candidates = () => {
                         </Tooltip>
                         <Tooltip title="Offered">
                           <button
-                            disabled={candidate?.status === "offered"}
+                            disabled={
+                              candidate?.status === "offered" ||
+                              candidate?.status === "hired" ||
+                              candidate?.status === "rejected"
+                            }
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "offered",candidate?.email)
+                              handleChangeStatus(
+                                candidate._id,
+                                "offered",
+                                candidate?.email
+                              )
                             }
                           >
                             <MdLocalOffer className="text-xl text-[#daa520]" />
@@ -243,10 +289,11 @@ const Candidates = () => {
                         </Tooltip>
                         <Tooltip title="Hired">
                           <button
-                            disabled={candidate?.status === "hired"}
-                            onClick={() =>
-                              handleChangeStatus(candidate._id, "hired",candidate?.email)
+                            disabled={
+                              candidate?.status === "hired" ||
+                              candidate?.status === "rejected"
                             }
+                            onClick={() => handleHiredModal(candidate)}
                           >
                             <MdPersonAdd className="text-xl text-[#008080]" />
                           </button>
@@ -255,7 +302,11 @@ const Candidates = () => {
                           <button
                             disabled={candidate?.status === "rejected"}
                             onClick={() =>
-                              handleChangeStatus(candidate._id, "rejected",candidate?.email)
+                              handleChangeStatus(
+                                candidate._id,
+                                "rejected",
+                                candidate?.email
+                              )
                             }
                           >
                             <MdCancel className="text-xl text-red-500" />
@@ -325,61 +376,87 @@ const Candidates = () => {
         onCancel={() => setInterviewModal(false)}
       >
         {/* want to add task submission feature */}
-        {selectedCandidate && <form onSubmit={(e)=>handleInterviewScheduled(e,selectedCandidate?._id,selectedCandidate?.email)} className="my-5 w-full flex flex-col items-start gap-3">
-          {
-            selectedCandidate?.job_nature === 'On Site' && <div className='flex flex-col items-start gap-2 w-full mb-3'>
-            <h1 className='text-sm text-[#18191C]'>Location</h1>
-            <input type="text" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='location' placeholder='Location'/>
+        {selectedCandidate && (
+          <form
+            onSubmit={(e) =>
+              handleInterviewScheduled(
+                e,
+                selectedCandidate?._id,
+                selectedCandidate?.email
+              )
+            }
+            className="my-5 w-full flex flex-col items-start gap-3"
+          >
+            {selectedCandidate?.job_nature === "On Site" && (
+              <div className="flex flex-col items-start gap-2 w-full mb-3">
+                <h1 className="text-sm text-[#18191C]">Location</h1>
+                <input
+                  type="text"
+                  className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+                  name="location"
+                  placeholder="Location"
+                />
+              </div>
+            )}
+            {selectedCandidate?.job_nature === "Remote" && (
+              <div className="flex flex-col items-start gap-2 w-full mb-3">
+                <h1 className="text-sm text-[#18191C]">Meeting Link</h1>
+                <input
+                  type="text"
+                  className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+                  name="meet"
+                  placeholder="Meeting Link"
+                />
+              </div>
+            )}
+            {selectedCandidate?.job_nature === "Hybrid" && (
+              <div className="flex flex-col items-start gap-2 w-full mb-3">
+                <h1 className="text-sm text-[#18191C]">Location</h1>
+                <input
+                  type="text"
+                  className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+                  name="location"
+                  placeholder="Location"
+                />
+              </div>
+            )}
+            <div className="flex flex-col items-start gap-2 w-full">
+              <h1 className="text-sm text-[#18191C]">Interview Date</h1>
+              <DatePicker
+                required
+                name="date"
+                format="YYYY-MM-DD"
+                className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+                placeholder="Interview Date"
+              />
             </div>
-          }
-          {
-            selectedCandidate?.job_nature === 'Remote' && <div className='flex flex-col items-start gap-2 w-full mb-3'>
-            <h1 className='text-sm text-[#18191C]'>Meeting Link</h1>
-            <input type="text" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='meet' placeholder='Meeting Link'/>
+            <div className="flex flex-col items-start gap-2 w-full">
+              <h1 className="text-sm text-[#18191C]">Interview Time</h1>
+              <TimePicker
+                required
+                name="time"
+                format="h:mm a"
+                use12Hours
+                className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+                placeholder="Interview Time"
+                // onChange={(time)=> setTime(moment(time).format('h:mm a'))}
+              />
             </div>
-          }
-          {
-            selectedCandidate?.job_nature === 'Hybrid' && <div className='flex flex-col items-start gap-2 w-full mb-3'>
-            <h1 className='text-sm text-[#18191C]'>Location</h1>
-            <input type="text" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none' name='location' placeholder='Location'/>
-            </div>
-          }
-    <div className="flex flex-col items-start gap-2 w-full">
-      <h1 className="text-sm text-[#18191C]">Interview Date</h1>
-      <DatePicker
-      required
-        name="date"
-        format="YYYY-MM-DD"
-        className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
-        placeholder="Interview Date"
-      />
-    </div>
-    <div className="flex flex-col items-start gap-2 w-full">
-      <h1 className="text-sm text-[#18191C]">Interview Time</h1>
-      <TimePicker
-      required
-      name="time"
-      format="h:mm a"
-      use12Hours
-      className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
-      placeholder="Interview Time"
-      // onChange={(time)=> setTime(moment(time).format('h:mm a'))}
-    />
-    </div>
 
-    <div className='flex flex-col items-start gap-2 col-span-3 w-full'>
-  <h1 className='text-sm text-[#18191C]'>Other Query</h1>
-  <JoditEditor
+            <div className="flex flex-col items-start gap-2 col-span-3 w-full">
+              <h1 className="text-sm text-[#18191C]">Other Query</h1>
+              <JoditEditor
                 ref={editor}
                 config={config}
                 onChange={(newContent) => setOtherInfo(newContent)}
-                
               />
-  </div>
+            </div>
 
-    <button className="bg-primary text-white px-4 py-2 rounded-md">Submit </button>
-      
-          </form>}
+            <button className="bg-primary text-white px-4 py-2 rounded-md">
+              Submit{" "}
+            </button>
+          </form>
+        )}
       </Modal>
       <Modal
         width={600}
@@ -388,9 +465,95 @@ const Candidates = () => {
         open={resumeModal}
         onCancel={() => setResumeModal(false)}
       >
-        {selectedCandidate && (
-          <PDFViewer url={selectedCandidate?.resume}/>
-        )}
+        {selectedCandidate && <PDFViewer url={selectedCandidate?.resume} />}
+      </Modal>
+      <Modal
+        width={600}
+        height={500}
+        footer={false}
+        open={hiredModal}
+        onCancel={() => setHiredModal(false)}
+      >
+        <form>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Job Type</h1>
+            <select
+              required
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="job_type"
+            >
+              <option value="Full-Time">Full-Time</option>
+              <option value="Part-Time">Part-Time</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Position Title</h1>
+            <input
+              type="text"
+              required
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="position_title"
+              placeholder="Position Title"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Department</h1>
+            <input
+              type="text"
+              required
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="department"
+              placeholder="Department"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Supervisor</h1>
+            <input
+              type="text"
+              required
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="supervisor"
+              placeholder="Supervisor"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Start Date</h1>
+            <DatePicker
+              required
+              name="start_date"
+              format="YYYY-MM-DD"
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              placeholder="Start Date"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Salary</h1>
+            <input
+              type="number"
+              required
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="salary"
+              placeholder="Salary"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 col-span-3 w-full mb-3">
+            <h1 className="text-sm text-[#18191C]">Additional Benefits</h1>
+            <textarea
+              className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+              name="benefits"
+              placeholder="Additional Benefits"
+            />
+          </div>
+          <div className="flex flex-col items-start gap-2 col-span-3 w-full">
+            <h1 className="text-sm text-[#18191C]">Other Information</h1>
+            <JoditEditor
+              ref={editor}
+              config={config}
+              onChange={(newContent) => setOtherInfo(newContent)}
+            />
+          </div>
+        </form>
       </Modal>
     </div>
   );

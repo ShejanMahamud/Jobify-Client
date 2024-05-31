@@ -9,6 +9,7 @@ import useCompanyInfo from "../../hooks/useCompanyInfo";
 import useUserInfo from "../../hooks/useUserInfo";
 import useJoditConfigs from './../../hooks/useJoditConfigs';
 import Subscription from "./Subscription";
+const { RangePicker } = DatePicker;
 //Will use multi step post job form later
 const CompanyPostJob = () => {
     const {userInfo} = useUserInfo()
@@ -16,7 +17,10 @@ const CompanyPostJob = () => {
     const [description, setDescription] = useState("");
     const [responsibility, setResponsibility] = useState('')
     const axiosSecure = useAxiosSecure();
-    const {companyInfo} = useCompanyInfo()
+    const {companyInfo} = useCompanyInfo();
+    const [jobType,setJobType] = useState(null)
+    const [internDate,setInternDate] = useState([])
+
 
   const {mutateAsync} = useMutation({
       mutationFn: async jobInfo => {
@@ -58,11 +62,15 @@ const CompanyPostJob = () => {
       const company_name = userInfo.name;
       const company_email = userInfo.email;
       const featured = false;
+      const internship_period_start = internDate[0]
+      const internship_period_end = internDate[1]
+  
 
-      const jobInfo = {job_title,job_tags,job_role,job_salary_min,job_salary_max,job_salary_type,education,experience,job_nature,job_type,vacancies,expiration_date,location,job_level,category,description,responsibilities,platform,posted_date,company_name,company_email,featured}
+      const jobInfo = {job_title,job_tags,job_role,job_salary_min,job_salary_max,job_salary_type,education,experience,job_nature,job_type,vacancies,expiration_date,location,job_level,category,description,responsibilities,platform,posted_date,company_name,company_email,featured, ...(jobType === 'Internship' && internship_period_start && {internship_period_start}),...(jobType === 'Internship' && internship_period_end && {internship_period_end})}
       await mutateAsync(jobInfo)
       }
       catch(error){
+        console.log(error)
         toast.error('Something Went Wrong!')
       }
 
@@ -196,15 +204,30 @@ const CompanyPostJob = () => {
       required
         name="job_type"
         className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+        onChange={(e)=>setJobType(e.target.value)}
       >
         <option value="select" selected disabled>
           Select
         </option>
         <option value="Full-Time">Full-Time</option>
         <option value="Part-Time">Part-Time</option>
+        <option value="Internship">Internship</option>
         <option value="Contractual">Contractual</option>
       </select>
     </div>
+    {
+      jobType === 'Internship' && <div className="flex flex-col items-start gap-2">
+      <h1 className="text-sm text-[#18191C] mb-2">Internship Period</h1>
+      
+      <RangePicker
+      required
+        className="px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none"
+        onChange={(values) => {
+          setInternDate(values.map(date => new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })));
+        }}
+      />
+    </div>
+    }
     <div className="flex flex-col items-start gap-2">
       <h1 className="text-sm text-[#18191C] mb-2">Vacancies</h1>
       <select
@@ -259,21 +282,16 @@ const CompanyPostJob = () => {
   <h1 className='text-sm text-[#18191C] mb-2'>Job Category</h1>
   <select required name="category" className='px-4 py-3 rounded-lg bg-transparent w-full border border-[#E4E5E8] focus:outline-none'>
   <option value="select" disabled selected>Select</option>
-      <option value="Tech">Tech</option>
-      <option value="Developer">Developer</option>
-      <option value="Designer">Designer</option>
-      <option value="Marketing">Marketing</option>
-      <option value="Sales">Sales</option>
-      <option value="Customer Support">Customer Support</option>
-      <option value="Finance">Finance</option>
-      <option value="Human Resources">Human Resources</option>
-      <option value="Legal">Legal</option>
-      <option value="Operations">Operations</option>
-      <option value="Product Management">Product Management</option>
-      <option value="Project Management">Project Management</option>
-      <option value="Research and Development">Research and Development</option>
-      <option value="Others">Others</option>
-  </select>
+  <option value="Code & Programing">Code & Programing</option>
+  <option value="Digital Marketing">Digital Marketing</option>
+  <option value="Video & Animation">Video & Animation</option>
+  <option value="Graphics Design">Graphics Design</option>
+  <option value="Music & Audio">Music & Audio</option>
+  <option value="Account & Finance">Account & Finance</option>
+  <option value="Health & Care">Health & Care</option>
+  <option value="Data & Science">Data & Science</option>
+</select>
+
   </div>
   <div className="w-full col-span-3 bg-[#F1F2F4] rounded-lg px-5 py-5 grid grid-cols-3 row-auto items-stretch gap-5">
   <h1 className="text-lg text-[#18191C] font-medium my-5 col-span-3">
