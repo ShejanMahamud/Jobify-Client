@@ -30,24 +30,14 @@ const handleEmailPasswordLogin = async (e) => {
   e.preventDefault();
   const email = e.target.email.value;
   const password = e.target.password.value;
-  const account = e.target.account.value;
-// TODO: ROLE BASED CONTROL AND ROLE BASED NAVIGATE & PRIVATE ROUTE AND CANDIDATE ONLY ACCESS ON HIS DASHBOARD & POLISH THE ACCESS
   try{
-    const {data:auth} = await axiosCommon.get(`/role/${email}`)
-    if(auth.role !== account){
-      return toast.error('Please Select Correct Account Type!')
-    }
        await emailPasswordLogin(email,password)
-       const {data:cookie} = await axiosSecure.post(`/auth`,{email:email,role:account})
-       if(!cookie.success){
-        return toast.error('Suspicious Login!')
-      }
        toast.success('Successfully Logged In!')
        setTimeout(()=>{
          navigate(location?.state || '/')
        },1000)
   }
-  catch{
+  catch(error){
     toast.error('Something Went Wrong!')
   }
 }
@@ -71,22 +61,6 @@ const handleEmailPasswordLogin = async (e) => {
 
             <input type="password" name="password" required class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg  focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
         </div>
-        <div className="mt-6">
-            <label for="email" class="block text-sm text-gray-800 ">Who Are You?</label>
-            <select
-                required
-                name="account"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 col-span-2"
-              >
-                <option value="Select Type" disabled selected>
-                  Select Type
-                </option>
-                <option value="company">Company</option>
-                <option value="candidate">Candidate</option>
-                <option value="admin">Admin</option>
-              </select>
-        </div>
-
         <div class="mt-6">
             <button type="submit" class="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-primary rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
                 Sign In

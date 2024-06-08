@@ -48,7 +48,6 @@ const Route = createBrowserRouter([
         },
         {
           path: '/find_jobs',
-          loader: ()=> fetch(`http://localhost:5948/jobs_count`),
           element: <FindJob/>
         },
         {

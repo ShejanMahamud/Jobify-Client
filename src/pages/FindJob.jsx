@@ -1,22 +1,21 @@
+import { useQuery } from "@tanstack/react-query";
 import { Breadcrumb } from "antd";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useLoaderData } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
-import useAxiosSecure from "../hooks/useAxiosSecure";
+import useAxiosCommon from "../hooks/useAxiosCommon";
 import Job from './../Utils/Job';
 
 const FindJob = () => {
-  const axiosSecure = useAxiosSecure();
+
+  const axiosCommon = useAxiosCommon()
   const [jobs,setJobs] = useState([])
-  const [loading, setLoading] = useState(true)
   const [showCard, setShowCard] = useState(false);
   const [itemsPerPage,setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1)
-  const {jobsCount} = useLoaderData();
-  const numberOfPages = Math.ceil(jobsCount / itemsPerPage)
+  const [count, setCount] = useState(0)
+  const numberOfPages = Math.ceil(count / itemsPerPage)
 
   const pages = [...Array(numberOfPages).keys()]
 
@@ -35,19 +34,29 @@ const FindJob = () => {
       setCurrentPage(currentPage+1)
     }
   }
-  useEffect(()=>{
-    setLoading(true)
-    const getJobs = async() => {
-      const {data} = await axiosSecure.get(`/search?page=${currentPage}&limit=${itemsPerPage}`)
-      setJobs(data);
-      setLoading(false)
+  // useEffect(()=>{
+  //   setLoading(true)
+  //   const getJobs = async() => {
+  //     const {data} = await axiosCommon.get()
+  //     setJobs(data);
+  //     setLoading(false)
+  //   }
+  //   getJobs();
+  // },[currentPage,itemsPerPage])
+
+  const {data,isPending} = useQuery({
+    queryKey: ['find_job',currentPage,itemsPerPage],
+    queryFn: async () => {
+      const {data} = await axiosCommon.get(`/search?page=${currentPage}&limit=${itemsPerPage}`)
+      setJobs(data.jobs)
+      setCount(data.jobsCount)
+      return data
     }
-    getJobs();
-  },[currentPage,itemsPerPage])
+  })
 
 const handleSearch = async (e) => {
   e.preventDefault();
-  let baseURL = 'http://localhost:5948/search?'
+  let baseURL = `/search?`
 
   const title = e.target.title.value;
   const type = e.target.type.value;
@@ -68,7 +77,7 @@ const handleSearch = async (e) => {
   }
 
   try{
-    const {data} = await axios.get(baseURL)
+    const {data} = await axiosCommon.get(baseURL)
     setJobs(data)
   }
   catch(error){
@@ -77,7 +86,7 @@ const handleSearch = async (e) => {
 
 }
 
-if(loading){
+if(isPending){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>

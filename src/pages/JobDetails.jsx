@@ -106,7 +106,7 @@ const JobDetails = () => {
               <li>/</li>
               <li>Find Jobs</li>
               <li>/</li>
-              <li>{data?.job?.job_title}</li>
+              <li>{data?.job_title}</li>
             </ul>
           </div>
           <div className="flex items-center justify-between w-full px-20 py-10">
@@ -115,14 +115,14 @@ const JobDetails = () => {
               <div className="flex items-start flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <h1 className="text-[#18191C] text-2xl font-medium">
-                    {data?.job?.job_title}
+                    {data?.job_title}
                   </h1>
                   <div className="flex items-center gap-3">
                     <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC]">
-                      {data?.job?.job_type}
+                      {data?.job_type}
                     </span>
                     {
-                      data?.job?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                      data?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
                       Featured
                     </span>
                     }
@@ -162,8 +162,8 @@ const JobDetails = () => {
                   />
                 </div>
 {
-  data?.job?.platform === 'jobify' && <button
-  disabled={!data?.job?.status}
+  data?.platform === 'jobify' && <button
+  disabled={!data?.status}
   onClick={showModal}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
@@ -175,11 +175,11 @@ const JobDetails = () => {
 </button>
 }
 {
-  data?.job?.platform === 'email' && <button
-  disabled={!data?.job?.status}
+  data?.platform === 'email' && <button
+  disabled={!data?.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
-  <a href={`mailto:${data?.job?.company_email}`}>Email Us</a>
+  <a href={`mailto:${data?.company_email}`}>Email Us</a>
   <img
     src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
     alt=""
@@ -187,8 +187,8 @@ const JobDetails = () => {
 </button>
 }
 {
-  data?.job?.platform === 'external' && <button
-  disabled={!data?.job?.status}
+  data?.platform === 'external' && <button
+  disabled={!data.status}
   className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
 >
   <a href={data?.company?.website}>Our Website</a>
@@ -205,7 +205,7 @@ const JobDetails = () => {
                   confirmLoading={confirmLoading}
                   onCancel={handleCancel}
                 >
-                  <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${data?.job?.job_title}`}</h1>
+                  <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${data?.job_title}`}</h1>
                   <div className="mb-10">
                     <label
                       for="resume"
@@ -236,7 +236,7 @@ const JobDetails = () => {
               <p className="text-[#767F8C] text-sm">
                 Job expire in:{" "}
                 <span className="text-[#E05151] font-medium">
-                  {data?.job?.expiration_date}
+                  {data?.expiration_date}
                 </span>
               </p>
             </div>
@@ -247,14 +247,14 @@ const JobDetails = () => {
                 <h1 className="text-black text-lg font-medium mb-3">
                   Job Description
                 </h1>
-                <Parser text={data?.job?.description}/>
+                <Parser text={data?.description}/>
               </div>
 
               <div className="flex flex-col items-start gap-2">
                 <h1 className="text-black text-lg font-medium mb-3">
                   Responsibilities
                 </h1>
-                <Parser text={data?.job?.responsibilities}/>
+                <Parser text={data?.responsibilities}/>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-[#191F33]">Share this job:</span>
@@ -295,7 +295,7 @@ const JobDetails = () => {
                       Job Posted:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {data?.job?.posted_date}
+                      {data?.posted_date}
                     </span>
                   </div>
 
@@ -308,7 +308,7 @@ const JobDetails = () => {
                       Job expire in:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {data?.job?.expiration_date}
+                      {data?.expiration_date}
                     </span>
                   </div>
 
@@ -321,7 +321,7 @@ const JobDetails = () => {
                       Salaray:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      ${data?.job?.job_salary_min}-{data?.job?.job_salary_max}/month
+                      ${data?.job_salary_min}-{data?.job_salary_max}/month
                     </span>
                   </div>
 
@@ -334,7 +334,7 @@ const JobDetails = () => {
                       Location:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {data?.job?.location}
+                      {data?.location}
                     </span>
                   </div>
 
@@ -347,7 +347,7 @@ const JobDetails = () => {
                       Job type:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {data?.job?.job_type}
+                      {data?.job_type}
                     </span>
                   </div>
 
@@ -360,7 +360,7 @@ const JobDetails = () => {
                       Experience:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                      {data?.job?.experience}
+                      {data?.experience}
                     </span>
                   </div>
 
@@ -370,7 +370,7 @@ const JobDetails = () => {
                       Education:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                    {data?.job?.education}
+                    {data?.education}
                     </span>
                   </div>
                 </div>

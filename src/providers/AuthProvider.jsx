@@ -10,10 +10,12 @@ import {
 import React, { createContext, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import auth from "../config/firebase.config";
+import useAxiosCommon from "./../hooks/useAxiosCommon";
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-  const [isTokenInvalid,setIsTokenInvalid] = useState(false)
+  const axiosCommon = useAxiosCommon();
+  const [isTokenInvalid, setIsTokenInvalid] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,22 +33,30 @@ const AuthProvider = ({ children }) => {
   };
 
   const logOut = async () => {
-    setLoading(true)
-    const { data } = await axios(`http://localhost:5948/logout`, {
-      withCredentials: true,
-    })
-    return signOut(auth)
-  }
+    setLoading(true);
+    return signOut(auth);
+  };
 
-  useEffect(()=>{
-    const unSubscribe = onAuthStateChanged(auth,currentUser => {
-        setUser(currentUser)
-        setLoading(false)
-    })
+  useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      if (currentUser) {
+        const { data: role } = await axiosCommon.get(
+          `/role/${currentUser.email}`
+        );
+        const user = { email: currentUser.email, role: role };
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_API}/auth`, user, {
+          withCredentials: true,
+        });
+      } else {
+        const { data } = await axios.post(`${import.meta.env.VITE_SERVER_API}/logout`, user, {
+          withCredentials: true,
+        });
+      }
+    });
     return () => unSubscribe();
-},[])
-
-
+  }, []);
 
   const authInfo = {
     user,
