@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import useAuth from './useAuth'
+import useUserInfo from './useUserInfo'
 
 const useAppliedJobs = () => {
 
-const {user} = useAuth()
+const {user} = useUserInfo()
 
     const {data:appliedJobs = [],isPending} = useQuery({
         queryKey: ['applied_jobs',user?.email],

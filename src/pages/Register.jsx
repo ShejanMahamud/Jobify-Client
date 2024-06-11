@@ -5,7 +5,7 @@ import { IoIosEyeOff, IoMdEye } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
 import auth from "../config/firebase.config";
-import useAuth from "../hooks/useAuth";
+import useUserInfo from "../hooks/useUserInfo";
 import useAxiosSecure from "./../hooks/useAxiosSecure";
 // in custom email verification page there is a problem that is its says rejected but it working [maybe a condition issue need to fix]
 const Register = () => {
@@ -14,7 +14,7 @@ const Register = () => {
   const [show, setShow] = useState(false);
   const [confirmShow, setConfirmShow] = useState(false);
 
-  const { emailPasswordRegister, logOut } = useAuth();
+  const { emailPasswordRegister, logOut } = useUserInfo();
 
   const handleEmailPassRegister = async (e) => {
     e.preventDefault();

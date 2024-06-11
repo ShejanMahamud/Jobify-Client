@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import useAuth from './useAuth';
 import useAxiosCommon from './useAxiosCommon';
+import useUserInfo from './useUserInfo';
 
 const useCompanyInfo = () => {
 
 const axiosCommon = useAxiosCommon();
-const {user} = useAuth();
+const {user} = useUserInfo();
 
 const {data:companyInfo,isPending:companyInfoPending,refetch:companyInfoRefetch} = useQuery({
     queryKey: ['company_info',user?.email],

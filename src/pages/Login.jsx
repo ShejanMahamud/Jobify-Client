@@ -4,12 +4,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
 import useAxiosCommon from "../hooks/useAxiosCommon";
 import useAxiosSecure from "../hooks/useAxiosSecure";
-import useAuth from './../hooks/useAuth';
+import useUserInfo from "../hooks/useUserInfo";
 
 const Login = () => {
   const axiosCommon = useAxiosCommon()
 const axiosSecure = useAxiosSecure();
-const {googleLogin,emailPasswordLogin} = useAuth();
+const {googleLogin,emailPasswordLogin} = useUserInfo();
 const navigate = useNavigate();
 const location = useLocation();
 

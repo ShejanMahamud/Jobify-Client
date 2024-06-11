@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import useAuth from './useAuth'
+import useUserInfo from './useUserInfo'
 
 const useBookmarkJobs = () => {
 
-    const {user} = useAuth()
+    const {user} = useUserInfo()
     const {data:bookmarkJobs=[],isPending} = useQuery({
       queryKey: ['bookmark_jobs',user?.email],
       queryFn: async () => {

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import useAuth from '../hooks/useAuth';
+import useUserInfo from '../hooks/useUserInfo';
 import Footer from './../components/Footer';
 
 const Root = () => {
 
-const {loading} = useAuth();  
+const {loading} = useUserInfo();  
 
   return (
     <>

@@ -3,11 +3,11 @@ import moment from 'moment';
 import React from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import useUserInfo from '../hooks/useUserInfo';
 
 const Job = ({job}) => {
 
-const {user} = useAuth();
+const {user} = useUserInfo();
 const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId,featured} = job;
 
 const navigate = useNavigate();

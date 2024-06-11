@@ -1,24 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
-import { AuthContext } from "../providers/AuthProvider";
 import useAuth from "./useAuth";
 import useAxiosSecure from './useAxiosSecure';
 
 const useUserInfo = () => {
-    const axiosSecure = useAxiosSecure()
-  const auth = useContext(AuthContext)
-  const {user,loading} = useAuth()
+    const axiosSecure = useAxiosSecure();
+    const auth = useAuth();
 
+    const { data: userInfo, isLoading: userInfoPending, refetch: userInfoRefetch } = useQuery({
+        queryKey: ["userInfo", auth?.user?.email],
+        enabled: !auth?.loading && !!auth?.user?.email,
+        queryFn: async () => {
+            const { data } = await axiosSecure.get(`/user/${auth?.user?.email}`);
+            return data;
+        },
+    });
 
-const {data:userInfo,isPending:userInfoPending,refetch:userInfoRefetch} = useQuery({
-    queryKey: ["userInfo", user?.email],
-    enabled: !loading && !!user?.email,
-    queryFn: async () => {
-        const {data} = await axiosSecure.get(`/user/${user?.email}`);
-        return data
-    },
-  });
-  return {userInfo,userInfoPending,userInfoRefetch,...auth}
+    return { userInfo, userInfoPending, userInfoRefetch, ...auth };
 };
 
 export default useUserInfo;

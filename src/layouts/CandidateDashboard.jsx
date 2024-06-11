@@ -5,10 +5,10 @@ import { LuBellRing } from "react-icons/lu";
 import { RiStackFill } from "react-icons/ri";
 import { NavLink, Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import useAuth from '../hooks/useAuth';
+import useUserInfo from '../hooks/useUserInfo';
 
 const CandidateDashboard = () => {
-  const {loading} = useAuth()
+  const {loading} = useUserInfo()
   const currentYear = new Date().getFullYear();
 
   if(loading){

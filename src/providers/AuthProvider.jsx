@@ -42,10 +42,7 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
       if (currentUser) {
-        const { data: role } = await axiosCommon.get(
-          `/role/${currentUser.email}`
-        );
-        const user = { email: currentUser.email, role: role };
+        const user = { email: currentUser.email };
         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_API}/auth`, user, {
           withCredentials: true,
         });
