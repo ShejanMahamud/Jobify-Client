@@ -12,7 +12,7 @@ const How = () => {
           We try to provide a better job experience
         </p>
       </div>
-      <div className='my-5 w-[90%] mx-auto grid grid-cols-4 row-auto items-center gap-10 relative'>
+      <div className='my-5 w-[90%] mx-auto grid lg:grid-cols-4 grid-cols-1 row-auto items-center gap-10 relative'>
         <div className='flex flex-col items-center gap-3 text-center group'>
             <div className='px-5 py-5 rounded-full bg-white'>
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" className="group-hover:scale-125 duration-500">
@@ -33,7 +33,7 @@ const How = () => {
             <h1 className='text-lg font-medium'>Create Account</h1>
 <p className='text-sm text-[#767F8C]'>Aliquam facilisis egestas sapien, nec tempor leo tristique at.</p>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute left-48 top-0'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute left-48 top-0 hidden lg:inline-block'>
   <g opacity="0.4">
     <path d="M0.999997 40.8082C0.999997 40.8082 43.9587 1.00001 108.877 1.00001C173.795 1.00001 216.754 40.8083 216.754 40.8083" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="12 8"/>
     <path d="M215.551 28.6097L217.502 41.5912L204.555 43.4272" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -60,7 +60,7 @@ const How = () => {
 <p className='text-sm text-[#767F8C]'>Curabitur sit amet maximus ligula. Nam a nulla ante. Nam sodales</p>
         </div>
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute bottom-20 right-[500px] '>
+        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute bottom-20 right-[500px] hidden lg:inline-block'>
   <g opacity="0.4">
     <path d="M0.999997 8.19175C0.999997 8.19175 43.9587 48 108.877 48C173.795 48 216.754 8.19174 216.754 8.19174" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="12 8"/>
     <path d="M215.551 20.3903L217.502 7.40878L204.555 5.57281" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -88,7 +88,7 @@ const How = () => {
 <p className='text-sm text-[#767F8C]'>Aliquam facilisis egestas sapien, nec tempor leo tristique at.</p>
         </div>
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute right-44 top-0'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="223" height="49" viewBox="0 0 223 49" fill="none" className='absolute right-44 top-0 hidden lg:inline-block'>
   <g opacity="0.4">
     <path d="M0.999997 40.8082C0.999997 40.8082 43.9587 1.00001 108.877 1.00001C173.795 1.00001 216.754 40.8083 216.754 40.8083" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="12 8"/>
     <path d="M215.551 28.6097L217.502 41.5912L204.555 43.4272" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

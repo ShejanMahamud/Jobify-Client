@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { IoIosMenu } from "react-icons/io";
+import { IoCloseOutline } from 'react-icons/io5';
 import { MdOutlineWifiCalling3 } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import useUserInfo from "../hooks/useUserInfo";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { userInfo,user,logOut } = useUserInfo();//here is a problem without login redirect to login page [need to fix that]
+  const { userInfo,user,logOut } = useUserInfo();
   const [isOpen, setIsOpen] = useState(false);
-
+  const [menuOpen,setMenuOpen] = useState(false)
   const handleLogout = async () => {
     try{
       await logOut()
@@ -20,9 +22,9 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-[#F1F2F4] flex flex-col items-center w-full font-inter">
-      <div className="w-full flex items-center justify-between px-10 py-3">
-        <ul className="flex items-center gap-10">
+    <nav className="bg-[#F1F2F4] flex flex-col items-center w-full font-inter border border-[#E4E5E8]">
+      <div className="w-full flex items-center justify-between lg:px-10 px-5 py-3">
+        <ul className=" items-center gap-10 lg:flex hidden md:flex">
           <NavLink
             className={({ isActive }) =>
               isActive
@@ -88,7 +90,7 @@ const Navbar = () => {
             </li>
           </NavLink>
         </ul>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center lg:gap-8 gap-4 ">
           <div className="flex items-center gap-2 text-[#18191C]">
             <MdOutlineWifiCalling3 className="text-lg" />
             <span className="text-sm">+880171247834</span>
@@ -102,8 +104,11 @@ const Navbar = () => {
             <span className="text-sm">English</span>
           </div>
         </div>
+        {
+              menuOpen ? <IoCloseOutline onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl"/>   : <IoIosMenu onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl"/>
+            }
       </div>
-      <div className="w-full bg-white px-20 flex items-center justify-between py-4">
+      <div className="w-full bg-white lg:px-20 md:px-10 px-5 flex items-center justify-between py-4">
         <div className="flex items-center gap-10">
           <div className="flex items-center gap-2">
             <svg
@@ -151,7 +156,7 @@ const Navbar = () => {
             </svg>
             <span className="text-xl font-medium">Jobify</span>
           </div>
-          <form className="border border-[#E4E5E8] px-5 py-2 rounded-md flex items-center gap-3 w-full">
+          <form className="border border-[#E4E5E8] px-5 py-2 rounded-md lg:flex items-center gap-3 w-full hidden md:flex">
             <div className="inline-flex items-center gap-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -281,8 +286,80 @@ const Navbar = () => {
             <button className="bg-primary text-white px-4 py-2 rounded-md font-medium">
               Post A Job
             </button>
+            
           </div>
         )}
+        <ul className={`w-full flex-col items-start  absolute top-[136px] right-0 bg-white rounded-2xl shadow-xl py-5 transform transition-transform px-8 ${menuOpen ? 'flex translate-x-0 duration-500' : 'hidden -translate-x-full'}`}>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">Home</li>
+          </NavLink>
+          <hr className="border w-full border-[#E4E5E8] my-3"/>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/find_jobs"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">Find Jobs</li>
+          </NavLink>
+          <hr className="border w-full border-[#E4E5E8] my-3"/>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/find_companies"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">Find Companies</li>
+          </NavLink>
+          <hr className="border w-full border-[#E4E5E8] my-3"/>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/candidates"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">Candidates</li>
+          </NavLink>
+          <hr className="border w-full border-[#E4E5E8] my-3"/>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/plans"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">
+              Pricing Plans
+            </li>
+          </NavLink>
+          <hr className="border w-full border-[#E4E5E8] my-3"/>
+          <NavLink
+            className={({ isActive }) =>
+              isActive
+                ? " text-primary"
+                : "no-underline text-[#5E6670]"
+            }
+            to={"/customer"}
+          >
+            <li className=" font-medium text-sm cursor-pointer">
+              Customer Supports
+            </li>
+          </NavLink>
+        </ul>
       </div>
     </nav>
   );

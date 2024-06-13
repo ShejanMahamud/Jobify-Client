@@ -4,7 +4,7 @@ const Categories = () => {
   return (
     <div className="my-28 font-inter w-full">
       <div className="w-[90%] mx-auto flex items-center justify-between">
-        <div className="flex flex-col items-start gap-2 mb-10 w-full">
+        <div className="flex flex-col items-start gap-2 mb-10 ">
           <h1 className="text-primary font-medium">Choose Categories</h1>
           <span className=" font-bold lg:text-3xl md:text-xl text-lg">
             Explore our jobs categories
@@ -13,7 +13,7 @@ const Categories = () => {
             Find your dream job in Jobify
           </p>
         </div>
-        <button className="border border-[#CEE0F5] px-4 py-2 rounded-md text-primary font-medium flex items-center gap-2 text-sm w-[10%] justify-center">
+        <button className="border border-[#CEE0F5] px-4 py-2 rounded-md text-primary font-medium flex items-center gap-2 text-sm justify-center">
           <span>See All</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M5 12H19" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -21,7 +21,7 @@ const Categories = () => {
 </svg>
         </button>
       </div>
-      <div className="w-[90%] mx-auto grid grid-cols-4 row-auto items-center gap-12 my-10">
+      <div className="w-[90%] mx-auto grid lg:grid-cols-4 grid-cols-1 row-auto items-center gap-12 my-10">
         <div className="flex items-center gap-5 cursor-pointer group">
             <div className="bg-[#E7F0FA] px-5 py-5 rounded-md flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" className="group-hover:scale-125 duration-500">

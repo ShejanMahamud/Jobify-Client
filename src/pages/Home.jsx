@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import Banner from '../components/Banner'
+import CTA from '../components/CTA'
 import Categories from '../components/Categories'
 import Companies from '../components/Companies'
 import FeaturedJobs from '../components/FeaturedJobs'
@@ -17,6 +18,7 @@ const Home = () => {
     <FeaturedJobs/>
     <TopCompanies/>
     <Testimonials/>
+    <CTA/>
     </>
   )
 }

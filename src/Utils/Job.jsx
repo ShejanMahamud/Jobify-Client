@@ -1,12 +1,12 @@
-import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import useAxiosSecure from '../hooks/useAxiosSecure';
 import useUserInfo from '../hooks/useUserInfo';
 
 const Job = ({job}) => {
-
+const axiosSecure = useAxiosSecure()
 const {user} = useUserInfo();
 const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId,featured} = job;
 
@@ -21,7 +21,7 @@ const handleBookmarkJob = async () => {
 
   const bookmarkJob = {job_type:job_type,job_title:job_title,company_name:company_name,location:location,job_salary_min:job_salary_min,job_salary_max:job_salary_max,expiration_date:expiration_date,jobId: jobId,candidate_email:user?.email}
   
-  const {data} = await axios.post(`http://localhost:5948/bookmark_jobs`,bookmarkJob)
+  const {data} = await axiosSecure.post(`/bookmark_jobs`,bookmarkJob)
   if(!data.success){
     toast.error('Bookmark Already Saved!')
   }
@@ -31,8 +31,8 @@ const handleBookmarkJob = async () => {
 }
 
   return (
-    <div className="w-full flex items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5]">
-    <div className="flex items-center gap-5">
+    <div className="w-full flex lg:flex-row flex-col items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5] gap-3 lg:gap-0 p-5">
+    <div className="flex items-center lg:gap-5">
     <div
           className={`bg-primary bg-opacity-80 h-16 w-16 rounded-md flex items-center justify-center text-white text-3xl font-bold`}
         >
@@ -52,13 +52,13 @@ const handleBookmarkJob = async () => {
               }
               </div>
           </div>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center lg:gap-5 gap-2">
               <div className="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
 <path d="M19.25 9.16675C19.25 15.5834 11 21.0834 11 21.0834C11 21.0834 2.75 15.5834 2.75 9.16675C2.75 6.97871 3.61919 4.88029 5.16637 3.33312C6.71354 1.78594 8.81196 0.916748 11 0.916748C13.188 0.916748 15.2865 1.78594 16.8336 3.33312C18.3808 4.88029 19.25 6.97871 19.25 9.16675Z" stroke="#C5C9D6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M11 11.9167C12.5188 11.9167 13.75 10.6855 13.75 9.16675C13.75 7.64797 12.5188 6.41675 11 6.41675C9.48122 6.41675 8.25 7.64797 8.25 9.16675C8.25 10.6855 9.48122 11.9167 11 11.9167Z" stroke="#C5C9D6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-<span className="text-[#636A80] text-sm">{location}</span>
+<span className="text-[#636A80] lg:text-sm text-xs">{location}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ const handleBookmarkJob = async () => {
 </clipPath>
 </defs>
 </svg>
-<span className="text-[#636A80] text-sm">${job_salary_min}-${job_salary_max}</span>
+<span className="text-[#636A80] lg:text-sm text-xs">${job_salary_min}-${job_salary_max}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ const handleBookmarkJob = async () => {
 </clipPath>
 </defs>
 </svg>
-<span className="text-[#636A80] text-sm">
+<span className="text-[#636A80] lg:text-sm text-xs">
   {currentDate === moment(expiration_date).format("MMMM D, YYYY")
      ? 'Today Last Date'
      : remainingDays < 0
@@ -102,14 +102,14 @@ const handleBookmarkJob = async () => {
           </div>
       </div>
     </div>
-    <div className="flex items-center gap-5">
+    <div className="flex items-center lg:gap-5 gap-2">
       <button onClick={handleBookmarkJob} className="bg-[#E8F1FF] px-3 py-3 rounded-md flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 
       </button>
-      <button onClick={()=>navigate(`/job/${jobId}`)} className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3">
+      <button onClick={()=>navigate(`/job/${jobId}`)} className="bg-primary lg:px-4 px-2 lg:py-3 py-2 lg:text-base text-sm rounded-md text-white font-medium flex items-center gap-3">
 <span>Apply Now</span>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
 <path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

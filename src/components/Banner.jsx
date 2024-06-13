@@ -29,10 +29,10 @@ const Banner = () => {
   };
 
   return (
-    <div className="bg-[#f1f2f499] w-full grid grid-cols-2 row-auto items-center gap-20 font-inter py-28 px-10">
-      <div className="w-full">
+    <div className="bg-[#f1f2f499] w-full grid lg:grid-cols-2 grid-cols-1 row-auto items-center gap-20 font-inter lg:py-28 py-20 px-10">
+      <div className="w-full lg:col-span-1 col-span-2">
         <div className="flex flex-col items-start gap-5 w-full">
-          <h1 className="text-[56px] font-medium leading-[64px]">
+          <h1 className="lg:text-[56px] text-4xl font-medium lg:leading-[64px] leading-[40px]">
             Find a job that suits your interest & skills.
           </h1>
           <p className="text-[#5E6670] text-base leading-[28px]">
@@ -41,7 +41,7 @@ const Banner = () => {
           </p>
           <form
             onSubmit={handleSearch}
-            className="bg-white rounded-lg flex items-center gap-5 px-5 py-5 w-full relative"
+            className="bg-white rounded-lg flex items-center gap-5 lg:px-5 px-3 lg:py-5 py-3 w-full relative"
           >
             <div className="flex items-center gap-2 w-full px-5">
               <svg
@@ -113,7 +113,7 @@ const Banner = () => {
             )}
           </form>
           <p className="text-[#9199A3] text-sm">
-            Suggestion:
+            Suggestion: {" "}
             <span className="text-[#474C54]">
                Designer, Programing,
               <span className="text-primary"> Digital Marketing,</span> Video,
@@ -122,10 +122,10 @@ const Banner = () => {
           </p>
         </div>
       </div>
-      <div>
+      <div className="w-full lg:col-span-1 col-span-2">
         <img src="https://i.ibb.co/DwJPJ31/Illustration.png" alt="hero.png" />
       </div>
-      <div className="w-full grid grid-cols-4 row-auto items-center gap-16 col-span-2">
+      <div className="w-full grid lg:grid-cols-4 grid-cols-1 row-auto items-center lg:gap-16 gap-8 col-span-2">
         <div className="bg-white px-5 py-5 rounded-lg flex items-center gap-5 w-full group hover:shadow-lg shadow-sm">
           <div className="bg-[#E7F0FA] px-5 py-5 rounded-lg group-hover:bg-primary duration-500">
             <svg
