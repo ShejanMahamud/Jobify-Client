@@ -1,6 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import { Breadcrumb } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import CardCompany from "../Utils/CardCompany";
 import Company from "../Utils/Company";
 import useAxiosCommon from "../hooks/useAxiosCommon";
 
@@ -11,28 +13,20 @@ const FindCompanies = () => {
   const [count,setCount] = useState(0);
   const numberOfPages = Math.ceil(count / itemsPerPage)
   const [currentPage, setCurrentPage] = useState(1)
-  const [loading,setLoading] = useState(true)
 
   const pages = [...Array(numberOfPages).keys()].map(num => num  + 1)
 
-useEffect(()=>{
-  const getData = async () => {
+const {data,isPending} = useQuery({
+  queryKey: ['companies',currentPage,itemsPerPage],
+  queryFn: async () => {
     const {data} = await axiosCommon.get(`/companies?page=${currentPage}&size=${itemsPerPage}`)
-    setCompanies(data)
-  }
-  getData();
-},[currentPage,itemsPerPage])
-
-useEffect(()=>{
-  const getCount = async () => {
-    const {data} = await axiosCommon.get(`/company_search`)
+    setCompanies(data.companies)
     setCount(data.count)
-    setLoading(false)
+    return data
   }
-  getCount();
-},[])
+})
 
-if(loading){
+if(isPending){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -82,7 +76,7 @@ if(loading){
             </button>
         </form>
       </div>
-      <div className="py-10 px-20">
+      <div className="py-10 lg:px-20 px-5">
             <div className="flex w-full items-center justify-end">
 
                 <div className="flex items-center gap-5">
@@ -98,7 +92,7 @@ if(loading){
   <path d="M5 7.5L10 12.5L15 7.5" stroke="#9199A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
                     </div>
-                    <div className="border border-[#E4E5E8] px-5 py-2 rounded-lg flex items-center gap-5">
+                    <div className="border border-[#E4E5E8] px-5 py-2 rounded-lg lg:flex items-center gap-5 hidden ">
                         <button onClick={()=>setShowCard(true)} className={`px-1 py-1 bg-[#E4E5E8] rounded-md`}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className={'focus:*:fill-[#18191C]'}>
   <path d="M8 3H4C3.44772 3 3 3.44772 3 4V8C3 8.55228 3.44772 9 4 9H8C8.55228 9 9 8.55228 9 8V4C9 3.44772 8.55228 3 8 3Z" fill="#939AAD"/>
@@ -120,9 +114,14 @@ if(loading){
             </div>
       </div>
 
-      <div className={`py-10 px-20 w-full grid grid-cols-1 row-auto items-center gap-10`}>
+      <div className={`hidden py-10 px-20 w-full lg:grid grid-cols-1 row-auto items-center gap-10`}>
       {
        companies && companies.map(company => <Company key={company._id} company={company}/>)
+      }
+      </div>
+      <div className={`lg:hidden py-10 lg:px-20 px-5 w-full grid grid-cols-1 row-auto items-center gap-10`}>
+      {
+       companies && companies.map(company => <CardCompany key={company._id} company={company}/>)
       }
       </div>
       <div className="flex items-center gap-5 py-10 px-20 w-full justify-center">

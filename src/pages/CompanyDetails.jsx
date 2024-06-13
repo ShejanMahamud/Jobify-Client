@@ -1,18 +1,23 @@
+import { useQuery } from "@tanstack/react-query";
 import { Breadcrumb } from "antd";
 import React from "react";
 import { AiOutlineUserSwitch } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
-import useCompany from "../hooks/useCompany";
-import useOpenJobs from "../hooks/useOpenJobs";
+import useAxiosCommon from "../hooks/useAxiosCommon";
 
 const CompanyDetails = () => {
   const {id} = useParams()
+  const axiosCommon = useAxiosCommon()
+  const {data: company,isPending} = useQuery({
+    queryKey: ['company',id],
+    queryFn: async () => {
+      const {data} = await axiosCommon.get(`/company/${id}`)
+      return data[0]
+    }
+  })
 
-  const {company,companyIsPending} = useCompany(id)
-  const {openJobs,openJobsPending} = useOpenJobs(company?.company_name)
-
-  if(openJobsPending || companyIsPending){
+  if(isPending){
     return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
     <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
     <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -22,7 +27,7 @@ const CompanyDetails = () => {
 
   return (
     <div className="w-full font-inter">
-      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full px-20">
+      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full lg:px-20 px-5">
         <div className="flex items-center justify-between w-full ">
           <h1 className="text-[#18191C] text-lg font-medium">{company?.company_name}</h1>
           <Breadcrumb
@@ -47,19 +52,17 @@ const CompanyDetails = () => {
       <div className="w-full rounded-lg border border-[#E4E5E8] h-[250px] z-10 relative">
             <img src="https://i.ibb.co/y5qNCph/israel-andrade-YI-9-Siv-Vt-s-unsplash.jpg" alt="" className="w-full object-cover h-full rounded-lg"/>
       </div>
-      <div className="w-[90%] mx-auto bg-white relative z-50 py-5 px-5 rounded-lg flex items-center justify-between -mt-16 border border-[#E4E5E8]">
+      <div className="w-[90%] mx-auto bg-white relative z-50 py-5 px-5 rounded-lg flex items-center justify-between -mt-16 border border-[#E4E5E8] flex-col lg:flex-row gap-5">
       <div className="flex items-center gap-5">
-      <div className="h-20 w-20 rounded-full bg-gray-400 text-3xl text-white flex items-center justify-center">
-                {company?.company_name[0]}
-              </div>
+      <img src={company?.company_logo || 'https://i.ibb.co/jMNrMnz/enterprise.png'} alt="" className='h-20 w-20 rounded-full object-cover p-2 bg-white shadow-lg'/>
               <div className="flex flex-col items-start">
-                <h1 className="text-[#18191C] font-medium text-2xl">{company?.company_name}</h1>
+                <h1 className="text-[#18191C] font-medium lg:text-2xl text-xl">{company?.company_name}</h1>
                 <span className="text-[#5E6670]">{company?.company_category}</span>
               </div>
       </div>
-              <button className="bg-primary text-white font-medium text-lg px-6 py-3 rounded-lg">Open Positions</button>
+              <button className="bg-primary text-white font-medium lg:text-lg text-sm lg:px-6 px-4 py-3 rounded-lg w-full lg:w-auto">Open Positions</button>
       </div>
-      <div className="w-full grid grid-cols-[50%_40%] gap-16 justify-items-end row-auto items-start my-10 py-5">
+      <div className="w-full grid lg:grid-cols-[50%_40%] grid-cols-1 gap-16 justify-items-end row-auto items-start my-10 py-5">
             <div className="w-full flex flex-col items-start gap-12">
                 <div className="flex flex-col items-start gap-3">
                     <h1 className="text-[#18191C] text-lg font-medium">Description</h1>
@@ -81,7 +84,7 @@ const CompanyDetails = () => {
                     <p className="text-[#5E6670]">{company?.company_vision}</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[#191F33]">Share this profile:</span>
                 <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#0A65CC] flex items-center gap-2">
                     <img src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg" alt="" />
@@ -174,13 +177,13 @@ const CompanyDetails = () => {
                 </div>
                
               </div>
-              <div className="border border-[#E7F0FA] px-10 py-10 w-full rounded-lg">
+              <div className="border border-[#E7F0FA] lg:px-10 px-5 py-10 w-full rounded-lg">
                 <h1 className="text-xl font-medium mb-10">Contact Information</h1>
                 <div className="flex items-center gap-3">
                     <img src="https://gist.github.com/ShejanMahamud/1b527c1461bd70ee259aad5a3465cc2f/raw/caf2be0686385bb7bc9dcaaa3cbf5fbc97cbea95/globe.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Website</h1>
-                    <p className="font-medium text-[#18191C]">{company?.website}</p>
+                    <p className="font-medium text-[#18191C] lg:text-base text-sm">{company?.website}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -188,7 +191,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/f73c44e6f5a5eb8b101e012a4b9ba526/raw/47152dabb6afa9e32b31a784329559a0be53d611/phone.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Phone</h1>
-                    <p className="font-medium text-[#18191C]">{company?.phone}</p>
+                    <p className="font-medium text-[#18191C] lg:text-base text-sm">{company?.phone}</p>
                     </div>
                 </div>
                 <hr className="border border-[#E4E5E8] w-full rounded-full my-5"/>
@@ -196,7 +199,7 @@ const CompanyDetails = () => {
                     <img src="https://gist.github.com/ShejanMahamud/2374104d4a783130c5540f1fb53d5013/raw/d2de14c9c15942c354ae03fd2ac8dca6cc3a1eb9/email.svg" alt="" />
                     <div className="flex flex-col items-start">
                     <h1 className="uppercase text-xs text-[#767F8C] mb-1">Email</h1>
-                    <p className="font-medium text-[#18191C]">{company?.email}</p>
+                    <p className="font-medium text-[#18191C] lg:text-base text-sm">{company?.email}</p>
                     </div>
                 </div>
                 </div>
@@ -223,11 +226,11 @@ const CompanyDetails = () => {
             </div>
       </div>
       </div>
-      <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
-        <h1 className="text-[#18191C] text-[40px] font-medium">Open Positions ({openJobs && openJobs.length})</h1>
-        <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
+      <div className="my-10 py-10 border border-[#E4E5E8] lg:px-20 px-5 w-full">
+        <h1 className="text-[#18191C] lg:text-[40px] text-3xl font-medium">Open Positions ({company?.open_jobs && company?.open_jobs.length})</h1>
+        <div className="w-full grid lg:grid-cols-3 grid-cols-1 row-auto items-center gap-10 my-10">
         {
-            openJobs && openJobs.map(job => <CardJob job={job} key={job._id}/>)
+            company?.open_jobs && company?.open_jobs.map(job => <CardJob job={job} key={job._id}/>)
         }
         </div>
       </div>

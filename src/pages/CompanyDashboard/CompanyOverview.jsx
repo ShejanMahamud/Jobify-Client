@@ -4,7 +4,6 @@ import { IoCheckmark, IoCloseCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import Expire from '../../Utils/Expire';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import useOpenJobs from '../../hooks/useOpenJobs';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const CompanyOverview = () => {
@@ -12,7 +11,6 @@ const CompanyOverview = () => {
   const navigate = useNavigate()
 const {userInfo} = useUserInfo()
 
-const {openJobs,openJobsPending} = useOpenJobs(userInfo?.name)
     const { data:candidates, isLoading } = useQuery({
         queryKey: ["candidate"],
         queryFn: async () => {
@@ -21,13 +19,6 @@ const {openJobs,openJobsPending} = useOpenJobs(userInfo?.name)
         },
       });
 
-if(openJobsPending || isLoading){
-  return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-  <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
-</div>
-}
 
   return (
     <div className='w-full h-full border-l border-[#e4e5e8] min-h-screen py-10 px-10'>
@@ -37,7 +28,7 @@ if(openJobsPending || isLoading){
         <div className='w-full grid grid-cols-3 row-auto items-center justify-center gap-5 mt-10'>
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#E7F0FA]'>
             <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-[#18191C] text-2xl font-medium'>{openJobs.length}</h1>
+              <h1 className='text-[#18191C] text-2xl font-medium'>1</h1>
               <p className='text-[#18191C] text-sm'>Open jobs</p>
             </div>
             <div className='bg-white h-16 w-16 flex items-center justify-center rounded-lg'>

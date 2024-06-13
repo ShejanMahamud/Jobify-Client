@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.7.1",
-    "@tanstack/react-query": "^5.34.1",
+    "@tanstack/react-query": "^5.45.0",
     "@tanstack/react-query-devtools": "^5.35.1",
     "alpinejs": "^3.13.10",
     "antd": "^5.17.0",

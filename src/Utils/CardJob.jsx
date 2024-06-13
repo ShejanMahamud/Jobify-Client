@@ -11,7 +11,7 @@ const CardJob = ({job}) => {
         <img src={company_logo || 'https://i.ibb.co/jMNrMnz/enterprise.png'} alt="" className='h-16 w-16 rounded-lg object-cover p-2 bg-white shadow-lg'/>
         <div className='flex items-start flex-col gap-3'>
             <div className='flex items-center gap-3'>
-            <h1 className='text-[#191F33] text-lg font-medium'>{company_name}</h1>
+            <h1 className='text-[#191F33] text-lg font-medium'>{job_title}</h1>
             <div className='flex items-center gap-3'>
 
             {
@@ -31,7 +31,7 @@ const CardJob = ({job}) => {
         </div>
     </div>
     <div className='flex flex-col items-start gap-1'>
-        <h1 className='text-[#18191C] text-lg font-medium'>{job_title}</h1>
+        <h1 className='text-[#18191C] text-lg font-medium'>{ company_name}</h1>
         <div className='flex items-center gap-3'>
         <p className='text-[#767F8C] text-sm'>{job_type}</p>
         <svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4" fill="none">

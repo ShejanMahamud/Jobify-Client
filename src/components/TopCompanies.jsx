@@ -10,7 +10,7 @@ const {data} = useQuery({
   queryKey: ['featured_companies'],
   queryFn: async () => {
     const {data} = await axiosCommon.get(`/companies?featured=true`)
-    return data
+    return data.companies
   }
 })
 
