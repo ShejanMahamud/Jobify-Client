@@ -8,7 +8,7 @@ import useUserInfo from '../hooks/useUserInfo';
 const Job = ({job}) => {
 const axiosSecure = useAxiosSecure()
 const {user} = useUserInfo();
-const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId,featured} = job;
+const {job_type,job_title,company_name,location,job_salary_min,job_salary_max,expiration_date,_id:jobId,featured,company_logo} = job;
 
 const navigate = useNavigate();
 
@@ -31,13 +31,9 @@ const handleBookmarkJob = async () => {
 }
 
   return (
-    <div className="w-full flex lg:flex-row flex-col items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5] gap-3 lg:gap-0 p-5">
+    <div className={`w-full flex lg:flex-row flex-col items-center justify-between px-5 py-3 rounded-lg border border-[#EDEFF5] gap-3 lg:gap-0 p-5 ${featured && 'bg-gradient'}`}>
     <div className="flex items-center lg:gap-5">
-    <div
-          className={`bg-primary bg-opacity-80 h-16 w-16 rounded-md flex items-center justify-center text-white text-3xl font-bold`}
-        >
-          {company_name[0]}
-        </div>
+    <img src={company_logo || 'https://i.ibb.co/jMNrMnz/enterprise.png'} alt="" className='h-16 w-16 rounded-lg object-cover p-3 bg-white shadow-lg'/>
       <div className="flex flex-col items-start gap-3">
           <div className="flex items-center gap-3">
               <h1>{job_title}</h1>

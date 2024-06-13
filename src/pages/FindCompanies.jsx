@@ -1,10 +1,11 @@
 import { Breadcrumb } from "antd";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import Company from "../Utils/Company";
+import useAxiosCommon from "../hooks/useAxiosCommon";
 
 const FindCompanies = () => {
+  const axiosCommon = useAxiosCommon()
   const [itemsPerPage,setItemsPerPage] = useState(5);
   const [companies, setCompanies] = useState([])
   const [count,setCount] = useState(0);
@@ -16,7 +17,7 @@ const FindCompanies = () => {
 
 useEffect(()=>{
   const getData = async () => {
-    const {data} = await axios.get(`http://localhost:5948/companies?page=${currentPage}&size=${itemsPerPage}`)
+    const {data} = await axiosCommon.get(`/companies?page=${currentPage}&size=${itemsPerPage}`)
     setCompanies(data)
   }
   getData();
@@ -24,7 +25,7 @@ useEffect(()=>{
 
 useEffect(()=>{
   const getCount = async () => {
-    const {data} = await axios.get(`http://localhost:5948/company_search`)
+    const {data} = await axiosCommon.get(`/company_search`)
     setCount(data.count)
     setLoading(false)
   }
@@ -41,7 +42,7 @@ if(loading){
 
   return (
     <div className="font-inter w-full">
-      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full px-20">
+      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full lg:px-20 px-5">
         <div className="flex items-center justify-between w-full ">
           <h1 className="text-[#18191C] text-lg font-medium">Find Companies</h1>
           <Breadcrumb
@@ -57,7 +58,7 @@ if(loading){
             ]}
           />
         </div>
-        <form className="bg-white px-5 py-3 rounded-lg flex justify-between items-center gap-10 w-full">
+        <form className="bg-white p-5 rounded-lg flex lg:flex-row flex-col justify-between items-center lg:gap-10 gap-5 w-full">
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -65,7 +66,8 @@ if(loading){
 </svg>
 <input name="title" type="text" className="w-full bg-transparent focus:outline-none" placeholder="Company Name"/>
             </div>
-            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full"></div>
+            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full lg:inline-block hidden"></div>
+            <hr className="w-full border border-[#E4E5E8] rounded-full"/>
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="#0066FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -75,8 +77,8 @@ if(loading){
             </div>
           
 
-            <button type="submit" className="bg-primary text-white font-medium px-4 py-3 rounded-lg w-[20%]">
-                Find Job
+            <button type="submit" className="bg-primary text-white font-medium px-4 py-3 rounded-lg w-full">
+                Find Company
             </button>
         </form>
       </div>
@@ -117,12 +119,7 @@ if(loading){
                 </div>
             </div>
       </div>
-      {/* <div className={`py-10 px-20 w-full grid ${showCard ? 'grid-cols-3' : 'grid-cols-1'} row-auto items-center gap-10`}>
-        
-        {
-          showCard ? jobs && jobs.map(job => <CardJob key={job._id} job={job}/>) : jobs && jobs.map(job => <Job key={job._id} job={job}/>)
-        }
-      </div> */}
+
       <div className={`py-10 px-20 w-full grid grid-cols-1 row-auto items-center gap-10`}>
       {
        companies && companies.map(company => <Company key={company._id} company={company}/>)

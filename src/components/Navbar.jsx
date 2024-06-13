@@ -105,7 +105,7 @@ const Navbar = () => {
           </div>
         </div>
         {
-              menuOpen ? <IoCloseOutline onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl"/>   : <IoIosMenu onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl"/>
+              menuOpen ? <IoCloseOutline onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl lg:hidden"/>   : <IoIosMenu onClick={()=>setMenuOpen(!menuOpen)} className="text-3xl lg:hidden"/>
             }
       </div>
       <div className="w-full bg-white lg:px-20 md:px-10 px-5 flex items-center justify-between py-4">

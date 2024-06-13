@@ -47,7 +47,7 @@ const FindJob = () => {
   const {data,isPending} = useQuery({
     queryKey: ['find_job',currentPage,itemsPerPage],
     queryFn: async () => {
-      const {data} = await axiosCommon.get(`/search?page=${currentPage}&limit=${itemsPerPage}`)
+      const {data} = await axiosCommon.get(`/jobs?page=${currentPage}&limit=${itemsPerPage}`)
       setJobs(data.jobs)
       setCount(data.jobsCount)
       return data
@@ -96,7 +96,7 @@ if(isPending){
 
   return (
     <div className="font-inter w-full">
-      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full px-20">
+      <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full lg:px-20 px-5">
         <div className="flex items-center justify-between w-full ">
           <h1 className="text-[#18191C] text-lg font-medium">Find Jobs</h1>
           <Breadcrumb
@@ -112,7 +112,7 @@ if(isPending){
             ]}
           />
         </div>
-        <form onSubmit={handleSearch} className="bg-white px-5 py-3 rounded-lg flex justify-between items-center gap-10 w-full">
+        <form onSubmit={handleSearch} className="bg-white p-5 rounded-lg flex lg:flex-row flex-col justify-between items-center lg:gap-10 gap-5 w-full">
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -120,7 +120,8 @@ if(isPending){
 </svg>
 <input name="title" type="text" className="w-full bg-transparent focus:outline-none" placeholder="Job Title"/>
             </div>
-            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full"></div>
+            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full lg:inline-block hidden"></div>
+            <hr className="w-full border border-[#E4E5E8] rounded-full lg:hidden inline-block"/>
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="#0066FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -128,7 +129,8 @@ if(isPending){
 </svg>
 <input name="location" type="text" className="w-full bg-transparent focus:outline-none" placeholder="Job Location"/>
             </div>
-            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full"></div>
+            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full lg:inline-block hidden"></div>
+            <hr className="w-full border border-[#E4E5E8] rounded-full lg:hidden inline-block"/>
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M2 17L12 22L22 17" stroke="#0A65CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -145,7 +147,8 @@ if(isPending){
   <path d="M6 9L12 15L18 9" stroke="#767E94" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
             </div>
-            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full"></div>
+            <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full lg:inline-block hidden"></div>
+            <hr className="w-full border border-[#E4E5E8] rounded-full lg:hidden inline-block"/>
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M6 9L12 15L18 9" stroke="#767E94" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -157,9 +160,9 @@ if(isPending){
             </button>
         </form>
       </div>
-      <div className="py-10 px-20">
-            <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-5">
+      <div className="py-10 lg:px-20 px-5">
+            <div className="flex w-full items-center justify-end">
+                {/* <div className="flex items-center gap-5">
                     <div className="flex items-center gap-2 bg-[#F1F2F4] px-3 py-2 rounded-full">
                         <span className="text-[#474C54] text-sm">Design</span>
                         <button>
@@ -194,7 +197,7 @@ if(isPending){
 </svg>
                         </button>
                     </div>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-5">
                     <div className="flex items-center px-5 py-3 gap-3 rounded-lg border border-[#E4E5E8]">
                         <span className="text-xs">Items Per Page</span>
@@ -208,7 +211,7 @@ if(isPending){
   <path d="M5 7.5L10 12.5L15 7.5" stroke="#9199A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
                     </div>
-                    <div className="border border-[#E4E5E8] px-5 py-2 rounded-lg flex items-center gap-5">
+                    <div className="border border-[#E4E5E8] px-5 py-2 rounded-lg lg:flex hidden items-center gap-5">
                         <button onClick={()=>setShowCard(true)} className={`px-1 py-1 bg-[#E4E5E8] rounded-md`}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className={'focus:*:fill-[#18191C]'}>
   <path d="M8 3H4C3.44772 3 3 3.44772 3 4V8C3 8.55228 3.44772 9 4 9H8C8.55228 9 9 8.55228 9 8V4C9 3.44772 8.55228 3 8 3Z" fill="#939AAD"/>
@@ -229,13 +232,19 @@ if(isPending){
                 </div>
             </div>
       </div>
-      <div className={`py-10 px-20 w-full grid ${showCard ? 'grid-cols-3' : 'grid-cols-1'} row-auto items-center gap-10`}>
+      <div className={`py-10 px-20 w-full lg:grid hidden ${showCard ? 'grid-cols-3' : 'grid-cols-1'} row-auto items-center gap-10`}>
         
         {
           showCard ? jobs && jobs.map(job => <CardJob key={job._id} job={job}/>) : jobs && jobs.map(job => <Job key={job._id} job={job}/>)
         }
       </div>
-      <div className="flex items-center gap-5 py-10 px-20 w-full justify-center">
+      <div className={`py-10 lg:px-20 px-5 w-full grid lg:hidden grid-cols-1 row-auto items-center gap-10`}>
+        
+        {
+          jobs && jobs.map(job => <CardJob key={job._id} job={job}/>)
+        }
+      </div>
+      <div className="flex items-center gap-5 py-10 lg:px-20 px-5 w-full justify-center">
       <button disabled={currentPage < 2} onClick={handlePrevPage} className={`bg-[#E7F0FA] flex items-center justify-center h-10 w-10 rounded-full text-2xl ${currentPage < 2  ? 'text-[#99C2FF]' : 'text-primary'}`}>
       <IoIosArrowBack />
             </button>

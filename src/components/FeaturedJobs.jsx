@@ -12,10 +12,9 @@ const {data} = useQuery({
   queryKey: ['featured_jobs'],
   queryFn: async () => {
     const {data} = await axiosCommon.get('/jobs?featured=true')
-    return data
+    return data?.jobs
   }
 })
-
 
   return (
     <div className="w-full font-inter my-28">

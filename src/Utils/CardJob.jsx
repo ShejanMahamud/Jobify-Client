@@ -3,24 +3,22 @@ import { useNavigate } from 'react-router-dom';
 
 const CardJob = ({job}) => {
     const navigate = useNavigate();
-    const {job_title,company_name,location,job_salary_min,job_salary_max,_id,job_type} = job;
+    const {job_title,company_name,location,job_salary_min,job_salary_max,_id,job_type,featured,company_logo} = job;
 
   return (
-    <div className='w-full border border-[#EDEFF5] rounded-lg px-5 py-5 flex flex-col items-start gap-8'>
+    <div className={`w-full border border-[#EDEFF5] rounded-lg px-5 py-5 flex flex-col items-start gap-8 ${featured && 'bg-gradient'}`}>
     <div className='flex items-center gap-5'>
-    <div
-          className={`bg-primary bg-opacity-80 h-16 w-16 rounded-md flex items-center justify-center text-white text-3xl font-bold`}
-        >
-          {company_name[0]}
-        </div>
+        <img src={company_logo || 'https://i.ibb.co/jMNrMnz/enterprise.png'} alt="" className='h-16 w-16 rounded-lg object-cover p-2 bg-white shadow-lg'/>
         <div className='flex items-start flex-col gap-3'>
             <div className='flex items-center gap-3'>
             <h1 className='text-[#191F33] text-lg font-medium'>{company_name}</h1>
             <div className='flex items-center gap-3'>
 
-              <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
-                  Featured
-              </span>
+            {
+                featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                Featured
+            </span>
+              }
               </div>
             </div>
             <div className='flex items-center gap-3'>
@@ -42,7 +40,7 @@ const CardJob = ({job}) => {
         <p className='text-[#767F8C] text-sm'>${job_salary_min}-${job_salary_max}</p>
         </div>
     </div>
-    <button onClick={()=>navigate(`/job/${_id}`)} className='w-full py-3 rounded-md text-[#0A65CC] bg-[#E7F0FA] font-medium'>
+    <button onClick={()=>navigate(`/job/${_id}`)} className='w-full py-3 rounded-md text-[#0A65CC] border border-primary font-medium'>
         Apply Job
     </button>
 </div>
