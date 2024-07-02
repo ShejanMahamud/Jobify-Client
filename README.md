@@ -100,6 +100,8 @@ https://github.com/ShejanMahamud/Jobify-Client.git
 ```
 npm install
 ```
+Create .env file in root of folder. Use firebase credentials in .env file
+
 Dev Mode:
 ```
 npm run dev
