@@ -1,4 +1,4 @@
-# Jobify - Job Portal Web Application
+# Jobify - Job Portal Web Application (In Progress)
 
 <p>Jobify is a comprehensive job portal web app developed using the MERN stack. It provides a seamless platform where candidates can apply for jobs, and companies can explore candidates for their posted jobs and manage the status of applications. Additionally, companies can subscribe to a Premium Plan via SSL COMMERZ and Stripe.</p>
 
