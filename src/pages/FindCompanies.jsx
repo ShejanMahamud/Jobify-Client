@@ -61,7 +61,7 @@ if(isPending){
 <input name="title" type="text" className="w-full bg-transparent focus:outline-none" placeholder="Company Name"/>
             </div>
             <div className="w-[2px] h-[20px] bg-[#E4E5E8] rounded-full lg:inline-block hidden"></div>
-            <hr className="w-full border border-[#E4E5E8] rounded-full"/>
+            <hr className="w-full border border-[#E4E5E8] rounded-full hidden lg:lnline-block"/>
             <div className="flex items-center gap-3 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
   <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="#0066FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

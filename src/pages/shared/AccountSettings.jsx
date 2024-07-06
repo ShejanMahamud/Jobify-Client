@@ -1,6 +1,7 @@
 import { Modal, Tooltip } from 'antd';
 import { EmailAuthProvider, deleteUser, reauthenticateWithCredential, sendEmailVerification, updateEmail, updatePassword } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { AwesomeCaptcha } from 'react-awesome-captcha';
 import toast from 'react-hot-toast';
 import { IoIosEyeOff, IoMdEye } from 'react-icons/io';
 import { IoBriefcaseOutline, IoCheckmarkCircleOutline, IoCloseCircleOutline, IoLocation } from "react-icons/io5";
@@ -8,7 +9,6 @@ import { SlEnvolope } from "react-icons/sl";
 import { useNavigate } from 'react-router-dom';
 import auth from '../../config/firebase.config';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import useCaptcha from '../../hooks/useCaptcha';
 import useUserInfo from '../../hooks/useUserInfo';
 
 const AccountSettings = () => {
@@ -20,17 +20,16 @@ const AccountSettings = () => {
   const [confirmShow, setConfirmShow] = useState(false);  
   const [oldShow, setOldShow] = useState(false);
 
-  const {captcha,generateCaptcha} = useCaptcha();
+  // const {captcha,generateCaptcha} = useCaptcha();
 
   const handleContactUpdate = async (e) => {
     e.preventDefault();
-    const recaptcha = e.target.recaptcha.value;
     const email = e.target.email.value;
     const number = e.target.number.value;
     const location = e.target.location.value;
-    if(captcha !== recaptcha){
-     return toast.success('Captcha Should Match!')
-    }
+    // if(captcha !== recaptcha){
+    //  return toast.success('Captcha Should Match!')
+    // }
 
     const contactInfo = {
       ...(email && {email}),
@@ -45,7 +44,6 @@ const AccountSettings = () => {
         const {data} = await axiosSecure.patch(`/user/${user?.email}`,contactInfo)
         if(data.success){
           toast.success('Profile Updated')
-          generateCaptcha()
         }
       }
 
@@ -53,14 +51,12 @@ const AccountSettings = () => {
         const {data} = await axiosSecure.patch(`/company/${user?.email}`,contactInfo)
         if(data.success){
           toast.success('Profile Updated')
-          generateCaptcha()
         }
       }
 
   }
   catch(error){
     toast.error('Something Went Wrong!')
-    generateCaptcha()
   }
   }
   const handlePasswordChange = async (e) => {
@@ -130,9 +126,13 @@ const AccountSettings = () => {
     setIsModalOpen(true);
   };
 
-  useEffect(()=>{
-    generateCaptcha();
-  },[])
+  const handleCaptchaValidation = (isValid) => {
+    if (isValid) {
+        console.log('Captcha is valid');
+    } else {
+        console.log('Captcha is invalid');
+    }
+};
 
   return (
     <div className='w-full px-5 font-inter'>
@@ -166,7 +166,7 @@ const AccountSettings = () => {
           </div>
         }
 
-    <div className='w-full flex gap-5 items-start'>
+    {/* <div className='w-full flex gap-5 items-start'>
     <div className='flex flex-col items-start gap-2 mt-5'>
         <h1 className='text-sm text-[#18191C]'>Recaptcha</h1>
         <input disabled type="text" className='px-4 py-2 rounded-lg bg-transparent border border-[#E4E5E8] focus:outline-none italic tracking-widest' name='phone' defaultValue={captcha}/>
@@ -176,14 +176,16 @@ const AccountSettings = () => {
         <h1 className='text-sm text-[#18191C]'>Submit Recaptcha</h1>
         <input type="text" className='px-4 py-2 rounded-lg bg-transparent border border-[#E4E5E8] focus:outline-none' name='recaptcha' required placeholder='Enter Captcha'/>
         </div>
-    </div>
+    </div> */}
+    {/* <AwesomeCaptcha onValidate={handleCaptchaValidation}/> */}
 
         </div>
+    <AwesomeCaptcha onValidate={handleCaptchaValidation}/>
         <button className='mt-5 bg-primary text-white font-medium text-lg px-4 py-2 rounded-sm w-[20%]'>Save Changes</button>
 
         </form>
         <hr className='w-full border border-[#E4E5E8] rounded-full my-10'/>
-        <h1 className='text-base text-[#18191C] font-medium mb-10'>Job Alerts</h1>
+        <h1 className='text-base text-[#18191C] font-medium mb-10 select-none'>Job Alerts</h1>
 
         <form className='grid grid-cols-2 row-auto items-center gap-5'>
 

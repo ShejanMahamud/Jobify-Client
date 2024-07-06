@@ -2,7 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Breadcrumb } from "antd";
 import React from "react";
 import { AiOutlineUserSwitch } from "react-icons/ai";
-import { useParams } from "react-router-dom";
+import { DiGithubAlt } from "react-icons/di";
+import { FaFacebookF, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
+import { Link, useParams } from "react-router-dom";
 import CardJob from "../Utils/CardJob";
 import useAxiosCommon from "../hooks/useAxiosCommon";
 
@@ -24,7 +26,7 @@ const CompanyDetails = () => {
     <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
   </div>
   }
-
+console.log(company)
   return (
     <div className="w-full font-inter">
       <div className="bg-[#F1F2F4] py-10 flex flex-col items-center gap-5 w-full lg:px-20 px-5">
@@ -205,23 +207,40 @@ const CompanyDetails = () => {
                 </div>
                 <div className="flex flex-col items-start gap-5 border border-[#E7F0FA] w-full rounded-lg px-10 py-10">
                 <h1 className="text-xl font-medium">Follow us on:</h1>
-                  <div className="flex items-center gap-3">
-                  <button className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center">
-                    <img src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg" alt="" />
-                  </button>
-
-                  <button className="bg-primary h-12 w-12 rounded-lg flex items-center justify-center">
-                        <img src="https://gist.github.com/ShejanMahamud/372ef393a3da0d042a6a3b5e737f4d33/raw/79340a1ae04cd2237dd8c2bf9ecacf1086c041b1/twitter-white.svg" alt="" />
-                  </button>
-
-                  <button className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center">
-                  <img src="https://gist.github.com/ShejanMahamud/a7272c50110795fa41efab3e55522c5d/raw/52e3e7273026695fa3c90a81f31024071b8b30c5/instagram.svg" alt="" />
-                  </button>
-
-                  <button className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center">
-                    <img src="https://gist.github.com/ShejanMahamud/1396a416e70ca905c85b3d482668d2f2/raw/a72bb12ba36d587f3c6068c29326ef410894b8d3/youtube.svg" alt="" />
-                  </button>
-                  </div>
+                <div className="flex items-center gap-5 ">
+                  {company?.linkedin && (
+                    <Link
+                      href={company?.linkedin}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaLinkedinIn />
+                    </Link>
+                  )}
+                  {company?.facebook && (
+                    <Link
+                      href={company?.facebook}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaFacebookF />
+                    </Link>
+                  )}
+                  {company?.twitter && (
+                    <Link
+                      href={company?.twitter}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaXTwitter />
+                    </Link>
+                  )}
+                  {company?.github && (
+                    <Link
+                      href={company?.github}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <DiGithubAlt />
+                    </Link>
+                  )}
+                </div>
                 </div>
             </div>
       </div>

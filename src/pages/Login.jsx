@@ -1,15 +1,14 @@
+import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
-import useAxiosCommon from "../hooks/useAxiosCommon";
-import useAxiosSecure from "../hooks/useAxiosSecure";
-import useUserInfo from "../hooks/useUserInfo";
+import auth from "../config/firebase.config";
+import useAuth from "../hooks/useAuth";
 
 const Login = () => {
-  const axiosCommon = useAxiosCommon()
-const axiosSecure = useAxiosSecure();
-const {googleLogin,emailPasswordLogin} = useUserInfo();
+
+const {googleLogin,emailPasswordLogin} = useAuth();
 const navigate = useNavigate();
 const location = useLocation();
 
@@ -31,19 +30,27 @@ const handleEmailPasswordLogin = async (e) => {
   const email = e.target.email.value;
   const password = e.target.password.value;
   try{
-       await emailPasswordLogin(email,password)
-       toast.success('Successfully Logged In!')
+    await toast.promise(
+      emailPasswordLogin(email,password),
+      {
+        loading: 'Authenticating Your Credentials...',
+        success: 'Successfully Logged In!',
+        error: 'Failed To Authenticate'
+      }
+    )
+       const {data} = await axios.patch(`${import.meta.env.VITE_SERVER_API}/user/${auth.currentUser.email}`,{emailVerified: auth.currentUser.emailVerified},{withCredentials:true})
        setTimeout(()=>{
          navigate(location?.state || '/')
        },1000)
   }
   catch(error){
+    console.log(error)
     toast.error('Something Went Wrong!')
   }
 }
 
   return (
-    <div className="w-full font-inter grid grid-cols-2 row-auto items-center min-h-screen">
+    <div className="w-full font-inter grid lg:grid-cols-2 grid-cols-1 row-auto items-center min-h-screen">
 <div class="w-full max-w-sm p-6 m-auto mx-auto bg-white rounded-lg shadow-md ">
 <Logo/>
 
@@ -98,7 +105,7 @@ const handleEmailPasswordLogin = async (e) => {
 
     <p class="mt-8 text-xs font-light text-center text-gray-400"> Don't have an account? <Link to="/register" class="font-medium text-gray-700 hover:underline"> Create One</Link></p>
 </div>
-      <div className="w-full bg-login bg-no-repeat bg-cover bg-center h-full flex items-end justify-center px-10 py-10">
+      <div className="w-full bg-login bg-no-repeat bg-cover bg-center h-full lg:flex items-end justify-center px-10 py-10 hidden">
         <div className="flex flex-col items-start gap-10">
           <h1 className="font-medium text-3xl w-[80%] text-white">
             Over 1,75,324 candidates waiting for good employees.

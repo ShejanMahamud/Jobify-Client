@@ -28,8 +28,8 @@ const handleSendPasswordResetEmail = async (e) => {
         <Logo/>
         <div className='flex flex-col items-center w-full gap-5'>
             <h1 className='text-2xl font-medium'>Forget Password</h1>
-            <p className='text-[#767F8C] w-1/4 text-center mb-3'>Duis luctus interdum metus, ut consectetur ante consectetur sed. Suspendisse euismod viverra massa sit amet mollis.</p>
-            <form onSubmit={handleSendPasswordResetEmail} className='w-1/4 flex flex-col gap-5'>
+            <p className='text-[#767F8C] lg:w-1/4 w-[90%] mx-auto text-center mb-3'>Duis luctus interdum metus, ut consectetur ante consectetur sed. Suspendisse euismod viverra massa sit amet mollis.</p>
+            <form onSubmit={handleSendPasswordResetEmail} className='lg:w-1/4 w-[90%] mx-auto flex flex-col gap-5'>
             <div>
             <label for="username" class="block text-sm text-gray-800 ">Email Address</label>
             <input name='email' required type="text" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg   focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />

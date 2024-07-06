@@ -1,3 +1,5 @@
+import { UploadOutlined } from '@ant-design/icons';
+import { Upload } from 'antd';
 import { sendEmailVerification, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -5,16 +7,18 @@ import { IoIosEyeOff, IoMdEye } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Utils/Logo";
 import auth from "../config/firebase.config";
-import useUserInfo from "../hooks/useUserInfo";
+import useAuth from '../hooks/useAuth';
+import usePhotoUpload from "../hooks/usePhotoUpload";
 import useAxiosSecure from "./../hooks/useAxiosSecure";
-// in custom email verification page there is a problem that is its says rejected but it working [maybe a condition issue need to fix]
+
 const Register = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [confirmShow, setConfirmShow] = useState(false);
-
-  const { emailPasswordRegister, logOut } = useUserInfo();
+  const {photo,uploadProps} = usePhotoUpload()
+  const [isCompany, setIsCompany] = useState(false)
+  const { emailPasswordRegister, logOut } = useAuth();
 
   const handleEmailPassRegister = async (e) => {
     e.preventDefault();
@@ -25,13 +29,11 @@ const Register = () => {
     const name = e.target.name.value;
     const username = e.target.username.value;
     const email = e.target.email.value;
-    const photo = e.target.photo.value;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirm.value;
     const role = e.target.account.value;
     const terms = e.target.terms.checked;
     const phone_number = e.target.phone_number.value;
-    const user = { name, username, email, phone_number, role, photo };
 
     if (!terms) {
       return toast.error("Please Accept Terms & Services!");
@@ -53,9 +55,29 @@ const Register = () => {
         photoURL: photo,
       });
       await sendEmailVerification(auth.currentUser);
-      if(role === 'company'){
-        const { data } = await axiosSecure.post("/company", {company_name: name,email,company_logo: photo,phone: phone_number,plan:'free',job_limit:1,resume_access_limit: 5,resume_visibility_limit: 5,featured:false});
+      if (role === "company") {
+        const { data } = await axiosSecure.post("/company", {
+          company_name: name,
+          company_email: email,
+          company_logo: photo,
+          phone: phone_number,
+          plan: "free",
+          job_limit: 1,
+          resume_access_limit: 5,
+          resume_visibility_limit: 5,
+          featured: false,
+        });
       }
+      if(role === 'candidate'){
+        const {data} = await axiosSecure.post('/candidates',{
+          candidate_name: name,
+          candidate_email: email,
+          candidate_photo: photo,
+          phone_number: phone_number,
+          plan:"free",
+        })
+      }
+      const user = { name, username, email, role,emailVerified: auth.currentUser.emailVerified };
       const { data } = await axiosSecure.post("/user", user);
       if (data.insertedId) {
         toast.success("Account Registration Successfully!");
@@ -73,14 +95,14 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full font-inter grid grid-cols-2 row-auto items-center min-h-screen">
+    <div className="w-full font-inter grid lg:grid-cols-2 grid-cols-1 row-auto items-center min-h-screen">
       <div class="flex items-center w-full max-w-3xl p-8 mx-auto lg:px-12">
         <div class="w-full">
           <Logo />
 
           <form
             onSubmit={handleEmailPassRegister}
-            class="grid grid-cols-2 gap-6 mt-8 row-auto w-full"
+            class="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-8 row-auto w-full"
           >
             <div>
               <label class="block mb-2 text-sm text-gray-600  ">
@@ -106,17 +128,20 @@ const Register = () => {
               />
             </div>
 
-            <div>
+            <div className="">
               <label class="block mb-2 text-sm text-gray-600  ">
-                Photo URL
+               {
+              isCompany ? 'Company Logo': 'Upload Photo'
+               }
               </label>
-              <input
-                type="text"
-                required
-                name="photo"
-                placeholder="Photo URL/Logo URL"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-              />
+              <div className="w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+              <Upload {...uploadProps}>
+    <button type="button" className="text-gray-400 text-base flex items-center gap-2">
+      <UploadOutlined />
+      <span>Click to Upload</span></button>
+  </Upload>
+                
+              </div>
             </div>
 
             <div>
@@ -199,15 +224,11 @@ const Register = () => {
               <label class="block mb-2 text-sm text-gray-600  ">
                 Account Type
               </label>
-              {/* <input
-                type="password"
-                placeholder="Enter your password"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-              /> */}
               <select
+              onChange={(e)=>e.target.value === 'company' ? setIsCompany(true) : setIsCompany(false)}
                 required
                 name="account"
-                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 col-span-2"
+                class="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg focus:border-blue-400   focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 "
               >
                 <option value="Select Type" disabled selected>
                   Select Type
@@ -216,7 +237,7 @@ const Register = () => {
                 <option value="candidate">Candidate</option>
               </select>
             </div>
-            <div className="flex items-center gap-3 col-span-2">
+            <div className="flex items-center gap-3 ">
               <input
                 name="terms"
                 type="checkbox"
@@ -229,7 +250,7 @@ const Register = () => {
                 </span>
               </p>
             </div>
-            <button class="flex items-center justify-between px-6 py-4 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full col-span-2">
+            <button class="flex items-center justify-between px-6 py-4 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 w-full lg:col-span-2 col-span-1">
               <span>Sign Up </span>
 
               <svg
@@ -256,7 +277,7 @@ const Register = () => {
           </p>
         </div>
       </div>
-      <div className="w-full bg-login bg-no-repeat bg-cover bg-center h-full flex items-end justify-center px-10 py-10">
+      <div className="w-full bg-login bg-no-repeat bg-cover bg-center h-full lg:flex  hidden items-end justify-center px-10 py-10">
         <div className="flex flex-col items-start gap-10">
           <h1 className="font-medium text-3xl w-[80%] text-white">
             Over 1,75,324 candidates waiting for good employees.

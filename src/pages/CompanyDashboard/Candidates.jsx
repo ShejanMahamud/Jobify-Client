@@ -15,9 +15,9 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import PDFViewer from "../../Utils/PDFViewer";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import useCandidates from "../../hooks/useCandidates";
 import useJoditConfigs from "../../hooks/useJoditConfigs";
 import Parser from "./../../Utils/Parser";
+import useCandidates from './../../hooks/useCandidates';
 
 const Candidates = () => {
   const { config, editor } = useJoditConfigs();

@@ -20,7 +20,7 @@ const Auth = () => {
         setVerificationStatus("success");
       } catch (error) {
         console.error("Email verification error:", error);
-        setVerificationStatus("rejected");
+        setVerificationStatus((prevStatus) => prevStatus === "success" ? "success" : "rejected");
       }
     };
 
@@ -34,12 +34,14 @@ const Auth = () => {
       }
     };
 
-    if (mode === "verifyEmail") {
+    if (mode === "verifyEmail" && actionCode) {
       handleVerifyEmail();
-    } else if (mode === "resetPassword") {
+    } else if (mode === "resetPassword" && actionCode) {
       handleResetPassword();
+    } else {
+      setVerificationStatus("rejected");
     }
-  }, [location, mode, actionCode]);
+  }, [mode, actionCode]);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -78,20 +80,20 @@ const Auth = () => {
             {verificationStatus === "success" && (
               <div className="flex flex-col items-center gap-5">
                 <h1 className="text-3xl font-medium">Email Verification Successful!</h1>
-                <p className="text-[#767F8C] ">Now you can log in to your account and find your desired job.</p>
+                <p className="text-[#767F8C]">Now you can log in to your account and find your desired job.</p>
               </div>
             )}
             {verificationStatus === "rejected" && (
               <div className="flex flex-col items-center gap-5">
                 <h1 className="text-3xl font-medium">Email Verification Rejected!</h1>
-                <p className="text-[#767F8C] ">Please verify your email first and activate your account.</p>
+                <p className="text-[#767F8C]">Please verify your email first and activate your account.</p>
               </div>
             )}
             <button onClick={() => navigate("/login")} className="bg-primary text-white font-medium uppercase px-4 py-2 rounded-lg">Back To Login</button>
           </div>
         </div>
       )}
-      {mode === "resetPassword" && (
+      {mode === "resetPassword" && verificationStatus === "passwordReset" && (
         <div className="w-full min-h-screen flex flex-col items-center gap-5 justify-center font-inter">
           <Logo />
           <div className="flex flex-col items-center w-full gap-5">
@@ -125,6 +127,16 @@ const Auth = () => {
                 Login
               </Link>
             </p>
+          </div>
+        </div>
+      )}
+      {mode === "resetPassword" && verificationStatus !== "passwordReset" && (
+        <div className="w-full min-h-screen flex flex-col items-center gap-5 justify-center font-inter">
+          <Logo />
+          <div className="flex flex-col items-center w-full gap-5">
+            <h1 className="text-3xl font-medium text-[#18191C]">Reset Password Error</h1>
+            <p className="text-[#767F8C]">The password reset link is invalid or expired. Please try again.</p>
+            <button onClick={() => navigate("/login")} className="bg-primary text-white font-medium uppercase px-4 py-2 rounded-lg">Back To Login</button>
           </div>
         </div>
       )}

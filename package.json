@@ -29,6 +29,7 @@
     "match-sorter": "^6.3.4",
     "moment": "^2.30.1",
     "react": "^18.2.0",
+    "react-awesome-captcha": "^1.0.9",
     "react-dom": "^18.2.0",
     "react-fast-marquee": "^1.6.4",
     "react-hot-toast": "^2.4.1",

@@ -1,19 +1,25 @@
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { MdCancel, MdDoneAll, MdEvent, MdExitToApp, MdLocalOffer, MdPersonAdd, MdSend, MdVisibility } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import useAppliedJobs from '../../hooks/useAppliedJobs';
-import useBookmarkJobs from '../../hooks/useBookmarkJobs';
+import useAuth from '../../hooks/useAuth';
+import { axiosSecure } from '../../hooks/useAxiosSecure';
 import useJobAlert from '../../hooks/useJobAlert';
-import useUserInfo from '../../hooks/useUserInfo';
 
 const CandidateOverview = () => {
   const navigate = useNavigate()
-const {user,userInfo} = useUserInfo()
-  const {appliedJobs,isPending:appliedPending} = useAppliedJobs();
-  const {bookmarkJobsCount,isPending:bookmarkPending} = useBookmarkJobs();
+  const {user} = useAuth()
   const {jobAlertCount,jobAlertPending} = useJobAlert()
 
-if(appliedPending || bookmarkPending || jobAlertPending){
+  const {data:stats,isPending:statsPending} = useQuery({
+    queryKey: ['candidate_stats',user?.email],
+    queryFn: async () => {
+      const {data} = await axiosSecure.get(`/candidate_stats/${user?.email}`)
+      return data
+    }
+  })
+
+if(statsPending || jobAlertPending){
   return <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
   <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
@@ -29,7 +35,7 @@ if(appliedPending || bookmarkPending || jobAlertPending){
         <div className='w-full grid grid-cols-3 row-auto items-center justify-center gap-5 mt-10'>
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#E7F0FA]'>
             <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-[#18191C] text-2xl font-medium'>{appliedJobs.length}</h1>
+              <h1 className='text-[#18191C] text-2xl font-medium'>{stats?.applied_jobs}</h1>
               <p className='text-[#18191C] text-sm'>Applied jobs</p>
             </div>
             <div className='bg-white h-16 w-16 flex items-center justify-center rounded-lg'>
@@ -39,7 +45,7 @@ if(appliedPending || bookmarkPending || jobAlertPending){
 
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#FFF6E6]'>
             <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-[#18191C] text-2xl font-medium'>{bookmarkJobsCount}</h1>
+              <h1 className='text-[#18191C] text-2xl font-medium'>{stats?.bookmark_jobs}</h1>
               <p className='text-[#18191C] text-sm'>Favorite jobs</p>
             </div>
             <div className='bg-white h-16 w-16 flex items-center justify-center rounded-lg'>

@@ -11,19 +11,28 @@ const CompanyOverview = () => {
   const navigate = useNavigate()
 const {userInfo} = useUserInfo()
 
-    const { data:candidates, isLoading } = useQuery({
-        queryKey: ["candidate"],
+    const { data:open_jobs, isPending } = useQuery({
+        queryKey: ["open_jobs"],
         queryFn: async () => {
-          const { data } = await axiosSecure.get(`/candidates`);
+          const { data } = await axiosSecure.get(`/open_jobs/${userInfo?.email}`);
           return data;
         },
       });
 
+      if (isPending) {
+        return (
+          <div className="flex items-center justify-center space-x-2 w-full min-h-screen">
+            <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+            <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+            <div className="w-4 h-4 rounded-full animate-pulse bg-primary"></div>
+          </div>
+        );
+      }
 
   return (
     <div className='w-full h-full border-l border-[#e4e5e8] min-h-screen py-10 px-10'>
       <div className='flex flex-col items-start gap-2'>
-        <h1 className='text-[#18191C] text-lg font-medium'>Hello, {userInfo?.name}</h1>
+        <h1 className='text-[#18191C] text-lg font-medium'>Hello, {userInfo?.displayName}</h1>
         <p className='text-[#767F8C] text-sm'>Here is your daily activities and job alerts</p>
         <div className='w-full grid grid-cols-3 row-auto items-center justify-center gap-5 mt-10'>
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#E7F0FA]'>
@@ -38,7 +47,7 @@ const {userInfo} = useUserInfo()
 
           <div className='w-full px-5 py-5 flex items-center justify-between rounded-lg bg-[#FFF6E6]'>
             <div className='flex flex-col items-start gap-1'>
-              <h1 className='text-[#18191C] text-2xl font-medium'>{candidates && candidates.length}</h1>
+              <h1 className='text-[#18191C] text-2xl font-medium'>{0}</h1>
               <p className='text-[#18191C] text-sm'>Candidates</p>
             </div>
             <div className='bg-white h-16 w-16 flex items-center justify-center rounded-lg'>
@@ -71,7 +80,7 @@ const {userInfo} = useUserInfo()
     userInfo.number
   ) && <div className='w-full bg-[#E05151] px-5 py-5 rounded-lg flex items-center justify-between mt-10'>
   <div className='flex items-center gap-3'>
-    <img src={userInfo.photo} alt="user.png" className='w-14 h-14 rounded-full'/>
+    <img src={userInfo?.photo} alt="user.png" className='w-14 h-14 rounded-full'/>
     <div className='flex flex-col items-start gap-1'>
       <h1 className='text-lg font-medium text-white'>Your profile editing is not completed.</h1>
       <h1 className='text-xs text-white'>Complete your profile editing & build your custom Resume</h1>
@@ -103,7 +112,7 @@ const {userInfo} = useUserInfo()
     </thead>
     <tbody>
   {
-  openJobs && openJobs.map(job => {
+  open_jobs && open_jobs.map(job => {
     const status = Expire(job?.expiration_date)
     return (
       <tr key={job?._id} className="w-full">

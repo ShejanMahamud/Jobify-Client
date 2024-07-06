@@ -12,34 +12,34 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   FacebookShareButton,
   LinkedinShareButton,
-  TwitterShareButton
+  TwitterShareButton,
 } from "react-share";
 import CardJob from "../Utils/CardJob";
 import Parser from "../Utils/Parser";
 import useAxiosCommon from "../hooks/useAxiosCommon";
-import useAxiosSecure from '../hooks/useAxiosSecure';
+import useAxiosSecure from "../hooks/useAxiosSecure";
 import useJoditConfigs from "../hooks/useJoditConfigs";
 import useUserInfo from "../hooks/useUserInfo";
 
 const JobDetails = () => {
-  const navigate = useNavigate()
-  const axiosSecure = useAxiosSecure()
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
   const axiosCommon = useAxiosCommon();
-  const { user,userInfo } = useUserInfo();
+  const { user, userInfo } = useUserInfo();
   const resumeRef = useRef(null);
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { id } = useParams();
-  const {editor,config} = useJoditConfigs()
+  const { editor, config } = useJoditConfigs();
 
-  const {data,isLoading} = useQuery({
-    queryKey: ['job_details',id],
+  const { data, isLoading } = useQuery({
+    queryKey: ["job_details", id],
     queryFn: async () => {
-      const {data} = await axiosCommon(`/job_details/${id}`)
-      return data
-    }
-  })
+      const { data } = await axiosCommon(`/job_details/${id}`);
+      return data;
+    },
+  });
 
   const handleJobApply = async () => {
     if (!user) {
@@ -50,12 +50,23 @@ const JobDetails = () => {
     }
     setConfirmLoading(true);
     if (
-      !(userInfo && userInfo.name && userInfo.email && userInfo.photo && userInfo.education &&
-        userInfo.experience && userInfo.resume && userInfo.title && userInfo.biodata && userInfo.location && userInfo.number)
+      !(
+        userInfo &&
+        userInfo.name &&
+        userInfo.email &&
+        userInfo.photo &&
+        userInfo.education &&
+        userInfo.experience &&
+        userInfo.resume &&
+        userInfo.title &&
+        userInfo.biodata &&
+        userInfo.location &&
+        userInfo.number
+      )
     ) {
       setOpen(false);
       setConfirmLoading(false);
-      return toast.error('Please Complete Your Profile First');
+      return toast.error("Please Complete Your Profile First");
     }
     const jobInfo = {
       jobId: data && data?.job?._id,
@@ -64,7 +75,7 @@ const JobDetails = () => {
       cover_letter: content,
       resume: resumeRef.current.value,
       applied_date: moment().format("MMMM D, YYYY"),
-      status: 'applied'
+      status: "applied",
     };
     try {
       const { data: responseData } = await axiosSecure.post("/apply", jobInfo);
@@ -114,7 +125,11 @@ const JobDetails = () => {
           </div>
           <div className="flex flex-col lg:flex-row lg:items-center items-start justify-between w-full lg:px-20 px-5 py-10 gap-10">
             <div className="flex items-center gap-5">
-              <img src={data?.company?.company_logo} alt="" className="w-20 h-20 object-cover rounded-full shadow-lg p-2 hidden lg:inline-block"/>
+              <img
+                src={data?.company?.company_logo}
+                alt=""
+                className="w-20 h-20 object-cover rounded-full shadow-lg p-2 hidden lg:inline-block"
+              />
               <div className="flex items-start flex-col gap-2">
                 <div className="grid lg:grid-cols-4 grid-cols-4 items-center gap-3">
                   <h1 className="text-[#18191C] lg:text-2xl text-lg font-medium col-span-2">
@@ -124,11 +139,11 @@ const JobDetails = () => {
                     <span className="bg-[#E8F1FF] px-2 py-1 rounded-full text-xs text-[#0A65CC] ">
                       {data?.job_type}
                     </span>
-                    {
-                      data?.featured && <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
-                      Featured
-                    </span>
-                    }
+                    {data?.featured && (
+                      <span className="bg-[#FCEEEE] px-2 py-1 rounded-full text-xs text-[#E05151]">
+                        Featured
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex lg:items-center items-start gap-5 flex-col lg:flex-row ">
@@ -137,21 +152,27 @@ const JobDetails = () => {
                       src="https://gist.github.com/ShejanMahamud/205056e614f77ef4352546109a1ab4b1/raw/6d2e51907f77bd30c5150401fbe601dd99af44ae/website.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54] lg:text-base text-sm">{data?.company?.website}</span>
+                    <span className="text-[#474C54] lg:text-base text-sm">
+                      {data?.company?.website}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <img
                       src="https://gist.github.com/ShejanMahamud/ed4015cd6afcad4d397392d5869e1be8/raw/97ed63b0b533c03f1c7326c0db1f1388ffc53778/phone.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54] lg:text-base text-sm">{data?.company?.phone}</span>
+                    <span className="text-[#474C54] lg:text-base text-sm">
+                      {data?.company?.phone}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <img
                       src="https://gist.github.com/ShejanMahamud/4b5564a901828f1bc610653ac8cdeca4/raw/e8be40062e5ca3460b4dbae3dff928bf385f685c/email.svg"
                       alt=""
                     />
-                    <span className="text-[#474C54] lg:text-base text-sm">{data?.company?.email}</span>
+                    <span className="text-[#474C54] lg:text-base text-sm">
+                      {data?.company?.email}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -164,49 +185,49 @@ const JobDetails = () => {
                     alt=""
                   />
                 </div>
-{
-  data?.platform === 'jobify' && <button
-  disabled={!data?.status}
-  onClick={()=>setOpen(true)}
-  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
->
-  <span>Apply Now</span>
-  <img
-    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
-    alt=""
-  />
-</button>
-}
-{
-  data?.platform === 'email' && <button
-  disabled={!data?.status}
-  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
->
-  <a href={`mailto:${data?.company_email}`}>Email Us</a>
-  <img
-    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
-    alt=""
-  />
-</button>
-}
-{
-  data?.platform === 'external' && <button
-  disabled={!data.status}
-  className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
->
-  <a href={data?.company?.website}>Our Website</a>
-  <img
-    src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
-    alt=""
-  />
-</button>
-}
+                {data?.platform === "jobify" && (
+                  <button
+                    disabled={!data?.status}
+                    onClick={() => setOpen(true)}
+                    className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+                  >
+                    <span>Apply Now</span>
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+                      alt=""
+                    />
+                  </button>
+                )}
+                {data?.platform === "email" && (
+                  <button
+                    disabled={!data?.status}
+                    className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+                  >
+                    <a href={`mailto:${data?.company_email}`}>Email Us</a>
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+                      alt=""
+                    />
+                  </button>
+                )}
+                {data?.platform === "external" && (
+                  <button
+                    disabled={!data.status}
+                    className="bg-primary px-4 py-3 rounded-md text-white font-medium flex items-center gap-3"
+                  >
+                    <a href={data?.company?.website}>Our Website</a>
+                    <img
+                      src="https://gist.github.com/ShejanMahamud/3e1531c623443a8f5df5f64e60328b72/raw/406db90cd80314df603b5da7cbe504acfb194eaf/arrow.svg"
+                      alt=""
+                    />
+                  </button>
+                )}
                 <Modal
                   open={open}
                   width={800}
                   onOk={handleJobApply}
                   confirmLoading={confirmLoading}
-                  onCancel={()=>setOpen(false)}
+                  onCancel={() => setOpen(false)}
                 >
                   <h1 className="mb-5 text-xl font-medium text-[#18191C]">{`Apply Job: ${data?.job_title}`}</h1>
                   <div className="mb-10">
@@ -250,41 +271,52 @@ const JobDetails = () => {
                 <h1 className="text-black text-lg font-medium mb-3">
                   Job Description
                 </h1>
-                <Parser text={data?.description}/>
+                <Parser text={data?.description} />
               </div>
 
               <div className="flex flex-col items-start gap-2">
                 <h1 className="text-black text-lg font-medium mb-3">
                   Responsibilities
                 </h1>
-                <Parser text={data?.responsibilities}/>
+                <Parser text={data?.responsibilities} />
               </div>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[#191F33]">Share this job:</span>
-                <FacebookShareButton title={`Checkout ${data?.job_title} job on Jobify`} url={`https://jobify-web.netlify.app/job/${id}`}>
-                <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#0A65CC] flex items-center gap-2">
-                  <img
-                    src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg"
-                    alt=""
-                  />
-                  <span>Facebook</span>
-                </button>
+                <FacebookShareButton
+                  title={`Checkout ${data?.job_title} job on Jobify`}
+                  url={`https://jobify-web.netlify.app/job/${id}`}
+                >
+                  <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#0A65CC] flex items-center gap-2">
+                    <img
+                      src="https://gist.githubusercontent.com/ShejanMahamud/257bddb4ed895b9bf91c7979890f8c3d/raw/8f912afec40244266651bc332c398e565d0088bf/facebook.svg"
+                      alt=""
+                    />
+                    <span>Facebook</span>
+                  </button>
                 </FacebookShareButton>
-                <TwitterShareButton title={`Checkout ${data?.job_title} job on Jobify`} url={`https://jobify-web.netlify.app/job/${id}`}>
-                <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#1DA1F2] flex items-center gap-2">
-                  <img
-                    src="https://gist.githubusercontent.com/ShejanMahamud/6588958734fce721b08e8936e9cd024f/raw/cbb92eeefd308ddcb56a8d948f33d2a7146d6d33/twitter.svg"
-                    alt=""
-                  />
-                  <span>Twitter</span>
-                </button>
+                <TwitterShareButton
+                  title={`Checkout ${data?.job_title} job on Jobify`}
+                  url={`https://jobify-web.netlify.app/job/${id}`}
+                >
+                  <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-[#1DA1F2] flex items-center gap-2">
+                    <img
+                      src="https://gist.githubusercontent.com/ShejanMahamud/6588958734fce721b08e8936e9cd024f/raw/cbb92eeefd308ddcb56a8d948f33d2a7146d6d33/twitter.svg"
+                      alt=""
+                    />
+                    <span>Twitter</span>
+                  </button>
                 </TwitterShareButton>
-                
-                <LinkedinShareButton title={`Checkout ${data?.job_title} job on Jobify`} url={`https://jobify-web.netlify.app/job/${id}`} summary={`Checkout ${data?.job_title} job on Jobify`} source="Jobify">
-                <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-blue-500 flex items-center gap-2">
-                <FaLinkedinIn className="text-xl"/> 
-                  <span>LinkedIn</span>
-                </button>
+
+                <LinkedinShareButton
+                  title={`Checkout ${data?.job_title} job on Jobify`}
+                  url={`https://jobify-web.netlify.app/job/${id}`}
+                  summary={`Checkout ${data?.job_title} job on Jobify`}
+                  source="Jobify"
+                >
+                  <button className="border border-[#CEE0F5] px-3 py-2 rounded-lg text-blue-500 flex items-center gap-2">
+                    <FaLinkedinIn className="text-xl" />
+                    <span>LinkedIn</span>
+                  </button>
                 </LinkedinShareButton>
               </div>
             </div>
@@ -371,19 +403,23 @@ const JobDetails = () => {
                   </div>
 
                   <div className="flex flex-col items-start gap-1">
-                  <SlGraduation className='text-[#0A65CC] text-3xl'/>
+                    <SlGraduation className="text-[#0A65CC] text-3xl" />
                     <span className="text-[#767F8C] text-xs uppercase">
                       Education:
                     </span>
                     <span className="text-sm text-[#18191C] font-medium">
-                    {data?.education}
+                      {data?.education}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="border border-[#E7F0FA] lg:px-10 px-5 py-5 w-full rounded-lg">
                 <div className="flex items-center gap-5 mb-10">
-                <img src={data?.company?.company_logo} alt="" className="w-20 h-20 object-cover rounded-full"/>
+                  <img
+                    src={data?.company?.company_logo}
+                    alt=""
+                    className="w-20 h-20 object-cover rounded-full"
+                  />
                   <div className="flex flex-col items-start gap-2">
                     <h1 className="text-[#18191C] text-lg font-medium">
                       {data?.company?.company_name}
@@ -414,55 +450,73 @@ const JobDetails = () => {
                   </div>
                   <div className="flex items-center justify-between w-full flex-wrap">
                     <span className="text-[#5E6670]">Phone:</span>
-                    <span className="text-[#18191C]">{data?.company?.phone}</span>
+                    <span className="text-[#18191C]">
+                      {data?.company?.phone}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between w-full flex-wrap">
                     <span className="text-[#5E6670]">Email:</span>
-                    <span className="text-[#18191C]">{data?.company?.email}</span>
+                    <span className="text-[#18191C]">
+                      {data?.company?.email}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between w-full flex-wrap">
                     <span className="text-[#5E6670]">Website:</span>
-                    <span className="text-[#18191C]">{data?.company?.website}</span>
+                    <span className="text-[#18191C]">
+                      {data?.company?.website}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-5 ">
-                  {
-                    data?.company?.linkedin && <Link href={data?.company?.linkedin} className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl">
-                    <FaLinkedinIn />
+                  {data?.company?.linkedin && (
+                    <Link
+                      href={data?.company?.linkedin}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaLinkedinIn />
                     </Link>
-                  }
-                  {
-                    data?.company?.facebook &&
-                    <Link href={data?.company?.facebook} className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl">
-                    <FaFacebookF />
+                  )}
+                  {data?.company?.facebook && (
+                    <Link
+                      href={data?.company?.facebook}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaFacebookF />
                     </Link>
-                  }
-                  {
-                    data?.company?.twitter &&
-                    <Link href={data?.company?.twitter} className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl">
-                    <FaXTwitter />
+                  )}
+                  {data?.company?.twitter && (
+                    <Link
+                      href={data?.company?.twitter}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <FaXTwitter />
                     </Link>
-                  }
-                  {
-                    data?.company?.github &&
-                    <Link href={data?.company?.github} className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl">
-                    <DiGithubAlt />
+                  )}
+                  {data?.company?.github && (
+                    <Link
+                      href={data?.company?.github}
+                      className="bg-[#E7F0FA] h-12 w-12 rounded-lg flex items-center justify-center text-primary hover:text-white hover:bg-primary duration-500 text-2xl"
+                    >
+                      <DiGithubAlt />
                     </Link>
-                  }
+                  )}
                 </div>
               </div>
             </div>
           </div>
-{ data?.related_jobs && data?.related_jobs.length > 0 && 
-         <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
-            <h1 className="text-[#18191C] text-[40px] font-medium">
-              Related Jobs ({data?.related_jobs && data?.related_jobs.length})
-            </h1>
-            <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
-              {data?.related_jobs &&
-                data?.related_jobs.map((job) => <CardJob job={job} key={job._id} />)}
+          {data?.related_jobs && data?.related_jobs.length > 0 && (
+            <div className="my-10 py-10 border border-[#E4E5E8] px-20 w-full">
+              <h1 className="text-[#18191C] text-[40px] font-medium">
+                Related Jobs ({data?.related_jobs && data?.related_jobs.length})
+              </h1>
+              <div className="w-full grid grid-cols-3 row-auto items-center gap-10 my-10">
+                {data?.related_jobs &&
+                  data?.related_jobs.map((job) => (
+                    <CardJob job={job} key={job._id} />
+                  ))}
+              </div>
             </div>
-          </div>}
+          )}
         </div>
       )}
     </>
